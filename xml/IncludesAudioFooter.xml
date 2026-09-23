@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SINGLE SOURCE for the footer text (title/path/time). Transport plus
+     sliders stay in Layout.xml: duplicate ids would route focus to the
+     first (possibly hidden) instance. -->
+<includes>
+	<include name="AudioFooterContent">
+		
+		<control type="label">
+		<left>200</left>
+		<top>26</top>
+		<width>944</width>
+		<height>50</height>
+		<font>font36_title</font>
+		<textcolor>FFF2F2F4</textcolor>
+		<visible>!Skin.HasSetting(audio.noscroll)</visible>
+		<scroll>true</scroll>
+		<scrollsuffix>   |   </scrollsuffix>
+		<label>$INFO[Window(10000).Property(bp.audio.title.rep)]</label>
+		</control>
+		<control type="fadelabel">
+		<left>200</left>
+		<top>26</top>
+		<width>944</width>
+		<height>50</height>
+		<font>font36_title</font>
+		<textcolor>FFF2F2F4</textcolor>
+		<visible>Skin.HasSetting(audio.noscroll)</visible>
+		<label>$INFO[Window(10000).Property(bp.audio.title)]</label>
+		<scroll>false</scroll>
+		</control>
+		<control type="label">
+		<left>200</left>
+		<top>90</top>
+		<width>944</width>
+		<height>30</height>
+		<font>font20_title</font>
+		<textcolor>FF9A9AA2</textcolor>
+		<visible>!Skin.HasSetting(audio.noscroll) + Skin.HasSetting(show.audiopath)</visible>
+		<scroll>true</scroll>
+		<scrollspeed>30</scrollspeed>
+		<scrollsuffix>   |   </scrollsuffix>
+		<label>$INFO[Window(10000).Property(bp.audio.path.rep)]</label>
+		</control>
+		<control type="fadelabel">
+		<left>200</left>
+		<top>90</top>
+		<width>944</width>
+		<height>30</height>
+		<font>font20_title</font>
+		<textcolor>FF9A9AA2</textcolor>
+		<visible>Skin.HasSetting(audio.noscroll) + Skin.HasSetting(show.audiopath)</visible>
+		<label>$INFO[Window(10000).Property(bp.audio.path)]</label>
+		<scroll>false</scroll>
+		</control>
+<control type="label">
+		<left>200</left>
+		<top>90</top>
+		<width>944</width>
+		<height>30</height>
+		<font>font20_title</font>
+		<textcolor>FF9A9AA2</textcolor>
+		<visible>!Skin.HasSetting(audio.noscroll) + !Skin.HasSetting(show.audiopath)</visible>
+		<scroll>true</scroll>
+		<scrollspeed>30</scrollspeed>
+		<scrollsuffix>   |   </scrollsuffix>
+		<label>$INFO[Window(10000).Property(bp.audio.folder.rep)]</label>
+		</control>
+<control type="fadelabel">
+		<left>200</left>
+		<top>90</top>
+		<width>944</width>
+		<height>30</height>
+		<font>font20_title</font>
+		<textcolor>FF9A9AA2</textcolor>
+		<visible>Skin.HasSetting(audio.noscroll) + !Skin.HasSetting(show.audiopath)</visible>
+		<label>$INFO[Window(10000).Property(bp.audio.folder)]</label>
+		<scroll>false</scroll>
+		</control>
+		<control type="label">
+		<left>1204</left>
+		<top>137</top>
+		<width>240</width>
+		<height>24</height>
+		<font>font10</font>
+		<textcolor>FF9A9AA2</textcolor>
+		<label>$INFO[Player.Time]$INFO[Player.Duration, / ]</label>
+		</control>
+	</include>
+</includes>

@@ -1,0 +1,23 @@
+{
+  "functions": {
+    "back":      {"name": "Back",       "keys": ["backspace", "escape", "browser_back", "obc39"]},
+    "home":      {"name": "Home",       "keys": ["browser_home", "homepage", "obc218"]},
+    "menu":      {"name": "Menu",       "keys": ["menu", "obc8"]},
+    "up":        {"name": "Up",         "keys": ["up", "obc89"]},
+    "down":      {"name": "Down",       "keys": ["down", "obc88"]},
+    "left":      {"name": "Left",       "keys": ["left", "obc86"]},
+    "right":     {"name": "Right",      "keys": ["right", "obc87"]},
+    "ok":        {"name": "OK",         "keys": ["enter", "return", "obc244"]},
+    "playpause": {"name": "Play/Pause", "keys": ["p", "space"]},
+    "stop":      {"name": "Stop",       "keys": ["x"]},
+    "rewind":    {"name": "Rewind",     "keys": ["r"]},
+    "forward":   {"name": "Forward",    "keys": ["f"]},
+    "prev":      {"name": "Previous",   "keys": ["comma"]},
+    "next":      {"name": "Next",       "keys": ["period"]},
+    "vol_up":    {"name": "Volume +",   "keys": ["volume_up", "obc47"]},
+    "vol_down":  {"name": "Volume -",   "keys": ["volume_down", "obc46"]},
+    "mute":      {"name": "Mute",       "keys": ["m", "volume_mute", "obc63"]},
+    "power":     {"name": "Exit",       "keys": ["power", "obc59"]},
+    "settings":  {"name": "Settings",   "keys": ["obc255"]}
+  }
+}

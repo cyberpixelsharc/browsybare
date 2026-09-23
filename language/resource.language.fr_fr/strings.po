@@ -1,0 +1,782 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr_fr\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Error"
+msgctxt "#31303"
+msgstr "Erreur"
+
+msgid "Settings"
+msgctxt "#31307"
+msgstr "Paramètres"
+
+msgid "System"
+msgctxt "#31308"
+msgstr "Système"
+
+msgid "Quit"
+msgctxt "#31310"
+msgstr "Quitter"
+
+msgid "Show zebra stripes"
+msgctxt "#31312"
+msgstr "Afficher les lignes zébrées"
+
+msgid "Version"
+msgctxt "#31313"
+msgstr "Version"
+
+msgid "Show hidden"
+msgctxt "#31317"
+msgstr "Afficher les cachés"
+
+msgid "Accent color"
+msgctxt "#31318"
+msgstr "Couleur d'accent"
+
+msgid "Appearance and colors"
+msgctxt "#31319"
+msgstr "Apparence et couleurs"
+
+msgid "Files and folders"
+msgctxt "#31320"
+msgstr "Fichiers et dossiers"
+
+msgid "Sorting"
+msgctxt "#31321"
+msgstr "Tri"
+
+msgid "Alphabetical"
+msgctxt "#31322"
+msgstr "Alphabétique"
+
+msgid "Size"
+msgctxt "#31323"
+msgstr "Taille"
+
+msgid "Date modified"
+msgctxt "#31324"
+msgstr "Date de modification"
+
+msgid "Drives"
+msgctxt "#31325"
+msgstr "Lecteurs"
+
+msgid "No source available"
+msgctxt "#31326"
+msgstr "Aucune source disponible"
+
+msgid "Rename"
+msgctxt "#31327"
+msgstr "Renommer"
+
+msgid "Delete"
+msgctxt "#31328"
+msgstr "Supprimer"
+
+msgid "New folder"
+msgctxt "#31329"
+msgstr "Nouveau dossier"
+
+msgid "File not found"
+msgctxt "#31330"
+msgstr "Fichier introuvable"
+
+msgid "Invalid name"
+msgctxt "#31331"
+msgstr "Nom invalide"
+
+msgid "Really delete this folder?"
+msgctxt "#31332"
+msgstr "Vraiment supprimer ce dossier ?"
+
+msgid "Really delete this file?"
+msgctxt "#31333"
+msgstr "Vraiment supprimer ce fichier ?"
+
+msgid "Target already exists"
+msgctxt "#31334"
+msgstr "La cible existe déjà"
+
+msgid "Already exists"
+msgctxt "#31335"
+msgstr "Existe déjà"
+
+msgid "Rename failed: %s"
+msgctxt "#31336"
+msgstr "Échec du renommage : %s"
+
+msgid "Delete failed: %s"
+msgctxt "#31337"
+msgstr "Échec de la suppression : %s"
+
+msgid "Create folder failed: %s"
+msgctxt "#31338"
+msgstr "Échec de la création du dossier : %s"
+
+msgid "Actions…"
+msgctxt "#31339"
+msgstr "Actions…"
+
+msgid "Yes"
+msgctxt "#31340"
+msgstr "Oui"
+
+msgid "No"
+msgctxt "#31341"
+msgstr "Non"
+
+msgid "Search"
+msgctxt "#31342"
+msgstr "Rechercher"
+
+msgid "OK"
+msgctxt "#31343"
+msgstr "OK"
+
+msgid "Cancel"
+msgctxt "#31344"
+msgstr "Annuler"
+
+msgid "Patterns"
+msgctxt "#31345"
+msgstr "Motifs"
+
+msgid "Add pattern"
+msgctxt "#31346"
+msgstr "Ajouter un motif"
+
+msgid "Directories"
+msgctxt "#31349"
+msgstr "Dossiers"
+
+msgid "Add source"
+msgctxt "#31350"
+msgstr "Ajouter une source"
+
+msgid "Folders first"
+msgctxt "#31351"
+msgstr "Dossiers en premier"
+
+msgid "Options"
+msgctxt "#31352"
+msgstr "Options"
+
+msgid "Match case"
+msgctxt "#31353"
+msgstr "Respecter la casse"
+
+msgid "Select this folder"
+msgctxt "#31355"
+msgstr "Choisir ce dossier"
+
+msgid "Cannot select drive root"
+msgctxt "#31357"
+msgstr "Impossible de choisir la racine du lecteur"
+
+msgid "Already added"
+msgctxt "#31358"
+msgstr "Déjà ajouté"
+
+msgid "Audio"
+msgctxt "#31360"
+msgstr "Audio"
+
+msgid "Scroll labels"
+msgctxt "#31361"
+msgstr "Faire défiler les libellés"
+
+msgid "Video"
+msgctxt "#31362"
+msgstr "Vidéo"
+
+msgid "Home folder"
+msgctxt "#31363"
+msgstr "Dossier personnel"
+
+msgid "Installing…"
+msgctxt "#31364"
+msgstr "Installation en cours…"
+
+msgid "Installation and Fusion"
+msgctxt "#31365"
+msgstr "Installation et fusion"
+
+msgid "3D"
+msgctxt "#36501"
+msgstr "3D"
+
+msgid "Show source path"
+msgctxt "#31367"
+msgstr "Afficher le chemin source"
+
+msgid "Color intensity"
+msgctxt "#31366"
+msgstr "Intensité des couleurs"
+
+msgid "General"
+msgctxt "#31368"
+msgstr "Général"
+
+msgid "Player"
+msgctxt "#31369"
+msgstr "Lecteur"
+
+msgid "Sources"
+msgctxt "#31370"
+msgstr "Sources"
+
+msgid "Blocklist"
+msgctxt "#31371"
+msgstr "Blocage"
+
+msgid "Toggle"
+msgctxt "#31374"
+msgstr "Basculer"
+
+msgid "Remote"
+msgctxt "#31375"
+msgstr "Commandes"
+
+msgid "Back"
+msgctxt "#31376"
+msgstr "Retour"
+
+msgid "Home"
+msgctxt "#31377"
+msgstr "Accueil"
+
+msgid "Menu"
+msgctxt "#31378"
+msgstr "Menu"
+
+msgid "Up"
+msgctxt "#31379"
+msgstr "Haut"
+
+msgid "Down"
+msgctxt "#31380"
+msgstr "Bas"
+
+msgid "Left"
+msgctxt "#31381"
+msgstr "Gauche"
+
+msgid "Right"
+msgctxt "#31382"
+msgstr "Droite"
+
+msgid "OK"
+msgctxt "#31383"
+msgstr "OK"
+
+msgid "Rewind"
+msgctxt "#31386"
+msgstr "Retour rapide"
+
+msgid "Forward"
+msgctxt "#31387"
+msgstr "Avance rapide"
+
+msgid "Previous"
+msgctxt "#31388"
+msgstr "Précédent"
+
+msgid "Next"
+msgctxt "#31389"
+msgstr "Suivant"
+
+msgid "Louder"
+msgctxt "#31390"
+msgstr "Plus fort"
+
+msgid "Quieter"
+msgctxt "#31391"
+msgstr "Moins fort"
+
+msgid "Exit"
+msgctxt "#31393"
+msgstr "Quitter"
+
+msgid "Settings"
+msgctxt "#31398"
+msgstr "Paramètres"
+
+msgid "Scanning…"
+msgctxt "#31395"
+msgstr "Analyse en cours…"
+
+msgid "Start scanner"
+msgctxt "#31396"
+msgstr "Démarrer l'analyse"
+
+msgid "Save"
+msgctxt "#31397"
+msgstr "Enregistrer"
+
+msgid "Really power off the operating system?"
+msgctxt "#31399"
+msgstr "Vraiment éteindre le système ?"
+
+msgid "Really restart the operating system?"
+msgctxt "#31400"
+msgstr "Vraiment redémarrer le système ?"
+
+msgid "Really suspend the operating system?"
+msgctxt "#31401"
+msgstr "Vraiment mettre le système en veille ?"
+
+msgid "Really hibernate the operating system?"
+msgctxt "#31402"
+msgstr "Vraiment mettre le système en veille prolongée ?"
+
+msgid "Really run this action?"
+msgctxt "#31403"
+msgstr "Vraiment exécuter cette action ?"
+
+msgid "Really quit Kodi now?"
+msgctxt "#31404"
+msgstr "Vraiment quitter Kodi maintenant ?"
+
+msgid "Shutdown timer"
+msgctxt "#31405"
+msgstr "Minuteur d'arrêt"
+
+msgid "15 minutes"
+msgctxt "#31406"
+msgstr "15 minutes"
+
+msgid "30 minutes"
+msgctxt "#31407"
+msgstr "30 minutes"
+
+msgid "60 minutes"
+msgctxt "#31408"
+msgstr "60 minutes"
+
+msgid "120 minutes"
+msgctxt "#31409"
+msgstr "120 minutes"
+
+msgid "Delete active timer (%s)"
+msgctxt "#31411"
+msgstr "Supprimer le minuteur actif (%s)"
+
+msgid "No timer active"
+msgctxt "#31412"
+msgstr "Aucun minuteur actif"
+
+msgid "90 minutes"
+msgctxt "#31413"
+msgstr "90 minutes"
+
+msgid "5 minutes"
+msgctxt "#31414"
+msgstr "5 minutes"
+
+msgid "Block list"
+msgctxt "#31415"
+msgstr "Blocage"
+
+msgid "Scan folder sizes"
+msgctxt "#31416"
+msgstr "Analyser la taille des dossiers"
+
+msgid "Copy"
+msgctxt "#31394"
+msgstr "Copier"
+
+msgid "Cut"
+msgctxt "#31410"
+msgstr "Couper"
+
+msgid "Paste"
+msgctxt "#31417"
+msgstr "Coller"
+
+msgid "Clipboard is empty"
+msgctxt "#31418"
+msgstr "Le presse-papiers est vide"
+
+msgid "The target already exists!"
+msgctxt "#31419"
+msgstr "La cible existe déjà !"
+
+msgid "Copied: %s"
+msgctxt "#31420"
+msgstr "Copié : %s"
+
+msgid "Cut: %s"
+msgctxt "#31421"
+msgstr "Coupé : %s"
+
+msgid "Paste failed: %s"
+msgctxt "#31422"
+msgstr "Échec du collage : %s"
+
+msgid "Pasted: %s"
+msgctxt "#31423"
+msgstr "Collé : %s"
+
+msgid "Add as directory source"
+msgctxt "#31424"
+msgstr "Ajouter comme source de dossier"
+
+msgid "Add this folder as a directory source?"
+msgctxt "#31425"
+msgstr "Ajouter ce dossier comme source de dossier ?"
+
+msgid "Info"
+msgctxt "#31426"
+msgstr "Infos"
+
+msgid "Title"
+msgctxt "#31427"
+msgstr "Titre"
+
+msgid "Artist"
+msgctxt "#31428"
+msgstr "Artiste"
+
+msgid "Album"
+msgctxt "#31429"
+msgstr "Album"
+
+msgid "Year"
+msgctxt "#31430"
+msgstr "Année"
+
+msgid "Genre"
+msgctxt "#31431"
+msgstr "Genre"
+
+msgid "Duration"
+msgctxt "#31432"
+msgstr "Durée"
+
+msgid "Codec"
+msgctxt "#31433"
+msgstr "Codec"
+
+msgid "Bitrate"
+msgctxt "#31435"
+msgstr "Débit"
+
+msgid "Sample rate"
+msgctxt "#31436"
+msgstr "Fréquence d'échantillonnage"
+
+msgid "Channels"
+msgctxt "#31437"
+msgstr "Canaux"
+
+msgid "Size"
+msgctxt "#31440"
+msgstr "Taille"
+
+msgid "Modified"
+msgctxt "#31441"
+msgstr "Modifié le"
+
+msgid "Frame rate"
+msgctxt "#31442"
+msgstr "Fréquence d'images"
+
+msgid "Audio"
+msgctxt "#31443"
+msgstr "Audio"
+
+msgid "HDR"
+msgctxt "#31444"
+msgstr "HDR"
+
+msgid "Subtitle"
+msgctxt "#31445"
+msgstr "Sous-titre"
+
+msgid "Off"
+msgctxt "#31446"
+msgstr "Désactivé"
+
+msgid "Internal storage"
+msgctxt "#31447"
+msgstr "Stockage interne"
+
+msgid "Networks"
+msgctxt "#31448"
+msgstr "Réseaux"
+
+msgid "Server address"
+msgctxt "#31449"
+msgstr "Adresse du serveur"
+
+msgid "Display name"
+msgctxt "#31450"
+msgstr "Nom affiché"
+
+msgid "Use ftp://, smb://, nfs://, http(s):// or dav(s)://"
+msgctxt "#31451"
+msgstr "Utilisez ftp://, smb://, nfs://, http(s):// ou dav(s)://"
+
+msgid "Network source"
+msgctxt "#31452"
+msgstr "Source réseau"
+
+msgid "Name"
+msgctxt "#31453"
+msgstr "Nom"
+
+msgid "Protocol"
+msgctxt "#31454"
+msgstr "Protocole"
+
+msgid "Server"
+msgctxt "#31455"
+msgstr "Serveur"
+
+msgid "Username"
+msgctxt "#31456"
+msgstr "Nom d'utilisateur"
+
+msgid "Password"
+msgctxt "#31457"
+msgstr "Mot de passe"
+
+msgid "OK"
+msgctxt "#31458"
+msgstr "OK"
+
+msgid "Source already exists"
+msgctxt "#31459"
+msgstr "La source existe déjà"
+
+msgid "Path"
+msgctxt "#31460"
+msgstr "Chemin"
+
+msgid "Port"
+msgctxt "#31461"
+msgstr "Port"
+
+msgid "Invalid port"
+msgctxt "#31462"
+msgstr "Port invalide"
+
+msgid "Connection OK"
+msgctxt "#31463"
+msgstr "Connexion réussie"
+
+msgid "Connection failed"
+msgctxt "#31464"
+msgstr "Échec de la connexion"
+
+msgid "Test"
+msgctxt "#31465"
+msgstr "Tester"
+
+msgid "Edit"
+msgctxt "#31466"
+msgstr "Modifier"
+
+msgid "Connection error"
+msgctxt "#31467"
+msgstr "Erreur de connexion"
+
+msgid "Scan network files"
+msgctxt "#31468"
+msgstr "Analyser les fichiers réseau"
+
+msgid "Scanning..."
+msgctxt "#31470"
+msgstr "Analyse en cours..."
+
+msgid "Start-up delay"
+msgctxt "#31471"
+msgstr "Délai de démarrage"
+
+msgid "System and Kodi"
+msgctxt "#31472"
+msgstr "Système et Kodi"
+
+msgid "GUI sound volume"
+msgctxt "#31473"
+msgstr "Volume interface"
+
+msgid "Photo"
+msgctxt "#31474"
+msgstr "Photo"
+
+msgid "An older version (%s) was installed over the newer version (%s)."
+msgctxt "#31476"
+msgstr "Une version plus ancienne (%s) a été installée par-dessus la version plus récente (%s)."
+
+msgid "Version (%s) was installed again over version (%s)."
+msgctxt "#31477"
+msgstr "La version (%s) a été réinstallée par-dessus la version (%s)."
+
+msgid "Installation warning"
+msgctxt "#31478"
+msgstr "Avertissement d'installation"
+
+msgid "Some base files could not be copied. A new attempt is made on the next start."
+msgctxt "#31479"
+msgstr "Certains fichiers de base n'ont pas pu être copiés. Une nouvelle tentative aura lieu au prochain démarrage."
+
+msgid "The settings folder was broken and has been repaired successfully."
+msgctxt "#31480"
+msgstr "Le dossier des paramètres était endommagé et a été réparé avec succès."
+
+msgid "The settings folder is broken and could not be repaired."
+msgctxt "#31481"
+msgstr "Le dossier des paramètres est endommagé et n'a pas pu être réparé."
+
+msgid "The base layer could not be updated. See the log for details."
+msgctxt "#31482"
+msgstr "La couche de base n'a pas pu être mise à jour. Voir le journal pour plus de détails."
+
+msgid "Reset the settings of this section to their defaults?"
+msgctxt "#31483"
+msgstr "Réinitialiser les paramètres de cette section à leurs valeurs par défaut ?"
+
+msgid "Screen dimmer"
+msgctxt "#31484"
+msgstr "Atténuation de l'écran"
+
+msgid "Camera"
+msgctxt "#31485"
+msgstr "Appareil photo"
+
+msgid "Lens"
+msgctxt "#31486"
+msgstr "Objectif"
+
+msgid "Date taken"
+msgctxt "#31487"
+msgstr "Date de prise de vue"
+
+msgid "Exposure"
+msgctxt "#31488"
+msgstr "Exposition"
+
+msgid "Aperture"
+msgctxt "#31489"
+msgstr "Ouverture"
+
+msgid "Focal length"
+msgctxt "#31490"
+msgstr "Focale"
+
+msgid "Resolution"
+msgctxt "#31491"
+msgstr "Résolution"
+
+msgid "Orientation"
+msgctxt "#31492"
+msgstr "Orientation"
+
+msgid "Include subfolders"
+msgctxt "#31493"
+msgstr "Inclure les sous-dossiers"
+
+msgid "Shortcuts"
+msgctxt "#31494"
+msgstr "Raccourcis"
+
+msgid "P & Space"
+msgctxt "#31495"
+msgstr "P & Espace"
+
+msgid "X"
+msgctxt "#31496"
+msgstr "X"
+
+msgid "Comma / Period"
+msgctxt "#31498"
+msgstr "Virgule / Point"
+
+msgid "F / R"
+msgctxt "#31499"
+msgstr "F / R"
+
+msgid "M"
+msgctxt "#31500"
+msgstr "M"
+
+msgid "Plus / Minus"
+msgctxt "#31501"
+msgstr "Plus / Moins"
+
+msgid "Backspace"
+msgctxt "#31502"
+msgstr "Retour arrière"
+
+msgid "Arrow keys"
+msgctxt "#31503"
+msgstr "Flèches directionnelles"
+
+msgid "Enter"
+msgctxt "#31504"
+msgstr "Entrée"
+
+msgid "ESC"
+msgctxt "#31505"
+msgstr "Échap"
+
+msgid "Shift+F10"
+msgctxt "#31506"
+msgstr "Maj+F10"
+
+msgid "Play / Pause"
+msgctxt "#31507"
+msgstr "Lecture / Pause"
+
+msgid "Stop"
+msgctxt "#31508"
+msgstr "Stop"
+
+msgid "Previous / Next"
+msgctxt "#31510"
+msgstr "Précédent / Suivant"
+
+msgid "Skip back / forward"
+msgctxt "#31511"
+msgstr "Retour / avance rapide"
+
+msgid "Mute"
+msgctxt "#31512"
+msgstr "Muet"
+
+msgid "Louder / Quieter"
+msgctxt "#31513"
+msgstr "Plus fort / Moins fort"
+
+msgid "Close / folder up"
+msgctxt "#31514"
+msgstr "Fermer / dossier parent"
+
+msgid "Navigate"
+msgctxt "#31515"
+msgstr "Naviguer"
+
+msgid "Select"
+msgctxt "#31516"
+msgstr "Sélectionner"
+
+msgid "Close overlay"
+msgctxt "#31517"
+msgstr "Fermer les fenêtres"
+
+msgid "Context menu"
+msgctxt "#31518"
+msgstr "Menu contextuel"
+
+msgid "Ctrl+Enter"
+msgctxt "#31519"
+msgstr "Ctrl+Entrée"
+
+msgid "ISO"
+msgctxt "#31520"
+msgstr "ISO"

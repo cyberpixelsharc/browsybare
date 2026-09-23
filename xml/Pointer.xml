@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Own cursor (Estuary arrives only with the first sync).
+     Bootstrap arrow with hotspot offsets. Protected from sync. -->
+<window>
+	<controls>
+		<control type="image" id="1">
+			<description>Pointer</description>
+			<left>-6</left>
+			<top>-6</top>
+			<width>44</width>
+			<height>50</height>
+			<texture>pointer/cursor.png</texture>
+		</control>
+		<control type="image" id="2">
+			<description>Pointer Focus</description>
+			<left>-6</left>
+			<top>-6</top>
+			<width>44</width>
+			<height>50</height>
+			<texture>pointer/cursor.png</texture>
+		</control>
+		<control type="image" id="3">
+			<description>Pointer Drag</description>
+			<left>-6</left>
+			<top>-6</top>
+			<width>44</width>
+			<height>50</height>
+			<texture>pointer/cursor.png</texture>
+		</control>
+		<control type="image" id="4">
+			<description>pointer_click</description>
+			<left>-6</left>
+			<top>-6</top>
+			<width>44</width>
+			<height>50</height>
+			<texture>pointer/cursor.png</texture>
+		</control>
+	</controls>
+</window>

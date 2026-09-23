@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED FILE: built by scripts/remotes.py from remotes/defaults.json +
+     userdata/skindev/remotes.json (user additions from the settings Remote
+     tab). Edit the JSON, never this file.
+     FUNCTION model: the generated GEN blocks map every key to
+     keyboard.py special <function>; the dispatcher decides the per-window
+     behaviour (Home / VideoOSD / FullscreenVideo). Generated blocks sit AFTER
+     the hand-tuned locks so a mapped function wins, while unmapped keys keep
+     their lock (no accidental ShutdownMenu etc.).
+     Kodi 21 has no condition support in keymaps (CButtonTranslator ignores
+     the attribute), so the letter/digit guard on Home is UNCONDITIONAL and
+     enforced inside keyboard.py (insert only while the on-screen keyboard
+     bp.kb is open, else swallow). -->
+<keymap>
+  <!-- Global: the power key toggles OUR shutdown menu in EVERY window.
+       Without this, Kodi's system remote.xml <power>ShutDown()</power>
+       (global) fires inside the open menu and shuts the box down. Only
+       <power> is global here (no letters, which would kill shortcuts). -->
+  <global>
+    <keyboard>
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </keyboard>
+    <remote>
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <!-- Opt-in mouse-button block (settings Remote tab block list): noop
+         disables the button (system mouse.xml). Empty = nothing blocked. -->
+    <mouse>
+      <!--GEN:blocks_mouse-->
+      <!--/GEN:blocks_mouse-->
+    </mouse>
+  </global>
+  <Home>
+    <!-- Transport letters (p/x/r/f/m) are owned by the generated block below
+         (special <function> types the letter while the keyboard is open and
+         runs the transport action otherwise). No hand-tuned duplicates. -->
+    <keyboard>
+      <!--GEN:typing-->
+      <!--/GEN:typing-->
+      <!--GEN:home_keyboard-->
+      <!--/GEN:home_keyboard-->
+    </keyboard>
+    <remote>
+      <!-- Void names: open foreign windows or disrupt (never navigation,
+           transport, volume, power or anything the old box may send as OK).
+           Catches every remote that sends these standard names. -->
+      <myvideo>noop</myvideo>
+      <mymusic>noop</mymusic>
+      <mypictures>noop</mypictures>
+      <mytv>noop</mytv>
+      <guide>noop</guide>
+      <livetv>noop</livetv>
+      <liveradio>noop</liveradio>
+      <recordedtv>noop</recordedtv>
+      <epgsearch>noop</epgsearch>
+      <red>noop</red>
+      <green>noop</green>
+      <yellow>noop</yellow>
+      <blue>noop</blue>
+      <favorites>noop</favorites>
+      <display>noop</display>
+      <record>noop</record>
+      <eject>noop</eject>
+      <print>noop</print>
+      <teletext>noop</teletext>
+      <subtitle>noop</subtitle>
+      <language>noop</language>
+      <playlist>noop</playlist>
+      <clear>noop</clear>
+      <hash>noop</hash>
+      <star>noop</star>
+      <last>noop</last>
+      <info>noop</info>
+      <title>noop</title>
+      <!-- Power: open OUR shutdown menu (overrides Kodi's remote.xml
+           <power>ShutDown()</power>). Also swallowed while the scanner is armed
+           (keyboard.py _scan_armed), so scanning the power key no longer
+           shuts the box down. -->
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <mouse>
+      <!-- Right-click: route through the Menu-key dispatcher so it can be
+           guarded while the photo viewer (bp.photo) is open; otherwise the
+           core opens the native context menu behind the image. -->
+      <rightclick>RunScript(special://skin/scripts/keyboard.py,special,menu)</rightclick>
+    </mouse>
+    <!-- OBC codes MUST live in <universalremote>, never in <remote>: <remote>
+         maps IR button NAMES via IRTranslator::TranslateString (play, reverse,
+         forward, pageplus, ...), which returns 0 for "obc*"; only
+         <universalremote> runs TranslateUniversalRemoteString. OBC entries in
+         <remote> were silently dropped, so box 2 (Meson-IR) fell back to the
+         system mapping. -->
+    <universalremote>
+      <!-- Spare Meson-IR keys run into the void (unmapped = noop). The
+           app/colored buttons (YouTube/Netflix/Google/Prime) and P+/P- are
+           NOT hardcoded here: they live in the settings Remote tab block list
+           (remotes.py APP_BLOCKS, default ON) and are generated into the GEN
+           block below, so the user can toggle them there. obc14/obc26 stay as
+           permanent background voids. -->
+      <obc14>noop</obc14>
+      <obc26>noop</obc26>
+      <!--GEN:home_remote-->
+      <!--/GEN:home_remote-->
+    </universalremote>
+  </Home>
+  <!-- Settings window (id 1150 -> keymap section window1150): the SAME
+       hardware typing as Home, so the on-screen keyboard types with a real
+       keyboard there too (letters/digits/umlauts/symbols). No transport
+       genes, but Home must close the dialog like Back. -->
+  <window1150>
+    <keyboard>
+      <!--GEN:typing-->
+      <!--/GEN:typing-->
+      <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
+      <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
+    </keyboard>
+    <universalremote>
+      <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
+    </universalremote>
+  </window1150>
+  <VideoOSD>
+    <keyboard>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <a>noop</a>
+      <b>noop</b>
+      <c>noop</c>
+      <d>noop</d>
+      <e>noop</e>
+      <g>noop</g>
+      <h>noop</h>
+      <i>noop</i>
+      <j>noop</j>
+      <k>noop</k>
+      <l>noop</l>
+      <n>noop</n>
+      <n mod="ctrl">noop</n>
+      <o>noop</o>
+      <o mod="ctrl,shift">noop</o>
+      <o mod="alt">noop</o>
+      <q>noop</q>
+      <s>noop</s>
+      <t>noop</t>
+      <u>noop</u>
+      <v>noop</v>
+      <w>noop</w>
+      <y>noop</y>
+      <z>noop</z>
+      <one>noop</one>
+      <two>noop</two>
+      <three>noop</three>
+      <four>noop</four>
+      <five>noop</five>
+      <six>noop</six>
+      <seven>noop</seven>
+      <eight>noop</eight>
+      <nine>noop</nine>
+      <zero>noop</zero>
+      <tab>noop</tab>
+      <printscreen>noop</printscreen>
+      <pageup>noop</pageup>
+      <pagedown>noop</pagedown>
+      <home>noop</home>
+      <end>noop</end>
+      <left mod="ctrl">noop</left>
+      <right mod="ctrl">noop</right>
+      <return mod="longpress">noop</return>
+      <enter mod="longpress">noop</enter>
+      <return mod="ctrl">noop</return>
+      <enter mod="ctrl">noop</enter>
+      <!--GEN:osd_keyboard-->
+      <!--/GEN:osd_keyboard-->
+    </keyboard>
+    <remote>
+      <!-- Void names: open foreign windows or disrupt (never navigation,
+           transport, volume, power or anything the old box may send as OK).
+           Catches every remote that sends these standard names. -->
+      <myvideo>noop</myvideo>
+      <mymusic>noop</mymusic>
+      <mypictures>noop</mypictures>
+      <mytv>noop</mytv>
+      <guide>noop</guide>
+      <livetv>noop</livetv>
+      <liveradio>noop</liveradio>
+      <recordedtv>noop</recordedtv>
+      <epgsearch>noop</epgsearch>
+      <red>noop</red>
+      <green>noop</green>
+      <yellow>noop</yellow>
+      <blue>noop</blue>
+      <favorites>noop</favorites>
+      <display>noop</display>
+      <record>noop</record>
+      <eject>noop</eject>
+      <print>noop</print>
+      <teletext>noop</teletext>
+      <subtitle>noop</subtitle>
+      <language>noop</language>
+      <playlist>noop</playlist>
+      <clear>noop</clear>
+      <hash>noop</hash>
+      <star>noop</star>
+      <last>noop</last>
+      <info>noop</info>
+      <title>noop</title>
+      <!-- Power: open OUR shutdown menu (overrides Kodi's remote.xml
+           <power>ShutDown()</power>). Also swallowed while the scanner is armed
+           (keyboard.py _scan_armed), so scanning the power key no longer
+           shuts the box down. -->
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <!-- OBC codes live in <universalremote> (see the Home note). -->
+    <universalremote>
+      <!-- Spare Meson-IR keys run into the void (unmapped = noop). The
+           app/colored buttons (YouTube/Netflix/Google/Prime) and P+/P- are
+           NOT hardcoded here: they live in the settings Remote tab block list
+           (remotes.py APP_BLOCKS, default ON) and are generated into the GEN
+           block below, so the user can toggle them there. obc14/obc26 stay as
+           permanent background voids. -->
+      <obc14>noop</obc14>
+      <obc26>noop</obc26>
+      <!--GEN:osd_remote-->
+      <!--/GEN:osd_remote-->
+    </universalremote>
+  </VideoOSD>
+  <FullscreenVideo>
+    <keyboard>
+      <!-- Plain arrows are owned by the generated block below (transport:
+           up=next, down=prev, left=rewind, right=forward).
+           OK stays native (opens the OSD). -->
+      <up mod="longpress">noop</up>
+      <down mod="longpress">noop</down>
+      <left mod="alt">noop</left>
+      <right mod="alt">noop</right>
+      <left mod="ctrl">noop</left>
+      <right mod="ctrl">noop</right>
+      <up mod="ctrl">noop</up>
+      <down mod="ctrl">noop</down>
+      <quote>noop</quote>
+      <opensquarebracket>noop</opensquarebracket>
+      <closesquarebracket>noop</closesquarebracket>
+      <minus>noop</minus>
+      <equals>noop</equals>
+      <plus>noop</plus>
+      <a>noop</a>
+      <a mod="ctrl">noop</a>
+      <b>noop</b>
+      <b mod="ctrl">noop</b>
+      <b mod="alt">noop</b>
+      <c>noop</c>
+      <d>noop</d>
+      <e>noop</e>
+      <g>noop</g>
+      <h>noop</h>
+      <i>noop</i>
+      <j>noop</j>
+      <k>noop</k>
+      <l>noop</l>
+      <menu>noop</menu>
+      <n>noop</n>
+      <o>noop</o>
+      <o mod="ctrl,shift">noop</o>
+      <o mod="alt">noop</o>
+      <q>noop</q>
+      <s>noop</s>
+      <s mod="alt">noop</s>
+      <t>noop</t>
+      <t mod="ctrl">noop</t>
+      <u>noop</u>
+      <v>noop</v>
+      <v mod="ctrl">noop</v>
+      <text>noop</text>
+      <w>noop</w>
+      <y>noop</y>
+      <z>noop</z>
+      <zoom>noop</zoom>
+      <f1>noop</f1>
+      <f2>noop</f2>
+      <f3>noop</f3>
+      <f4>noop</f4>
+      <f5>noop</f5>
+      <f6>noop</f6>
+      <f7>noop</f7>
+      <f8>noop</f8>
+      <f9>noop</f9>
+      <f10>noop</f10>
+      <f11>noop</f11>
+      <f11 mod="alt">noop</f11>
+      <f12>noop</f12>
+      <pageup>noop</pageup>
+      <pagedown>noop</pagedown>
+      <home>noop</home>
+      <end>noop</end>
+      <tab>noop</tab>
+      <printscreen>noop</printscreen>
+      <return mod="longpress">noop</return>
+      <enter mod="longpress">noop</enter>
+      <return mod="ctrl">noop</return>
+      <enter mod="ctrl">noop</enter>
+      <!--GEN:fullscreen_keyboard-->
+      <!--/GEN:fullscreen_keyboard-->
+    </keyboard>
+    <remote>
+      <!-- Void names: open foreign windows or disrupt (never navigation,
+           transport, volume, power or anything the old box may send as OK).
+           Catches every remote that sends these standard names. -->
+      <myvideo>noop</myvideo>
+      <mymusic>noop</mymusic>
+      <mypictures>noop</mypictures>
+      <mytv>noop</mytv>
+      <guide>noop</guide>
+      <livetv>noop</livetv>
+      <liveradio>noop</liveradio>
+      <recordedtv>noop</recordedtv>
+      <epgsearch>noop</epgsearch>
+      <red>noop</red>
+      <green>noop</green>
+      <yellow>noop</yellow>
+      <blue>noop</blue>
+      <favorites>noop</favorites>
+      <display>noop</display>
+      <record>noop</record>
+      <eject>noop</eject>
+      <print>noop</print>
+      <teletext>noop</teletext>
+      <subtitle>noop</subtitle>
+      <language>noop</language>
+      <playlist>noop</playlist>
+      <clear>noop</clear>
+      <hash>noop</hash>
+      <star>noop</star>
+      <last>noop</last>
+      <info>noop</info>
+      <title>noop</title>
+      <!-- Power: open OUR shutdown menu (overrides Kodi's remote.xml
+           <power>ShutDown()</power>). Also swallowed while the scanner is armed
+           (keyboard.py _scan_armed), so scanning the power key no longer
+           shuts the box down. -->
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <!-- OBC codes live in <universalremote> (see the Home note). -->
+    <universalremote>
+      <!-- Spare Meson-IR keys run into the void (unmapped = noop). The
+           app/colored buttons (YouTube/Netflix/Google/Prime) and P+/P- are
+           NOT hardcoded here: they live in the settings Remote tab block list
+           (remotes.py APP_BLOCKS, default ON) and are generated into the GEN
+           block below, so the user can toggle them there. obc14/obc26 stay as
+           permanent background voids. -->
+      <obc14>noop</obc14>
+      <obc26>noop</obc26>
+      <!--GEN:fullscreen_remote-->
+      <!--/GEN:fullscreen_remote-->
+    </universalremote>
+  </FullscreenVideo>
+  <!-- Shutdown menu (DialogButtonMenu.xml, window 10111): map the arrow/OK
+       keys to our dispatcher so navigation also works for remote codes that
+       only our keymap knows (Home/OSD/Fullscreen); keyboard codes already
+       work via Kodi's global map. Back stays native (closes the dialog). -->
+  <ShutdownMenu>
+    <keyboard>
+      <!--GEN:shutdown_keyboard-->
+      <!--/GEN:shutdown_keyboard-->
+    </keyboard>
+    <!-- OBC codes live in <universalremote> (see the Home note). -->
+    <universalremote>
+      <!--GEN:shutdown_remote-->
+      <!--/GEN:shutdown_remote-->
+    </universalremote>
+  </ShutdownMenu>
+  <!-- Photo viewer (our own window, xml/Custom1151.xml, id 1151): the
+       transport keys that keyboard.py routes to photostep/photoplay/
+       photoclose. Keymaps are per window, so Home's bindings do not
+       reach the viewer; without this section comma/period could not
+       step images. Arrows stay native (they walk the OSD buttons). -->
+  <window1151>
+    <keyboard>
+      <!--GEN:photo_keyboard-->
+      <!--/GEN:photo_keyboard-->
+    </keyboard>
+  </window1151>
+</keymap>

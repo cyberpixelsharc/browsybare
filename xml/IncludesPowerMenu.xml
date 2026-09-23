@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shutdown menu (bp.power). Bootstrap stub: sync.py overwrites it with
+     rows from the installed Estuary. -->
+<includes>
+	<include name="PowerMenu">
+		<control type="group">
+			<visible>String.IsEqual(Window(10000).Property(bp.power),open)</visible>
+			<control type="button" id="952">
+				<left>0</left><top>0</top><width>1920</width><height>1080</height>
+				<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+				<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+				<onclick>ClearProperty(bp.power)</onclick>
+				<onclick>SetFocus(33)</onclick>
+				<onback>ClearProperty(bp.power)</onback>
+				<onback>SetFocus(33)</onback>
+			</control>
+			<control type="group">
+				<left>640</left><top>460</top>
+				<control type="image">
+					<left>0</left><top>0</top><width>640</width><height>160</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				<control type="image">
+					<left>0</left><top>0</top><width>640</width><height>60</height>
+					<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+				</control>
+				<control type="label">
+					<left>0</left><top>0</top><width>640</width><height>60</height>
+					<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+					<align>center</align><aligny>center</aligny>
+					<label>$LOCALIZE[31310]</label>
+				</control>
+				<control type="grouplist" id="950">
+					<left>20</left><top>80</top><width>600</width><height>60</height>
+					<orientation>vertical</orientation>
+					<onleft>950</onleft><onright>950</onright>
+					<control type="button" id="951">
+						<width>600</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31344]</label>
+						<onclick>ClearProperty(bp.power)</onclick>
+						<onclick>SetFocus(33)</onclick>
+						<onback>ClearProperty(bp.power)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+				</control>
+			</control>
+		</control>
+	</include>
+</includes>

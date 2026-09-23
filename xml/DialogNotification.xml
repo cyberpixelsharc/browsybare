@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- KaiToast 10107: 400 icon, 401 caption, 402 description.
+     Bootstrap stub; sync replaces it. -->
+<window>
+	<controls>
+		<control type="group">
+			<right>60</right>
+			<top>60</top>
+			<width>640</width>
+			<height>150</height>
+			<control type="image">
+				<width>640</width>
+				<height>150</height>
+				<colordiffuse>bp_bar</colordiffuse>
+				<texture>drawn/white.png</texture>
+			</control>
+			<control type="image" id="400">
+				<left>20</left>
+				<top>25</top>
+				<width>100</width>
+				<height>100</height>
+			</control>
+			<control type="label" id="401">
+				<left>140</left>
+				<top>24</top>
+				<width>480</width>
+				<height>40</height>
+				<align>left</align>
+				<font>font12</font>
+				<textcolor>bp_accent</textcolor>
+			</control>
+			<control type="fadelabel" id="402">
+				<left>140</left>
+				<top>66</top>
+				<width>480</width>
+				<height>70</height>
+				<align>left</align>
+				<aligny>top</aligny>
+				<font>font12</font>
+				<textcolor>bp_text</textcolor>
+				<scroll>false</scroll>
+			</control>
+		</control>
+	</controls>
+</window>

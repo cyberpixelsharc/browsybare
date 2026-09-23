@@ -1,0 +1,3 @@
+Bootstrap Icons v1.13.1 (https://icons.getbootstrap.com, MIT license, see LICENSE).
+The original SVGs are stored unmodified in svg/ (original file names, no prefixes).
+PNG derivatives (white, alpha) live in media/<same-name>.png — created with the SVG-to-PNG renderer (svg2png.py) <name>, rendered at the size set by the SVG_SIZE env var (default 256; e.g. SVG_SIZE=128 for small glyphs).

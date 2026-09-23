@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Custom VideoOSD footer (replaces Estuary): audio-footer style. Control
+     ids match Estuary for core compatibility. No Estuary includes. -->
+<window>
+	<onload condition="!Player.PauseEnabled">SetFocus(603)</onload>
+	<defaultcontrol always="true">602</defaultcontrol>
+	<depth>DepthOSD</depth>
+	<controls>
+		
+		<control type="button">
+			<left>0</left>
+			<top>0</top>
+			<width>100%</width>
+			<bottom>200</bottom>
+			<texturefocus />
+			<texturenofocus />
+			<onclick>Action(close)</onclick>
+		</control>
+		
+		<control type="group">
+			<bottom>0</bottom>
+			<height>200</height>
+			<visible>![Window.IsVisible(SliderDialog) | Window.IsVisible(1110) | Window.IsVisible(osdaudiosettings) | Window.IsVisible(osdvideosettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(playerprocessinfo) | Window.IsVisible(osdcmssettings) | Window.IsVisible(PVROSDChannels) | Window.IsVisible(pvrchannelguide)]</visible>
+			<animation effect="fade" time="200">VisibleChange</animation>
+			<animation type="WindowOpen" reversible="false">
+				<effect type="fade" start="0" end="100" time="200"/>
+				<effect type="slide" start="0,40" end="0,0" time="200" tween="cubic" easing="out"/>
+			</animation>
+			<animation type="WindowClose" reversible="false">
+				<effect type="fade" start="100" end="0" time="150"/>
+				<effect type="slide" start="0,0" end="0,40" time="150" tween="cubic" easing="in"/>
+			</animation>
+			
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>200</height>
+				<texture>drawn/fill.png</texture>
+				<colordiffuse>FC1E1E26</colordiffuse>
+			</control>
+			
+			<control type="image">
+				<left>0</left>
+				<top>-2</top>
+				<width>1920</width>
+				<height>2</height>
+				<texture>drawn/fill.png</texture>
+				<colordiffuse>FF2A2A33</colordiffuse>
+			</control>
+			
+			<control type="label">
+				<left>200</left>
+				<top>26</top>
+				<width>944</width>
+				<height>50</height>
+				<font>font36_title</font>
+				<textcolor>FFF2F2F4</textcolor>
+				<visible>!Skin.HasSetting(video.noscroll)</visible>
+				<scroll>true</scroll>
+				<scrollsuffix>   |   </scrollsuffix>
+				<label>$INFO[Window(10000).Property(bp.video.title.rep)]</label>
+			</control>
+			<control type="fadelabel">
+				<left>200</left>
+				<top>26</top>
+				<width>944</width>
+				<height>50</height>
+				<font>font36_title</font>
+				<textcolor>FFF2F2F4</textcolor>
+				<visible>Skin.HasSetting(video.noscroll)</visible>
+				<label>$INFO[Window(10000).Property(bp.video.title)]</label>
+				<scroll>false</scroll>
+			</control>
+			
+			<control type="label">
+				<left>200</left>
+				<top>90</top>
+				<width>944</width>
+				<height>30</height>
+				<font>font20_title</font>
+				<textcolor>FF9A9AA2</textcolor>
+				<visible>!Skin.HasSetting(video.noscroll) + Skin.HasSetting(show.videopath)</visible>
+				<scroll>true</scroll>
+				<scrollspeed>30</scrollspeed>
+				<scrollsuffix>   |   </scrollsuffix>
+				<label>$INFO[Window(10000).Property(bp.video.path.rep)]</label>
+			</control>
+			<control type="fadelabel">
+				<left>200</left>
+				<top>90</top>
+				<width>944</width>
+				<height>30</height>
+				<font>font20_title</font>
+				<textcolor>FF9A9AA2</textcolor>
+				<visible>Skin.HasSetting(video.noscroll) + Skin.HasSetting(show.videopath)</visible>
+				<label>$INFO[Window(10000).Property(bp.video.path)]</label>
+				<scroll>false</scroll>
+			</control>
+<control type="label">
+				<left>200</left>
+				<top>90</top>
+				<width>944</width>
+				<height>30</height>
+				<font>font20_title</font>
+				<textcolor>FF9A9AA2</textcolor>
+				<visible>!Skin.HasSetting(video.noscroll) + !Skin.HasSetting(show.videopath)</visible>
+				<scroll>true</scroll>
+				<scrollspeed>30</scrollspeed>
+				<scrollsuffix>   |   </scrollsuffix>
+				<label>$INFO[Window(10000).Property(bp.video.folder.rep)]</label>
+			</control>
+<control type="fadelabel">
+				<left>200</left>
+				<top>90</top>
+				<width>944</width>
+				<height>30</height>
+				<font>font20_title</font>
+				<textcolor>FF9A9AA2</textcolor>
+				<visible>Skin.HasSetting(video.noscroll) + !Skin.HasSetting(show.videopath)</visible>
+				<label>$INFO[Window(10000).Property(bp.video.folder)]</label>
+				<scroll>false</scroll>
+			</control>
+			
+			<control type="label">
+				<left>1204</left>
+				<top>137</top>
+				<width>240</width>
+				<height>24</height>
+				<font>font10</font>
+				<textcolor>FF9A9AA2</textcolor>
+				<label>$INFO[Player.Time]$INFO[Player.Duration, / ]</label>
+			</control>
+			
+			<control type="group" id="6000">
+				<left>200</left>
+				<top>141</top>
+				<width>944</width>
+				<height>26</height>
+				<visible>Player.SeekEnabled</visible>
+				
+				<control type="button" id="87">
+					<left>0</left>
+					<top>0</top>
+					<width>100%</width>
+					<height>26</height>
+					<texturefocus />
+					<texturenofocus />
+					<onup>noop</onup>
+					<ondown>noop</ondown>
+					<onleft>StepBack</onleft>
+					<onright condition="!Player.Paused">StepForward</onright>
+					<onright condition="Player.Paused">PlayerControl(FrameAdvance(1))</onright>
+				</control>
+				
+				<control type="slider">
+					<left>0</left>
+					<top>0</top>
+					<width>100%</width>
+					<height>26</height>
+					<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbar>
+					<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
+					<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
+					<info>Player.Progress</info>
+					<action>seek</action>
+					<onup>87</onup>
+					<ondown>87</ondown>
+					<visible>!Control.HasFocus(87) + !VideoPlayer.Content(LiveTV)</visible>
+				</control>
+				
+				<control type="slider">
+					<left>0</left>
+					<top>0</top>
+					<width>100%</width>
+					<height>26</height>
+					<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbar>
+					<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
+					<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
+					<info>Player.Progress</info>
+					<action>seek</action>
+					<onup>87</onup>
+					<ondown>87</ondown>
+					<visible>Control.HasFocus(87) + !VideoPlayer.Content(LiveTV)</visible>
+				</control>
+				
+				<control type="slider">
+					<left>0</left>
+					<top>0</top>
+					<width>100%</width>
+					<height>26</height>
+					<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbar>
+					<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
+					<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
+					<info>PVR.TimeshiftProgressPlayPos</info>
+					<action>pvr.seek</action>
+					<onup>87</onup>
+					<ondown>87</ondown>
+					<visible>!Control.HasFocus(87) + VideoPlayer.Content(LiveTV)</visible>
+				</control>
+				
+				<control type="slider">
+					<left>0</left>
+					<top>0</top>
+					<width>100%</width>
+					<height>26</height>
+					<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbar>
+					<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
+					<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
+					<info>PVR.TimeshiftProgressPlayPos</info>
+					<action>pvr.seek</action>
+					<onup>87</onup>
+					<ondown>87</ondown>
+					<visible>Control.HasFocus(87) + VideoPlayer.Content(LiveTV)</visible>
+				</control>
+			</control>
+			<!-- Volume: ENABLED input behind (drag/click/focus, no nib); DISABLED
+			     display on top (accent dot only). -->
+			<control type="slider" id="400">
+				<left>1170.6</left>
+				<top>37</top>
+				<width>10.8</width>
+				<height>130</height>
+				<orientation>vertical</orientation>
+				<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbar>
+			</control>
+			<control type="slider" id="344">
+				<left>1170.6</left>
+				<top>37</top>
+				<width>10.8</width>
+				<height>130</height>
+				<orientation>vertical</orientation>
+				<enable>false</enable>
+				<texturesliderbardisabled colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbardisabled>
+				<textureslidernibdisabled colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibdisabled>
+				<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbar>
+				<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
+				<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
+				<info>Skin.Numeric(volume.level)</info>
+			</control>
+			
+			
+			<control type="radiobutton" id="600">
+				<left>1204</left>
+				<top>36</top>
+				<width>64</width>
+				<height>64</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonfocus>
+				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonnofocus>
+				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioofffocus>
+				<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradiooffnofocus>
+				<radiowidth>32</radiowidth>
+				<radioheight>32</radioheight>
+				<radioposx>16</radioposx>
+				<radioposy>16</radioposy>
+				<font></font>
+								<onleft>600</onleft>
+				<onright>601</onright>
+				<onup>noop</onup>
+				<ondown>510</ondown>
+				<onclick>PlayerControl(Previous)</onclick>
+			</control>
+			
+			<control type="radiobutton" id="601">
+				<left>1288</left>
+				<top>36</top>
+				<width>64</width>
+				<height>64</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioonfocus>
+				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioonnofocus>
+				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioofffocus>
+				<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradiooffnofocus>
+				<radiowidth>32</radiowidth>
+				<radioheight>32</radioheight>
+				<radioposx>16</radioposx>
+				<radioposy>16</radioposy>
+				<font></font>
+				<onleft>600</onleft>
+				<onright>602</onright>
+				<onup>noop</onup>
+				<ondown>510</ondown>
+				<onclick condition="Player.Paused">PlayerControl(Play)</onclick>
+				<onclick condition="!Player.Paused">RunScript(special://skin/scripts/main.py,skip,bwd)</onclick>
+			</control>
+			
+			<control type="group" id="698">
+				<left>1372</left>
+				<top>20</top>
+				<width>96</width>
+				<height>96</height>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>96</width>
+					<height>96</height>
+					<texture colordiffuse="FF18181E">drawn/circle.png</texture>
+				</control>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>96</width>
+					<height>96</height>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texture>
+					<visible>Control.HasFocus(602)</visible>
+				</control>
+				<control type="image">
+					<left>26</left>
+					<top>26</top>
+					<width>44</width>
+					<height>44</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">osd/pause-fill.png</texture>
+					<visible>!Player.Paused</visible>
+				</control>
+				<control type="image">
+					<left>26</left>
+					<top>26</top>
+					<width>44</width>
+					<height>44</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">osd/play-fill.png</texture>
+					<visible>Player.Paused</visible>
+				</control>
+				<control type="button" id="602">
+					<left>0</left>
+					<top>0</top>
+					<width>96</width>
+					<height>96</height>
+					<texturefocus />
+					<texturenofocus />
+					<font></font>
+					<onleft>601</onleft>
+					<onright>603</onright>
+					<onup>noop</onup>
+					<ondown>514</ondown>
+					<onclick>PlayerControl(Play)</onclick>
+				</control>
+			</control>
+			
+			<control type="radiobutton" id="603">
+				<left>1488</left>
+				<top>36</top>
+				<width>64</width>
+				<height>64</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonfocus>
+				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonnofocus>
+				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioofffocus>
+				<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradiooffnofocus>
+				<radiowidth>32</radiowidth>
+				<radioheight>32</radioheight>
+				<radioposx>16</radioposx>
+				<radioposy>16</radioposy>
+				<font></font>
+				<onleft>602</onleft>
+				<onright>606</onright>
+				<onup>noop</onup>
+				<ondown>510</ondown>
+				<onclick>PlayerControl(Stop)</onclick>
+			</control>
+			
+			<control type="radiobutton" id="606">
+				<left>1572</left>
+				<top>36</top>
+				<width>64</width>
+				<height>64</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioonfocus>
+				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioonnofocus>
+				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioofffocus>
+				<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradiooffnofocus>
+				<radiowidth>32</radiowidth>
+				<radioheight>32</radioheight>
+				<radioposx>16</radioposx>
+				<radioposy>16</radioposy>
+				<font></font>
+				<onleft>603</onleft>
+				<onright>607</onright>
+				<onup>noop</onup>
+				<ondown>512</ondown>
+				<onclick condition="Player.Paused">PlayerControl(Play)</onclick>
+				<onclick condition="!Player.Paused">RunScript(special://skin/scripts/main.py,skip,fwd)</onclick>
+			</control>
+			
+			<control type="radiobutton" id="607">
+				<left>1656</left>
+				<top>36</top>
+				<width>64</width>
+				<height>64</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonfocus>
+				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonnofocus>
+				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioofffocus>
+				<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradiooffnofocus>
+				<radiowidth>32</radiowidth>
+				<radioheight>32</radioheight>
+				<radioposx>16</radioposx>
+				<radioposy>16</radioposy>
+				<font></font>
+				<onleft>606</onleft>
+								<onright>607</onright>
+				<onup>noop</onup>
+				<ondown>513</ondown>
+				<onclick>PlayerControl(Next)</onclick>
+			</control>
+			
+			<control type="radiobutton" id="804">
+				<left>1740</left>
+				<top>36</top>
+				<width>64</width>
+				<height>64</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<textureradioonfocus colordiffuse="FFFF453A">drawn/circle.png</textureradioonfocus>
+				<textureradioonnofocus colordiffuse="FFFF453A">drawn/circle.png</textureradioonnofocus>
+				<textureradioofffocus colordiffuse="FFFF453A">drawn/circle.png</textureradioofffocus>
+				<textureradiooffnofocus colordiffuse="FFFF453A">drawn/circle.png</textureradiooffnofocus>
+				<radiowidth>32</radiowidth>
+				<radioheight>32</radioheight>
+				<radioposx>16</radioposx>
+				<radioposy>16</radioposy>
+				<font></font>
+				<visible>VideoPlayer.Content(livetv)</visible>
+				<onclick>PVR.ToggleRecordPlayingChannel</onclick>
+			</control>
+			
+						<control type="button" id="514">
+				<left>1432</left>
+				<top>130</top>
+				<width>48</width>
+				<height>48</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<font></font>
+				<label></label>
+				<onclick>RunScript(special://skin/scripts/main.py,infoopen)</onclick>
+				<onleft>514</onleft>
+				<onright>510</onright>
+				<onup>602</onup>
+				<ondown>514</ondown>
+			</control>
+			<control type="image">
+				<left>1445</left>
+				<top>143</top>
+				<width>22</width>
+				<height>22</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="FF9A9AA2">osd/info-circle.png</texture>
+			</control>
+			<control type="button" id="510">
+				<left>1492</left>
+				<top>130</top>
+				<width>48</width>
+				<height>48</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<font></font>
+				<label></label>
+				<onclick>RunScript(special://skin/scripts/main.py,speed)</onclick>
+				<onleft>514</onleft>
+				<onright>511</onright>
+				<onup>603</onup>
+				<ondown>510</ondown>
+			</control>
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.speed),1)</visible>
+				<control type="image">
+					<left>1504</left>
+					<top>142</top>
+					<width>24</width>
+					<height>24</height>
+					<texture colordiffuse="FF9A9AA2">osd/speedometer2.png</texture>
+				</control>
+			</control>
+			<control type="group">
+				<visible>!String.IsEqual(Window(10000).Property(bp.speed),1)</visible>
+				<control type="label">
+					<left>1492</left>
+					<top>141</top>
+					<width>48</width>
+					<height>18</height>
+					<font>font_flag</font>
+					<textcolor>$INFO[Skin.String(accent)]</textcolor>
+					<align>center</align>
+					<label>$INFO[Window(10000).Property(bp.speed)]</label>
+				</control>
+			</control>
+			<control type="button" id="511">
+				<left>1552</left>
+				<top>130</top>
+				<width>48</width>
+				<height>48</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<font></font>
+				<label></label>
+				<onclick>Mute()</onclick>
+				<onleft>510</onleft>
+				<onright>512</onright>
+				<onup>603</onup>
+				<ondown>511</ondown>
+			</control>
+			<control type="image">
+				<visible>Player.Muted</visible>
+				<left>1562</left>
+				<top>140</top>
+				<width>28</width>
+				<height>28</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">osd/volume-mute.png</texture>
+			</control>
+			<control type="image">
+				<visible>!Player.Muted</visible>
+				<left>1562</left>
+				<top>140</top>
+				<width>28</width>
+				<height>28</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="FF9A9AA2">osd/volume-mute.png</texture>
+			</control>
+			<control type="button" id="512">
+				<left>1612</left>
+				<top>130</top>
+				<width>48</width>
+				<height>48</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<font></font>
+				<label></label>
+				<onclick>PlayerControl(Repeat)</onclick>
+				<onleft>511</onleft>
+				<onright>513</onright>
+				<onup>606</onup>
+				<ondown>512</ondown>
+			</control>
+			<control type="image">
+				<visible>!Playlist.IsRepeat + !Playlist.IsRepeatOne</visible>
+				<left>1625</left>
+				<top>143</top>
+				<width>22</width>
+				<height>22</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="FF9A9AA2">osd/repeat.png</texture>
+			</control>
+			<control type="image">
+				<visible>Playlist.IsRepeat</visible>
+				<left>1625</left>
+				<top>143</top>
+				<width>22</width>
+				<height>22</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">osd/repeat.png</texture>
+			</control>
+			<control type="image">
+				<visible>Playlist.IsRepeatOne</visible>
+				<left>1625</left>
+				<top>143</top>
+				<width>22</width>
+				<height>22</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">osd/repeat-1.png</texture>
+			</control>
+			<control type="button" id="513">
+				<left>1672</left>
+				<top>130</top>
+				<width>48</width>
+				<height>48</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<font></font>
+				<label></label>
+				<onclick>PlayerControl(Random)</onclick>
+				<onleft>512</onleft>
+				<onright>513</onright>
+				<onup>607</onup>
+				<ondown>513</ondown>
+			</control>
+			<control type="image">
+				<visible>Playlist.IsRandom</visible>
+				<left>1685</left>
+				<top>143</top>
+				<width>22</width>
+				<height>22</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">osd/shuffle.png</texture>
+			</control>
+			<control type="image">
+				<visible>!Playlist.IsRandom</visible>
+				<left>1685</left>
+				<top>143</top>
+				<width>22</width>
+				<height>22</height>
+				<aspectratio>keep</aspectratio>
+				<texture colordiffuse="FF9A9AA2">osd/shuffle.png</texture>
+			</control>
+		</control>
+		<include>InfoOverlay</include>
+	</controls>
+</window>

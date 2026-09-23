@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!-- Disabled by design: the footer/VideoOSD meter is the volume UI.
+      Renders nothing. -->
+
+<window>
+	<controls>
+		<control type="image">
+			<left>0</left>
+			<top>0</top>
+			<width>1</width>
+			<height>1</height>
+		</control>
+	</controls>
+</window>

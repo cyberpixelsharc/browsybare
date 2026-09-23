@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bootstrap fonts (arial.ttf ships with Kodi), Estuary fallback sizes.
+     Sync replaces this with the Estuary original. -->
+<fonts>
+	<fontset id="Default" idloc="15109">
+		<font>
+			<name>font_caption</name>
+			<filename>arial.ttf</filename>
+			<size>16</size>
+			<style>lighten</style>
+		</font>
+		<font>
+			<name>font_tab</name>
+			<filename>arial.ttf</filename>
+			<size>20</size>
+			<style>lighten</style>
+		</font>
+		<font>
+			<name>font10</name>
+			<filename>arial.ttf</filename>
+			<size>18</size>
+			<style>lighten</style>
+		</font>
+		<font>
+			<name>font12</name>
+			<filename>arial.ttf</filename>
+			<size>22</size>
+			<style>lighten</style>
+		</font>
+		<font>
+			<name>font13</name>
+			<filename>arial.ttf</filename>
+			<size>27</size>
+			<style>lighten</style>
+		</font>
+		<font>
+			<name>font_flag</name>
+			<filename>arial.ttf</filename>
+			<size>18</size>
+			<style>bold</style>
+		</font>
+		<font>
+			<name>font20_title</name>
+			<filename>arial.ttf</filename>
+			<size>20</size>
+			<style>bold</style>
+		</font>
+		<font>
+			<name>font25_title</name>
+			<filename>arial.ttf</filename>
+			<size>25</size>
+			<style>bold</style>
+		</font>
+		<font>
+			<name>font25_modal</name>
+			<filename>arial.ttf</filename>
+			<size>25</size>
+		</font>
+		<font>
+			<name>font_veil</name>
+			<filename>arial.ttf</filename>
+			<size>25</size>
+		</font>
+		<font>
+			<name>font36_title</name>
+			<filename>arial.ttf</filename>
+			<size>36</size>
+			<style>bold</style>
+		</font>
+	</fontset>
+</fonts>

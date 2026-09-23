@@ -1,0 +1,675 @@
+#!/usr/bin/env python3
+"""List source for the file manager lists (plugin://browsybare/list).
+
+q (search) and h (show hidden) arrive via the content URL params."""
+import datetime
+import json
+import os
+import sys
+from urllib.parse import quote, unquote
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import blacklist
+import search
+import sources
+from blacklist import blocked
+from navigation import drive_root_of
+from sources import is_network_path
+from common import safe_label, path_dec, natkey, write_json, state_file, cache_key, heic_capable, log as _common_log
+
+import xbmc
+import xbmcgui
+import xbmcplugin
+import xbmcvfs
+
+FOLDER_CACHE = "folder-sizes.json"
+
+
+def log(msg):
+    # Sanitized sink: raw paths may carry surrogates the logging binding rejects.
+    _common_log("list: " + msg)
+
+# Blacklist (data/blacklist.json) applies even when hidden-files is on.
+
+
+def skin_root():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def load_blacklist():
+    """Active blacklist patterns (data/ seed + user file, toggled-off removed)."""
+    return blacklist.load_active()
+
+
+def folder_cache_path():
+    try:
+        return state_file(FOLDER_CACHE)
+    except Exception:
+        return ""
+
+
+def load_folder_cache():
+    try:
+        import foldersize
+        data = foldersize.load_cache()
+    except Exception:
+        data = {}
+    if not isinstance(data, dict):
+        return {}
+    return {k: v for k, v in data.items() if isinstance(v, dict)}
+
+
+VIDEO_EXT = {".mp4", ".mkv", ".avi", ".mov", ".m4v", ".mpg", ".mpeg", ".webm",
+             ".flv", ".wmv", ".ts", ".m2ts", ".3gp", ".ogv"}
+AUDIO_EXT = {".mp3", ".flac", ".ogg", ".oga", ".m4a", ".aac", ".wav", ".opus",
+             ".wma", ".aiff", ".aif"}
+HEIC_EXT = {".heic", ".heif", ".hif"}
+IMAGE_EXT = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tif", ".tiff",
+             ".avif", ".heic", ".heif", ".hif"}
+ARCHIVE_EXT = {".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"}
+
+
+def item_url(path):
+    """Click/RunScript channel: path percent-encoded TWICE (Kodi trims commas
+    and percent-decodes once in skin commands); main.py _decode unquotes twice."""
+    return quote(quote(path, safe="", errors="surrogateescape"), safe="")
+
+
+def core_url(path):
+    """Item URL for the Kodi core: native raw path, else encoded fallback
+    (raw undecodable names segfault the binding; encoded URLs break zip:// probes)."""
+    try:
+        path.encode("utf-8")
+        return path
+    except Exception:
+        return quote(path, safe="", errors="surrogateescape")
+
+
+def kind_of(name):
+    """Row icon type for the bp.kind property (mirrors fileops.py extension sets)."""
+    ext = os.path.splitext(name)[1].lower()
+    if ext in VIDEO_EXT:
+        return "video"
+    if ext in AUDIO_EXT:
+        return "audio"
+    if ext in IMAGE_EXT:
+            # HEIC without a decoder is shown as a generic file, not a photo.
+        if ext in HEIC_EXT and not heic_capable():
+            return "file"
+        return "photo"
+    if ext in ARCHIVE_EXT:
+        return "archive"
+    return "file"
+
+
+def size_to_string(size):
+    prefixes = (" ", "k", "M", "G", "T", "P", "E", "Z", "Y")
+    i = 0
+    s = float(size)
+    while i < len(prefixes) and s >= 1000.0:
+        s /= 1024.0
+        i += 1
+    if i == 0:
+        return "%.2f B" % s
+    if i >= len(prefixes):
+        if s >= 1000.0:
+            return ">999.99 %sB" % prefixes[-1]
+        return "%.2f %sB" % (s, prefixes[-1])
+    if s >= 100.0:
+        return "%.1f %sB" % (s, prefixes[i])
+    return "%.2f %sB" % (s, prefixes[i])
+
+
+MAX_MATCHES = 200
+
+
+def _is_picker():
+    try:
+        return xbmcgui.Window(10000).getProperty("bp.pick.active") == "1"
+    except Exception:
+        return False
+
+
+def netsize_on():
+    """Network sizes/dates toggle (Sources tab); distinct from folder sizes."""
+    try:
+        return bool(xbmc.getCondVisibility("Skin.HasSetting(netsize.on)"))
+    except Exception:
+        return False
+
+
+def sizes_on():
+    """True when folder sizes are enabled (settings opt-in, default OFF)."""
+    try:
+        return bool(xbmc.getCondVisibility("Skin.HasSetting(foldersize.on)"))
+    except Exception:
+        return False
+
+
+def append_matches(items, root, needle, show_hidden=False, patterns=None, folder_cache=None, case_sensitive=False):
+    """Recursive name search below root (files + folders, capped at MAX_MATCHES).
+    Appends (item, path, is_folder, name, size, mtime)."""
+    patterns = patterns or []
+    folder_cache = folder_cache or {}
+    sizes_flag = sizes_on()
+    picker = _is_picker()
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames
+                             if not blocked(d, patterns, case_sensitive)
+                             and (show_hidden or not d.startswith(".")))
+        for name in dirnames + sorted(f for f in filenames
+                                      if not blocked(f, patterns, case_sensitive)
+                                      and (show_hidden or not f.startswith("."))):
+            try:
+                if needle not in name.lower():
+                    continue
+                full = os.path.join(dirpath, name)
+                is_dir = name in dirnames
+                label = safe_label(name)
+                item = xbmcgui.ListItem(label)
+                item.setIsFolder(is_dir)
+                if not is_dir:
+                    item.setProperty("bp.kind", kind_of(label))
+                size = 0
+                mtime = 0
+                try:
+                    st = os.stat(full)
+                    mtime = st.st_mtime
+                    if is_dir:
+                        if sizes_flag:
+                            cached = folder_cache.get(full)
+                            if cached and isinstance(cached.get("size"), int):
+                                size = cached["size"]
+                                if cached.get("partial") or cached.get("approx"):
+                                    item.setLabel2("~ " + size_to_string(size))
+                                else:
+                                    item.setLabel2(size_to_string(size))
+                            else:
+                                item.setLabel2("…")
+                                size = 0
+                    else:
+                        size = st.st_size
+                        item.setLabel2(size_to_string(size))
+                    item.setDateTime(
+                        datetime.datetime.fromtimestamp(st.st_mtime)
+                        .strftime("%Y-%m-%dT%H:%M:%S"))
+                except OSError:
+                    if is_dir:
+                        item.setLabel2("…")
+                    pass
+                try:
+                    cm = [] if (picker and not is_dir) else context_menu(full)
+                    item.addContextMenuItems(cm)
+                    # Kodi hides "Add to favourites" when this property is set.
+                    try:
+                        item.setProperty("hide_add_remove_favourite", "true")
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+                # onclick handlers read bp.url, never FileNameAndPath (see item_url).
+                url = item_url(full)
+                item.setProperty("bp.url", url)
+                items.append((item, core_url(full), is_dir, natkey(label), size, mtime))
+                if len(items) >= MAX_MATCHES:
+                    log("match cap %d reached" % MAX_MATCHES)
+                    return
+            except Exception as e:
+                log("skip match in %s: %r (%s)" % (root, safe_label(name), e))
+                continue
+
+
+def context_menu(path):
+    """Secondary-click trigger: one native entry opening our overlay (main.py ctx).
+    Kodi's native DialogContextMenu closes on any click, so actions live in the overlay."""
+    return [(
+        xbmc.getLocalizedString(31339),
+        "RunScript(special://skin/scripts/main.py,ctx,%s)" % item_url(path),
+    )]
+
+
+def context_menu_dotdot(path=None):
+    """Secondary-click trigger for the ".." row (picker: add current folder as
+    source; else reduced menu)."""
+    if path is not None:
+        return [(
+            xbmc.getLocalizedString(31424),
+            "RunScript(special://skin/scripts/main.py,srcask,%s)" % item_url(path),
+        )]
+    return [(
+        xbmc.getLocalizedString(31339),
+        "RunScript(special://skin/scripts/main.py,ctxmenu)",
+    )]
+
+
+def context_menu_picker(path):
+    """Picker context menu on a folder row: add it as a directory source."""
+    return [(
+        xbmc.getLocalizedString(31424),
+        "RunScript(special://skin/scripts/main.py,srcask,%s)" % item_url(path),
+    )]
+
+
+# Schemes Kodi opens natively (kept in sync with sources.NET_SCHEMES).
+def _localized(i):
+    try:
+        return xbmc.getLocalizedString(i)
+    except Exception:
+        return ""
+
+
+def list_network(handle, path, picker_active=False):
+    """List a network source over Kodi's VFS (ftp/ftps/smb/nfs/http/https/dav).
+    Subfolders browse via the same bp.url channel; ".." stops at the host boundary."""
+    win = xbmcgui.Window(10000)
+    try:
+        src = sources.rstrip_slash(path_dec(win.getProperty("bp.src") or ""))
+    except Exception:
+        src = ""
+    dirs, files, err = [], [], ""
+    path = (path or "").strip()
+    # "no path" and "scheme only" ("ftp://") are half-filled entries: report
+    # unreachable immediately instead of probing the VFS (long connect timeout).
+    if not path or path.endswith("://"):
+        err = "unreachable"
+    else:
+        path = sources.rstrip_slash(path)
+        try:
+            res = xbmcvfs.listdir(path)
+            if (isinstance(res, tuple) and len(res) == 2
+                    and res[0] is not False and res[1] is not False):
+                dirs = list(res[0] or [])
+                files = list(res[1] or [])
+                # WebDAV: Kodi's listing includes the folder itself (PROPFIND
+                # self-reference); drop that phantom child. Names stay URL-form.
+                if path.lower().startswith(("dav://", "davs://")):
+                    tail = path.rstrip("/").rsplit("/", 1)[-1]
+                    if tail:
+                        dirs = [n for n in dirs if n != tail]
+            else:
+                err = "unreachable"
+        except Exception as e:
+            err = str(e) or "error"
+    if not err and not dirs and not files:
+        # an empty result is a real folder only when it exists
+        try:
+            if not xbmcvfs.exists(path):
+                err = "unreachable"
+        except Exception as e:
+            err = str(e) or "error"
+
+    query = sys.argv[0] + (sys.argv[2] if len(sys.argv) > 2 else "")
+    show_hidden = search.hidden_from_url(query)
+    sort = search.sort_from_url(query)
+    folders_first_flag = search.foldersfirst_from_url(query)
+    case_sensitive = search.casesensitive_from_url(query)
+    patterns = load_blacklist()
+    # Size/date come from the background foldersize cache (~200 ms per VFS
+    # stat); shows "…" until warm. Own setting, independent of folder sizes.
+    sizes_flag = sizes_on()
+    netsize_flag = netsize_on()
+    folder_cache = load_folder_cache() if (sizes_flag or netsize_flag) else {}
+    # WebDAV: ONE PROPFIND gives sizes + dates (folders too) for the whole
+    # folder; fast path here (2 s timeout, no retry), daemon covers failures.
+    details = {}
+    if netsize_flag and path.lower().startswith(("dav://", "davs://")):
+        # never let the enrichment kill the listing
+        try:
+            details = sources.dav_details(path, timeout=2, attempts=1)
+        except Exception as e:
+            details = {}
+            log("dav details crashed: %s" % e)
+        if details:
+            # Persist server answers (folder dates included) across a later
+            # failed PROPFIND (server 503s when busy).
+            try:
+                merged = dict(folder_cache)
+                for key, (dsize, dmtime, ddir) in details.items():
+                    if not key.startswith(("dav://", "davs://")):
+                        continue        # name keys only serve the lookup
+                    entry = {"size": 0 if ddir else dsize, "mtime": dmtime}
+                    if ddir:
+                        entry["dir"] = True
+                        entry["tried"] = True
+                    merged[cache_key(key.rstrip("/"))] = entry
+                write_json(folder_cache_path(), merged)
+                folder_cache = merged
+            except Exception:
+                pass
+
+    items = []
+    skipped_hidden = skipped_blocked = 0
+    if err:
+        item = xbmcgui.ListItem("%s: %s" % (_localized(31467), err))
+        item.setIsFolder(False)
+        item.setProperty("bp.error", "1")
+        items.append((item, "dummy://network/error", False, ""))
+    else:
+        parent = sources.net_parent(path)
+        if path != src and parent:
+            item = xbmcgui.ListItem("..")
+            item.setIsFolder(True)
+            item.setProperty("bp.dotdot", "1")
+            try:
+                item.addContextMenuItems(context_menu_dotdot(None))
+                item.setProperty("hide_add_remove_favourite", "true")
+            except Exception:
+                pass
+            items.append((item, core_url(parent), True, ""))
+        entries = [(n, True) for n in dirs] + [(n, False) for n in files]
+        kept = []
+        for name, is_dir in entries:
+            if name.startswith(".") and not show_hidden:
+                skipped_hidden += 1
+                continue
+            if blocked(name, patterns, case_sensitive):
+                skipped_blocked += 1
+                continue
+            kept.append((name, is_dir))
+        # No VFS size/date (extra round trip per entry), so those sorts fall back to name.
+        if sort in ("size", "date"):
+            log("network sort '%s' falls back to name (no VFS size/date)" % sort)
+        folders_first = bool(folders_first_flag)
+        kept.sort(key=lambda e: ((not e[1],) if folders_first else ())
+                  + (natkey(safe_label(e[0])),))
+        for name, is_dir in kept:
+            try:
+                if picker_active and not is_dir:
+                    continue
+                # WebDAV: VFS returns href-ENCODED names; the PATH must stay
+                # URL-form (decoding broke playback) -- only the display name is decoded.
+                is_dav = path.lower().startswith(("dav://", "davs://"))
+                disp = unquote(name) if is_dav else name
+                item = xbmcgui.ListItem(safe_label(disp))
+                item.setIsFolder(is_dir)
+                # Explicit local artwork: without art Kodi probes "<itemurl>.tbn"
+                # per row -- a real network request on a VFS URL.
+                kind = "folder" if is_dir else kind_of(disp)
+                if kind not in ("folder", "video", "audio", "photo"):
+                    kind = "file"
+                # Filetype artwork uses the original Bootstrap icon names.
+                icon = "special://skin/media/filetypes/%s.png" % {
+                    "folder": "folder", "video": "file-play",
+                    "audio": "file-music", "photo": "file-image"}.get(kind, "file-text")
+                try:
+                    item.setArt({"thumb": icon, "icon": icon})
+                except Exception:
+                    pass
+                if not is_dir and kind in ("video", "audio"):
+                    # Stop the core tag loader: without a media info tag it
+                    # probes every file over the network (display-neutral).
+                    try:
+                        item.setInfo(
+                            "video" if kind == "video" else "music",
+                            {"title": disp})
+                    except Exception:
+                        pass
+                if is_dir:
+                    # Kodi does NOT honour the folder flag for plugin items with a
+                    # VFS URL, so bp.dir carries it explicitly for the skin.
+                    item.setProperty("bp.dir", "1")
+                else:
+                    item.setProperty("bp.kind", kind_of(disp))
+                child = path + "/" + name
+                try:
+                    # Sizes/dates: fresh PROPFIND answer first, else the background cache.
+                    size = mtime = None
+                    if details:
+                        # the server lists a collection with a trailing slash
+                        d = (details.get(child) or details.get(child + "/")
+                             or details.get(disp))
+                        if d:
+                            size, mtime = d[0], d[1]
+                    if size is None:
+                        cached = folder_cache.get(cache_key(child))
+                        if cached:
+                            size = cached.get("size")
+                            mtime = cached.get("mtime")
+                    if mtime:
+                        item.setDateTime(datetime.datetime.fromtimestamp(
+                            mtime).strftime("%Y-%m-%dT%H:%M:%S"))
+                    if not is_dir:
+                        if isinstance(size, int):
+                            item.setLabel2(size_to_string(size))
+                        elif netsize_flag:
+                            item.setLabel2("…")
+                except Exception:
+                    pass
+                item.setProperty("bp.url", item_url(child))
+                # Same context menu as local; overlay hides write rows for network paths.
+                if not picker_active:
+                    try:
+                        item.addContextMenuItems(context_menu(child))
+                        item.setProperty("hide_add_remove_favourite", "true")
+                    except Exception:
+                        pass
+                items.append((item, core_url(child), is_dir, natkey(safe_label(name))))
+            except Exception as e:
+                log("skip network entry %r: %s" % (safe_label(name), e))
+                continue
+    # Padding rows: 2 top (top bar overlay; also for the single error row) plus
+    # the overlaid bottom bars (audio footer 200px = 3 rows, picker 100px = 1 row).
+    for i in range(2):
+        pad = xbmcgui.ListItem("")
+        pad.setIsFolder(False)
+        pad.setProperty("bp.padding", "1")
+        items.insert(0, (pad, "dummy://padding/top%d" % i, False, ""))
+    try:
+        if (xbmc.getCondVisibility("Player.HasAudio")
+                and not xbmc.getCondVisibility("Player.HasVideo")
+                and not picker_active):
+            for i in range(3):
+                pad = xbmcgui.ListItem("")
+                pad.setIsFolder(False)
+                pad.setProperty("bp.padding", "1")
+                items.append((pad, "dummy://padding/audio%d" % i, False, ""))
+        if picker_active:
+            pad = xbmcgui.ListItem("")
+            pad.setIsFolder(False)
+            pad.setProperty("bp.padding", "1")
+            items.append((pad, "dummy://padding/picker0", False, ""))
+    except Exception:
+        pass
+
+    total = len(items)
+    for item, url, is_folder, _ in items:
+        xbmcplugin.addDirectoryItem(handle, url, item, is_folder, total)
+    xbmcplugin.endOfDirectory(handle, True)
+    log("network %d items from %s%s (hidden=%s, sort=%s, ff=%s, cs=%s, blacklist=%d, skipped_hidden=%d, skipped_blocked=%d)"
+        % (total, path, (" err=%s" % err) if err else "", show_hidden, sort,
+           folders_first_flag, case_sensitive, len(patterns),
+           skipped_hidden, skipped_blocked))
+
+
+def main():
+    handle = int(sys.argv[1]) if len(sys.argv) > 1 else -1
+    items = []
+    dotdot = None
+    raw = path_dec(xbmcgui.Window(10000).getProperty("bp.path") or "")
+    picker_active = _is_picker()
+    # Match network paths on the RAW value: stripping the trailing "/" turns a
+    # half-filled "ftp://" into "ftp:", which is_network_path() no longer recognises.
+    if is_network_path(raw) or (not raw and
+                                xbmcgui.Window(10000).getProperty("bp.net") == "1"):
+        list_network(handle, raw, picker_active)
+        return
+    path = raw.rstrip("/")
+    needle = show_hidden = sort = None
+    folders_first_flag = False
+    case_sensitive = False
+    patterns = []
+    skipped_hidden = 0
+    skipped_blocked = 0
+    if path and os.path.isdir(path):
+        # The entered source root (bp.src) is root-like: no ".." row there.
+        try:
+            src = path_dec(xbmcgui.Window(10000).getProperty("bp.src") or "").rstrip("/")
+        except Exception:
+            src = ""
+        if path != drive_root_of(path) and path != src:
+            parent = os.path.dirname(path)
+            if parent and parent not in ("/", "/Volumes") and os.path.isdir(parent):
+                item = xbmcgui.ListItem("..")
+                item.setIsFolder(True)
+                item.setProperty("bp.dotdot", "1")
+                try:
+                    item.addContextMenuItems(
+                        context_menu_dotdot(path if picker_active else None))
+                    item.setProperty("hide_add_remove_favourite", "true")
+                except Exception:
+                    pass
+                dotdot = (item, core_url(parent), True, "..", 0, 0)
+        url = sys.argv[0] + (sys.argv[2] if len(sys.argv) > 2 else "")
+        needle = search.needle_from_url(url)
+        show_hidden = search.hidden_from_url(url)
+        sort = search.sort_from_url(url)
+        folders_first_flag = search.foldersfirst_from_url(url)
+        case_sensitive = search.casesensitive_from_url(url)
+        patterns = load_blacklist()
+        sizes_flag = sizes_on()
+        folder_cache = load_folder_cache() if sizes_flag else {}
+        if needle:
+            append_matches(items, path, needle, show_hidden, patterns, folder_cache, case_sensitive)
+        else:
+            try:
+                # Sort by the natural folded display name (natkey), not raw codepoints.
+                entries = sorted(os.scandir(path), key=lambda e: natkey(safe_label(e.name)))
+            except OSError as e:
+                log("scandir failed for %s: %s" % (path, e))
+                entries = []
+            skipped_hidden = 0
+            skipped_blocked = 0
+            for entry in entries:
+                try:
+                    raw = entry.name
+                    if raw.startswith(".") and not show_hidden:
+                        skipped_hidden += 1
+                        continue
+                    if blocked(raw, patterns, case_sensitive):
+                        skipped_blocked += 1
+                        continue
+                    name = safe_label(raw)
+                    try:
+                        is_dir = entry.is_dir()
+                    except OSError:
+                        is_dir = False
+                    # Picker: folders only.
+                    if picker_active and not is_dir:
+                        continue
+                    item = xbmcgui.ListItem(name)
+                    item.setIsFolder(is_dir)
+                    if not is_dir:
+                        item.setProperty("bp.kind", kind_of(name))
+                    size = 0
+                    mtime = 0
+                    try:
+                        st = entry.stat()
+                        mtime = st.st_mtime
+                        if is_dir:
+                            if sizes_flag:
+                                cached = folder_cache.get(entry.path)
+                                if cached and isinstance(cached.get("size"), int):
+                                    size = cached["size"]
+                                    if cached.get("partial") or cached.get("approx"):
+                                        item.setLabel2("~ " + size_to_string(size))
+                                    else:
+                                        item.setLabel2(size_to_string(size))
+                                else:
+                                    item.setLabel2("…")
+                                    size = 0
+                        else:
+                            size = st.st_size
+                            item.setLabel2(size_to_string(size))
+                        item.setDateTime(
+                            datetime.datetime.fromtimestamp(st.st_mtime)
+                            .strftime("%Y-%m-%dT%H:%M:%S"))
+                    except OSError:
+                        if is_dir:
+                            item.setLabel2("…")
+                        pass
+                    try:
+                        cm = context_menu_picker(entry.path) if picker_active \
+                            else context_menu(entry.path)
+                        item.addContextMenuItems(cm)
+                        try:
+                            item.setProperty("hide_add_remove_favourite", "true")
+                        except Exception:
+                            pass
+                    except Exception:
+                        pass
+                    # onclick handlers read bp.url, never FileNameAndPath (see item_url).
+                    url = item_url(entry.path)
+                    item.setProperty("bp.url", url)
+                    items.append((item, core_url(entry.path), is_dir, natkey(name), size, mtime))
+                except Exception as e:
+                    # One bad entry must never kill the listing -- Kodi segfaults
+                    # on some inside its bindings instead of raising.
+                    log("skip entry in %s: %r (%s)" % (path, safe_label(entry.name), e))
+                    continue
+    # Sorting: .. on top; folders-first groups in every mode, then the mode's
+    # key; ff travels via URL like h (reload trigger).
+    folders_first = bool(folders_first_flag)
+    def sort_key(x):
+        prefix = (not x[2],) if folders_first else ()
+        if sort == "size":
+            return prefix + (-x[4], x[3])
+        if sort == "date":
+            return prefix + (-x[5], x[3])
+        return prefix + (x[3],)
+    items.sort(key=sort_key)
+    if dotdot:
+        items.insert(0, dotdot)
+    # Top padding: 2 invisible rows (2*68=136 > top bar 128) push the first
+    # real row below the bar; exactly two keeps zebra parity.
+    if path and os.path.isdir(path):
+        for i in range(2):
+            pad = xbmcgui.ListItem("")
+            pad.setIsFolder(False)
+            pad.setProperty("bp.padding", "1")
+            items.insert(0, (pad, "dummy://padding/top%d" % i, False, "", 0, 0))
+    # Bottom-bar padding: audio footer (200px, top 880) -> 3 rows; picker bar
+    # (100px at 980) -> 1 row; added independently (picker+audio = 4).
+    try:
+        has_audio = xbmc.getCondVisibility("Player.HasAudio")
+        has_video = xbmc.getCondVisibility("Player.HasVideo")
+        if has_audio and not has_video and not needle and not picker_active:
+            for i in range(3):
+                pad = xbmcgui.ListItem("")
+                pad.setIsFolder(False)
+                pad.setProperty("bp.padding", "1")
+                items.append((pad, "dummy://padding/audio%d" % i, False, "", 0, 0))
+        if picker_active and not needle:
+            for i in range(1):
+                pad = xbmcgui.ListItem("")
+                pad.setIsFolder(False)
+                pad.setProperty("bp.padding", "1")
+                items.append((pad, "dummy://padding/picker%d" % i, False, "", 0, 0))
+    except Exception:
+        pass
+    total = len(items)
+    for item, url, is_folder, _, _, _ in items:
+        xbmcplugin.addDirectoryItem(handle, url, item, is_folder, total)
+    xbmcplugin.endOfDirectory(handle, True)
+    log("%d items from %s (needle=%r, hidden=%s, sort=%s, ff=%s, cs=%s, blacklist=%d, skipped_hidden=%d, skipped_blocked=%d)"
+        % (total, path, needle, show_hidden, sort, folders_first_flag, case_sensitive, len(patterns),
+           skipped_hidden, skipped_blocked))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        log("ERROR: %s" % e)
+        try:
+            xbmcplugin.endOfDirectory(int(sys.argv[1]), False)
+        except Exception:
+            pass
+    finally:
+        # Mark the list-loading veil (bp.listload) as "items built"; the
+        # home-daemon drops it once Container(33).IsUpdating is false.
+        try:
+            win = xbmcgui.Window(10000)
+            if win.getProperty("bp.listload") == "1":
+                win.setProperty("bp.listload.ready", "1")
+        except Exception:
+            pass

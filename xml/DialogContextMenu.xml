@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invisible relay (the native menu closes C++ side on ANY click): focusing
+     the cloned entry selects it and opens our bp.ctx overlay. Home only. -->
+<window>
+	<defaultcontrol>996</defaultcontrol>
+	<coordinates>
+		<left>0</left>
+		<top>0</top>
+	</coordinates>
+	<controls>
+		
+		<control type="image">
+			<left>-1920</left>
+			<top>-1080</top>
+			<width>5760</width>
+			<height>3240</height>
+			<texture>drawn/blank.png</texture>
+		</control>
+		<control type="button">
+			<left>-1920</left>
+			<top>-1080</top>
+			<width>5760</width>
+			<height>3240</height>
+			<texturefocus />
+			<texturenofocus />
+			<onclick>Action(close)</onclick>
+		</control>
+		
+		<control type="group">
+			<centerleft>50%</centerleft>
+			<centertop>50%</centertop>
+			<width>380</width>
+			<height>100</height>
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>380</width>
+				<height>100</height>
+				<texture>drawn/blank.png</texture>
+			</control>
+			<control type="grouplist" id="996">
+				<left>20</left>
+				<top>20</top>
+				<width>340</width>
+				<height max="60">auto</height>
+				<itemgap>16</itemgap>
+				<orientation>vertical</orientation>
+				<usecontrolcoords>true</usecontrolcoords>
+			</control>
+		</control>
+		
+		<control type="button" id="1000">
+			<left>0</left>
+			<top>0</top>
+			<width>340</width>
+			<height>60</height>
+			<align>center</align>
+			<aligny>center</aligny>
+			<font>font13</font>
+			<texturefocus />
+			<texturenofocus />
+			<onfocus condition="Window.IsActive(home)">Action(select)</onfocus>
+		</control>
+	</controls>
+</window>

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- File manager shell: onloads plus error path. Layout lives in Layout.xml. -->
+<window>
+	<!-- Transient overlay states are cleared on load (a persisted property would
+	     resurrect a ghost overlay without focus). -->
+	<onload>ClearProperty(bp.settings)</onload>
+	<onload>ClearProperty(bp.menu)</onload>
+	<onload>ClearProperty(bp.drives)</onload>
+	<onload>ClearProperty(bp.ctx)</onload>
+	<onload>ClearProperty(bp.ctx.reduced)</onload>
+	<onload>ClearProperty(bp.ctx.net)</onload>
+	<onload>ClearProperty(bp.ctx.readonly)</onload>
+	<onload>ClearProperty(bp.rowmenu)</onload>
+	<onload>ClearProperty(bp.rowmenu.title)</onload>
+	<onload>ClearProperty(bp.rowmenu.title.rep)</onload>
+	<onload>ClearProperty(bp.rscan)</onload>
+	<onload>ClearProperty(bp.rscan.idx)</onload>
+	<onload>ClearProperty(bp.rscan.fn)</onload>
+	<onload>ClearProperty(bp.rscan.code)</onload>
+	<onload>ClearProperty(bp.rscan.display)</onload>
+	<onload>ClearProperty(bp.rscan.scanning)</onload>
+	<onload>ClearProperty(bp.rscan.start)</onload>
+	<onload>ClearProperty(bp.rowmenu.kind)</onload>
+	<onload>ClearProperty(bp.rowmenu.idx)</onload>
+	<onload>ClearProperty(bp.rowmenu.focus)</onload>
+	<onload>ClearProperty(bp.rowmenu.candelete)</onload>
+	<onload>ClearProperty(bp.reset)</onload>
+	<onload>ClearProperty(bp.reset.rubric)</onload>
+	<onload>ClearProperty(bp.reset.title)</onload>
+	<onload>ClearProperty(bp.del)</onload>
+	<onload>ClearProperty(bp.keys)</onload>
+	<onload>ClearProperty(bp.about)</onload>
+	<onload>ClearProperty(bp.info)</onload>
+	<onload>ClearProperty(bp.info.done)</onload>
+	<onload>ClearProperty(bp.photo)</onload>
+	<onload>ClearProperty(bp.photo.loading)</onload>
+	<onload>ClearProperty(bp.photo.preidx)</onload>
+	<onload>ClearProperty(bp.photo.preloading)</onload>
+	<onload>ClearProperty(bp.photo.gen)</onload>
+	<onload>ClearProperty(bp.photo.path)</onload>
+	<onload>ClearProperty(bp.photo.list)</onload>
+	<onload>ClearProperty(bp.photo.idx)</onload>
+	<onload>ClearProperty(bp.photo.count)</onload>
+	<onload>ClearProperty(bp.photo.title)</onload>
+	<onload>ClearProperty(bp.photo.title.rep)</onload>
+	<onload>ClearProperty(bp.photo.pathdisp)</onload>
+	<onload>ClearProperty(bp.photo.pathdisp.rep)</onload>
+	<onload>ClearProperty(bp.photo.folder)</onload>
+	<onload>ClearProperty(bp.photo.folder.rep)</onload>
+	<onload>ClearProperty(bp.photo.playing)</onload>
+	<onload>ClearProperty(bp.photo.next)</onload>
+	<onload>ClearProperty(bp.photo.osd)</onload>
+	<onload>ClearProperty(bp.photo.osd.focus)</onload>
+	<onload>ClearProperty(bp.photo.interval)</onload>
+	<onload>ClearProperty(bp.photo.interval.icon)</onload>
+	<onload>ClearProperty(bp.photo.mode)</onload>
+	<onload>ClearProperty(bp.photo.kb)</onload>
+	<onload>ClearProperty(bp.photo.kb.t)</onload>
+	<onload>ClearProperty(bp.photo.repeat)</onload>
+	<onload>ClearProperty(bp.photo.shuffle)</onload>
+	<onload>ClearProperty(bp.notice)</onload>
+	<onload>ClearProperty(bp.notice.title)</onload>
+	<onload>ClearProperty(bp.notice.line)</onload>
+	<onload>ClearProperty(bp.kb)</onload>
+	<onload>ClearProperty(bp.aload)</onload>
+	<onload>ClearProperty(bp.aload.t)</onload>
+	<onload>ClearProperty(bp.exit)</onload>
+	<!-- Single serial boot (sync, drives, rows, accents, daemons). Parallel
+	     RunScripts segfaulted Kodi at interpreter startup. -->
+	<onload condition="String.IsEmpty(Skin.String(accent))">Skin.SetString(accent,FF8EB7D7)</onload>
+	<onload>SetProperty(bp.accent.value,$INFO[Skin.String(accent)])</onload>
+	<onload condition="String.IsEmpty(Skin.String(accent.level))">Skin.SetString(accent.level,L3)</onload>
+	<onload>SetProperty(bp.accent.level,$INFO[Skin.String(accent.level)])</onload>
+	<onload condition="String.IsEmpty(Skin.String(guisound.level))">Skin.SetString(guisound.level,4)</onload>
+	<onload>SetProperty(bp.guisound.level,$INFO[Skin.String(guisound.level)])</onload>
+	<onload condition="String.IsEmpty(Skin.String(sort))">Skin.SetString(sort,name)</onload>
+	<onload>RunScript(special://skin/scripts/boot.py)</onload>
+	<!-- No window-level onback (ignored); overlay close plus focus restore live
+	     on each control, file-manager Back is the keymap dispatcher. -->
+	<defaultcontrol always="true">30</defaultcontrol>
+	<backgroundcolor>bp_bg</backgroundcolor>
+	<controls>
+		<control type="label">
+			<visible>String.IsEqual(Window(10000).Property(bp.status), error)</visible>
+			<left>80</left>
+			<top>80</top>
+			<width>1760</width>
+			<height>60</height>
+			<font>font13</font>
+			<align>left</align>
+			<aligny>center</aligny>
+			<textcolor>bp_error</textcolor>
+			<label>$LOCALIZE[31303]: $INFO[Window(10000).Property(bp.error)]</label>
+		</control>
+	<!-- Fullscreen install veil (bp.sync.active): nothing reachable until the
+	     base layer lands; gone after the reload. -->
+	<!-- File manager hidden until boot sets bp.ready (Home paints before scripts
+	     run); the error label always shows. -->
+		<control type="group">
+			<visible>String.IsEqual(Window(10000).Property(bp.ready),1)</visible>
+			<include content="Layout"/>
+		</control>
+		<control type="group">
+			<visible>String.IsEqual(Window(10000).Property(bp.sync.active),1)</visible>
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>1080</height>
+				<texture>drawn/fill.png</texture>
+				<colordiffuse>FF101014</colordiffuse>
+			</control>
+			<control type="button" id="29">
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>1080</height>
+				<texturefocus>drawn/blank.png</texturefocus>
+				<texturenofocus>drawn/blank.png</texturenofocus>
+				<onleft>29</onleft>
+				<onright>29</onright>
+				<onup>29</onup>
+				<ondown>29</ondown>
+				<onclick>noop</onclick>
+			</control>
+			<control type="image">
+				<centerleft>50%</centerleft>
+				<centertop>50%</centertop>
+				<width>560</width>
+				<height>200</height>
+				<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+			</control>
+			<control type="image">
+				<centerleft>50%</centerleft>
+				<top>440</top>
+				<width>560</width>
+				<height>60</height>
+				<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+			</control>
+			<control type="label">
+				<centerleft>50%</centerleft>
+				<top>440</top>
+				<width>560</width>
+				<height>60</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<font>font_veil</font>
+				<textcolor>FFF2F2F4</textcolor>
+				<label>$LOCALIZE[31365]</label>
+			</control>
+			<control type="image">
+				<left>720</left>
+				<top>551</top>
+				<width>480</width>
+				<height>11</height>
+				<texture colordiffuse="FF18181E">drawn/fill.png</texture>
+			</control>
+			<!-- Determinate 20-segment copy bar (bp.sync.f1..f20). -->
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f1),1)</visible>
+				<left>720</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f2),1)</visible>
+				<left>744</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f3),1)</visible>
+				<left>768</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f4),1)</visible>
+				<left>792</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f5),1)</visible>
+				<left>816</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f6),1)</visible>
+				<left>840</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f7),1)</visible>
+				<left>864</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f8),1)</visible>
+				<left>888</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f9),1)</visible>
+				<left>912</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f10),1)</visible>
+				<left>936</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f11),1)</visible>
+				<left>960</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f12),1)</visible>
+				<left>984</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f13),1)</visible>
+				<left>1008</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f14),1)</visible>
+				<left>1032</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f15),1)</visible>
+				<left>1056</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f16),1)</visible>
+				<left>1080</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f17),1)</visible>
+				<left>1104</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f18),1)</visible>
+				<left>1128</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f19),1)</visible>
+				<left>1152</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.sync.f20),1)</visible>
+				<left>1176</left>
+				<top>551</top>
+				<width>22</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+			</control>
+			<!-- Always-animating bar for merges plus reload (never looks frozen). -->
+			<control type="image">
+				<left>720</left>
+				<top>578</top>
+				<width>480</width>
+				<height>11</height>
+				<texture colordiffuse="FF18181E">drawn/fill.png</texture>
+			</control>
+			<control type="image">
+				<left>720</left>
+				<top>578</top>
+				<width>60</width>
+				<height>11</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+				<animation effect="slide" start="0,0" end="420,0" time="1400" loop="true" reversible="true" condition="String.IsEqual(Window(10000).Property(bp.sync.active),1)">Conditional</animation>
+			</control>
+		</control>
+	</controls>
+</window>

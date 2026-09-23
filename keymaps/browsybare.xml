@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GENERATED FILE: built by scripts/remotes.py from remotes/defaults.json +
+     userdata/skindev/remotes.json (user additions from the settings Remote
+     tab). Edit the JSON, never this file.
+     FUNCTION model: the generated GEN blocks map every key to
+     keyboard.py special <function>; the dispatcher decides the per-window
+     behaviour (Home / VideoOSD / FullscreenVideo). Generated blocks sit AFTER
+     the hand-tuned locks so a mapped function wins, while unmapped keys keep
+     their lock (no accidental ShutdownMenu etc.).
+     Kodi 21 has no condition support in keymaps (CButtonTranslator ignores
+     the attribute), so the letter/digit guard on Home is UNCONDITIONAL and
+     enforced inside keyboard.py (insert only while the on-screen keyboard
+     bp.kb is open, else swallow). -->
+<keymap>
+  <!-- Global: the power key toggles OUR shutdown menu in EVERY window.
+       Without this, Kodi's system remote.xml <power>ShutDown()</power>
+       (global) fires inside the open menu and shuts the box down. Only
+       <power> is global here (no letters, which would kill shortcuts). -->
+  <global>
+    <keyboard>
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </keyboard>
+    <remote>
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <!-- Opt-in mouse-button block (settings Remote tab block list): noop
+         disables the button (system mouse.xml). Empty = nothing blocked. -->
+    <mouse>
+      <!--GEN:blocks_mouse-->
+      <!--/GEN:blocks_mouse-->
+    </mouse>
+  </global>
+  <Home>
+    <!-- Transport letters (p/x/r/f/m) are owned by the generated block below
+         (special <function> types the letter while the keyboard is open and
+         runs the transport action otherwise). No hand-tuned duplicates. -->
+    <keyboard>
+      <!--GEN:typing-->
+      <a>RunScript(special://skin/scripts/keyboard.py,hardware,a)</a>
+      <b>RunScript(special://skin/scripts/keyboard.py,hardware,b)</b>
+      <c>RunScript(special://skin/scripts/keyboard.py,hardware,c)</c>
+      <d>RunScript(special://skin/scripts/keyboard.py,hardware,d)</d>
+      <e>RunScript(special://skin/scripts/keyboard.py,hardware,e)</e>
+      <g>RunScript(special://skin/scripts/keyboard.py,hardware,g)</g>
+      <h>RunScript(special://skin/scripts/keyboard.py,hardware,h)</h>
+      <i>RunScript(special://skin/scripts/keyboard.py,hardware,i)</i>
+      <j>RunScript(special://skin/scripts/keyboard.py,hardware,j)</j>
+      <k>RunScript(special://skin/scripts/keyboard.py,hardware,k)</k>
+      <l>RunScript(special://skin/scripts/keyboard.py,hardware,l)</l>
+      <n>RunScript(special://skin/scripts/keyboard.py,hardware,n)</n>
+      <o>RunScript(special://skin/scripts/keyboard.py,hardware,o)</o>
+      <q>RunScript(special://skin/scripts/keyboard.py,hardware,q)</q>
+      <s>RunScript(special://skin/scripts/keyboard.py,hardware,s)</s>
+      <t>RunScript(special://skin/scripts/keyboard.py,hardware,t)</t>
+      <u>RunScript(special://skin/scripts/keyboard.py,hardware,u)</u>
+      <v>RunScript(special://skin/scripts/keyboard.py,hardware,v)</v>
+      <w>RunScript(special://skin/scripts/keyboard.py,hardware,w)</w>
+      <y>RunScript(special://skin/scripts/keyboard.py,hardware,y)</y>
+      <z>RunScript(special://skin/scripts/keyboard.py,hardware,z)</z>
+      <f>RunScript(special://skin/scripts/keyboard.py,hardware,f)</f>
+      <m>RunScript(special://skin/scripts/keyboard.py,hardware,m)</m>
+      <p>RunScript(special://skin/scripts/keyboard.py,hardware,p)</p>
+      <r>RunScript(special://skin/scripts/keyboard.py,hardware,r)</r>
+      <x>RunScript(special://skin/scripts/keyboard.py,hardware,x)</x>
+      <one>RunScript(special://skin/scripts/keyboard.py,hardware,1)</one>
+      <two>RunScript(special://skin/scripts/keyboard.py,hardware,2)</two>
+      <three>RunScript(special://skin/scripts/keyboard.py,hardware,3)</three>
+      <four>RunScript(special://skin/scripts/keyboard.py,hardware,4)</four>
+      <five>RunScript(special://skin/scripts/keyboard.py,hardware,5)</five>
+      <six>RunScript(special://skin/scripts/keyboard.py,hardware,6)</six>
+      <seven>RunScript(special://skin/scripts/keyboard.py,hardware,7)</seven>
+      <eight>RunScript(special://skin/scripts/keyboard.py,hardware,8)</eight>
+      <nine>RunScript(special://skin/scripts/keyboard.py,hardware,9)</nine>
+      <zero>RunScript(special://skin/scripts/keyboard.py,hardware,0)</zero>
+      <!-- Hardware Shift layer (typing while the on-screen keyboard is open;
+           closed it is swallowed like the plain letters). Uppercase travels
+           as plain ASCII (no encoding risk); shift symbols as tokens (German
+           hardware layout: !"§$%&/()=) mapped in keyboard.py HW_TOKENS.
+           Risk (Kodi wiki: shift alone may collapse to the plain key): then
+           the plain mapping fires instead, lowercase, no harm. -->
+      <a mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,A)</a>
+      <b mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,B)</b>
+      <c mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,C)</c>
+      <d mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,D)</d>
+      <e mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,E)</e>
+      <f mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,F)</f>
+      <g mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,G)</g>
+      <h mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,H)</h>
+      <i mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,I)</i>
+      <j mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,J)</j>
+      <k mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,K)</k>
+      <l mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,L)</l>
+      <m mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,M)</m>
+      <n mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,N)</n>
+      <o mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,O)</o>
+      <p mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,P)</p>
+      <q mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,Q)</q>
+      <r mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,R)</r>
+      <s mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,S)</s>
+      <t mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,T)</t>
+      <u mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,U)</u>
+      <v mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,V)</v>
+      <w mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,W)</w>
+      <x mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,X)</x>
+      <y mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,Y)</y>
+      <z mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,Z)</z>
+      <!-- German umlauts via unicode key id (0xF000 | codepoint, Kodi wiki
+           key-id rule; no shift mod needed, each case is its own id).
+           Verify on the box via kodi.log (OnKey code); adjust if the
+           platform reports different ids. -->
+      <key id="61668">RunScript(special://skin/scripts/keyboard.py,hardware,auml)</key>
+      <key id="61686">RunScript(special://skin/scripts/keyboard.py,hardware,ouml)</key>
+      <key id="61692">RunScript(special://skin/scripts/keyboard.py,hardware,uuml)</key>
+      <key id="61663">RunScript(special://skin/scripts/keyboard.py,hardware,szlig)</key>
+      <key id="61636">RunScript(special://skin/scripts/keyboard.py,hardware,Auml)</key>
+      <key id="61654">RunScript(special://skin/scripts/keyboard.py,hardware,Ouml)</key>
+      <key id="61660">RunScript(special://skin/scripts/keyboard.py,hardware,Uuml)</key>
+      <!-- US-xkb position layer (CoreELEC default, Kodi keeps US libinput
+           xkb regardless of locale.keyboardlayouts): German HW keys arrive
+           with US symbols, so map by POSITION. Unshifted syms have Kodi
+           names; shifted syms travel as PLAIN key-id (0xF000|sym, log-proven:
+           exclaim->0xF021 fires without mod while mod=shift key-ids stay
+           dead). Plain äöüß
+           (quote/semicolon/opensquarebracket/minus), German minus via
+           forwardslash, shifted ÄÖÜ?_" via key-id (" also covers Shift+2,
+           typed as Ä by frequency). § and * ride plain key-ids too
+           (Shift+3 yields numbersign, Shift+plus-key yields rightbrace);
+           + already rides closesquarebracket/plus by name. -->
+      <quote>RunScript(special://skin/scripts/keyboard.py,hardware,auml)</quote>
+      <semicolon>RunScript(special://skin/scripts/keyboard.py,hardware,ouml)</semicolon>
+      <opensquarebracket>RunScript(special://skin/scripts/keyboard.py,hardware,uuml)</opensquarebracket>
+      <minus>RunScript(special://skin/scripts/keyboard.py,hardware,szlig)</minus>
+      <forwardslash>RunScript(special://skin/scripts/keyboard.py,hardware,minus)</forwardslash>
+      <equals>RunScript(special://skin/scripts/keyboard.py,hardware,equal)</equals>
+      <!-- 61474 is the `"` sym (Shift+2 on German hardware, macOS + box):
+           insert dquot. Box Shift+Ä stays on its own umlaut id 61636, so the
+           old frequency mapping to Auml is gone. -->
+      <key id="61474">RunScript(special://skin/scripts/keyboard.py,hardware,dquot)</key>
+      <key id="61498">RunScript(special://skin/scripts/keyboard.py,hardware,Ouml)</key>
+      <key id="61563">RunScript(special://skin/scripts/keyboard.py,hardware,Uuml)</key>
+      <!-- 61503 is 0x3F `?` (German Shift+ß), 61535 is 0x5F `_` (German
+           Shift+minus): they were swapped, so `?` typed `_` and vice versa
+           on macOS and box alike. Corrected here. -->
+      <key id="61535">RunScript(special://skin/scripts/keyboard.py,hardware,underscore)</key>
+      <key id="61503">RunScript(special://skin/scripts/keyboard.py,hardware,qmark)</key>
+      <key id="61473">RunScript(special://skin/scripts/keyboard.py,hardware,exc)</key>
+      <key id="61476">RunScript(special://skin/scripts/keyboard.py,hardware,dollar)</key>
+      <key id="61477">RunScript(special://skin/scripts/keyboard.py,hardware,perc)</key>
+      <!-- Shift+3 yields numbersign (§), Shift+plus-key yields rightbrace (*):
+           plain key-id fallbacks for platforms that report shifted syms as
+           ids (box 1 reports names instead and swallows Shift+3 entirely,
+           so these stay silent there). Tokens live in HW_TOKENS. -->
+      <key id="61475">RunScript(special://skin/scripts/keyboard.py,hardware,sect)</key>
+      <key id="61565">RunScript(special://skin/scripts/keyboard.py,hardware,star)</key>
+      <!-- Mac § candidates (Shift+3 types nothing there today): 61607 is
+           0xA7, and section is the guess for the Kodi name of the sym.
+           No existing entries, so zero regression risk either way. -->
+      <key id="61607">RunScript(special://skin/scripts/keyboard.py,hardware,sect)</key>
+      <section>RunScript(special://skin/scripts/keyboard.py,hardware,sect)</section>
+      <!-- Box-proven arrivals (German syms, 2026-09-22 HandleKey log):
+           Shift+plus-key arrives as asterisk (must insert star), Shift+8 as
+           leftbracket/0x28 (must insert lparen, hence 61480 below), Shift+9
+           as rightbracket (rparen, correct). Shift+3 never reaches Kodi
+           (CoreELEC input layer swallows it, shift-160 corpse), so § stays
+           on-screen-only there. -->
+      <asterisk>RunScript(special://skin/scripts/keyboard.py,hardware,star)</asterisk>
+      <caret>RunScript(special://skin/scripts/keyboard.py,hardware,amp)</caret>
+      <closesquarebracket>RunScript(special://skin/scripts/keyboard.py,hardware,plus)</closesquarebracket>
+      <key id="61478">RunScript(special://skin/scripts/keyboard.py,hardware,amp)</key>
+      <key id="61480">RunScript(special://skin/scripts/keyboard.py,hardware,lparen)</key>
+      <key id="61481">RunScript(special://skin/scripts/keyboard.py,hardware,rparen)</key>
+      <plus>RunScript(special://skin/scripts/keyboard.py,hardware,plus)</plus>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <enter mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</enter>
+      <return mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</return>
+      <!-- Shift+F10: the Windows/Linux keyboard context-menu standard -->
+      <f10 mod="shift">RunScript(special://skin/scripts/keyboard.py,special,menu)</f10>
+      <!--/GEN:typing-->
+      <!--GEN:home_keyboard-->
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
+      <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
+      <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
+      <menu>RunScript(special://skin/scripts/keyboard.py,special,menu)</menu>
+      <up>Up</up>
+      <down>Down</down>
+      <left>Left</left>
+      <right>Right</right>
+      <enter>Select</enter>
+      <return>Select</return>
+      <p>RunScript(special://skin/scripts/keyboard.py,special,playpause)</p>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <x>RunScript(special://skin/scripts/keyboard.py,special,stop)</x>
+      <r>RunScript(special://skin/scripts/keyboard.py,special,rewind)</r>
+      <f>RunScript(special://skin/scripts/keyboard.py,special,forward)</f>
+      <comma>RunScript(special://skin/scripts/keyboard.py,special,prev)</comma>
+      <period>RunScript(special://skin/scripts/keyboard.py,special,next)</period>
+      <volume_up>RunScript(special://skin/scripts/keyboard.py,special,vol_up)</volume_up>
+      <volume_down>RunScript(special://skin/scripts/keyboard.py,special,vol_down)</volume_down>
+      <m>RunScript(special://skin/scripts/keyboard.py,special,mute)</m>
+      <volume_mute>RunScript(special://skin/scripts/keyboard.py,special,mute)</volume_mute>
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+      <!--/GEN:home_keyboard-->
+    </keyboard>
+    <remote>
+      <!-- Void names: open foreign windows or disrupt (never navigation,
+           transport, volume, power or anything the old box may send as OK).
+           Catches every remote that sends these standard names. -->
+      <myvideo>noop</myvideo>
+      <mymusic>noop</mymusic>
+      <mypictures>noop</mypictures>
+      <mytv>noop</mytv>
+      <guide>noop</guide>
+      <livetv>noop</livetv>
+      <liveradio>noop</liveradio>
+      <recordedtv>noop</recordedtv>
+      <epgsearch>noop</epgsearch>
+      <red>noop</red>
+      <green>noop</green>
+      <yellow>noop</yellow>
+      <blue>noop</blue>
+      <favorites>noop</favorites>
+      <display>noop</display>
+      <record>noop</record>
+      <eject>noop</eject>
+      <print>noop</print>
+      <teletext>noop</teletext>
+      <subtitle>noop</subtitle>
+      <language>noop</language>
+      <playlist>noop</playlist>
+      <clear>noop</clear>
+      <hash>noop</hash>
+      <star>noop</star>
+      <last>noop</last>
+      <info>noop</info>
+      <title>noop</title>
+      <!-- Power: open OUR shutdown menu (overrides Kodi's remote.xml
+           <power>ShutDown()</power>). Also swallowed while the scanner is armed
+           (keyboard.py _scan_armed), so scanning the power key no longer
+           shuts the box down. -->
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <mouse>
+      <!-- Right-click: route through the Menu-key dispatcher so it can be
+           guarded while the photo viewer (bp.photo) is open; otherwise the
+           core opens the native context menu behind the image. -->
+      <rightclick>RunScript(special://skin/scripts/keyboard.py,special,menu)</rightclick>
+    </mouse>
+    <!-- OBC codes MUST live in <universalremote>, never in <remote>: <remote>
+         maps IR button NAMES via IRTranslator::TranslateString (play, reverse,
+         forward, pageplus, ...), which returns 0 for "obc*"; only
+         <universalremote> runs TranslateUniversalRemoteString. OBC entries in
+         <remote> were silently dropped, so box 2 (Meson-IR) fell back to the
+         system mapping (2026-09-14 fix). -->
+    <universalremote>
+      <!-- Spare Meson-IR keys run into the void (unmapped = noop). The
+           app/colored buttons (YouTube/Netflix/Google/Prime) and P+/P- are
+           NOT hardcoded here: they live in the settings Remote tab block list
+           (remotes.py APP_BLOCKS, default ON) and are generated into the GEN
+           block below, so the user can toggle them there. obc14/obc26 stay as
+           permanent background voids. -->
+      <obc14>noop</obc14>
+      <obc26>noop</obc26>
+      <!--GEN:home_remote-->
+      <obc39>RunScript(special://skin/scripts/keyboard.py,special,back)</obc39>
+      <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
+      <obc8>RunScript(special://skin/scripts/keyboard.py,special,menu)</obc8>
+      <obc89>Up</obc89>
+      <obc88>Down</obc88>
+      <obc86>Left</obc86>
+      <obc87>Right</obc87>
+      <obc244>Select</obc244>
+      <obc47>RunScript(special://skin/scripts/keyboard.py,special,vol_up)</obc47>
+      <obc46>RunScript(special://skin/scripts/keyboard.py,special,vol_down)</obc46>
+      <obc63>RunScript(special://skin/scripts/keyboard.py,special,mute)</obc63>
+      <obc255>RunScript(special://skin/scripts/keyboard.py,special,settings)</obc255>
+      <obc59>RunScript(special://skin/scripts/keyboard.py,special,power)</obc59>
+      <obc21>noop</obc21>
+      <obc31>noop</obc31>
+      <obc32>noop</obc32>
+      <obc34>noop</obc34>
+      <obc44>noop</obc44>
+      <obc45>noop</obc45>
+      <!--/GEN:home_remote-->
+    </universalremote>
+  </Home>
+  <!-- Settings window (id 1150 -> keymap section window1150): the SAME
+       hardware typing as Home, so the on-screen keyboard types with a real
+       keyboard there too (letters/digits/umlauts/symbols). No transport
+       genes, but Home must close the dialog like Back (user 2026-09-22). -->
+  <window1150>
+    <keyboard>
+      <!--GEN:typing-->
+      <a>RunScript(special://skin/scripts/keyboard.py,hardware,a)</a>
+      <b>RunScript(special://skin/scripts/keyboard.py,hardware,b)</b>
+      <c>RunScript(special://skin/scripts/keyboard.py,hardware,c)</c>
+      <d>RunScript(special://skin/scripts/keyboard.py,hardware,d)</d>
+      <e>RunScript(special://skin/scripts/keyboard.py,hardware,e)</e>
+      <g>RunScript(special://skin/scripts/keyboard.py,hardware,g)</g>
+      <h>RunScript(special://skin/scripts/keyboard.py,hardware,h)</h>
+      <i>RunScript(special://skin/scripts/keyboard.py,hardware,i)</i>
+      <j>RunScript(special://skin/scripts/keyboard.py,hardware,j)</j>
+      <k>RunScript(special://skin/scripts/keyboard.py,hardware,k)</k>
+      <l>RunScript(special://skin/scripts/keyboard.py,hardware,l)</l>
+      <n>RunScript(special://skin/scripts/keyboard.py,hardware,n)</n>
+      <o>RunScript(special://skin/scripts/keyboard.py,hardware,o)</o>
+      <q>RunScript(special://skin/scripts/keyboard.py,hardware,q)</q>
+      <s>RunScript(special://skin/scripts/keyboard.py,hardware,s)</s>
+      <t>RunScript(special://skin/scripts/keyboard.py,hardware,t)</t>
+      <u>RunScript(special://skin/scripts/keyboard.py,hardware,u)</u>
+      <v>RunScript(special://skin/scripts/keyboard.py,hardware,v)</v>
+      <w>RunScript(special://skin/scripts/keyboard.py,hardware,w)</w>
+      <y>RunScript(special://skin/scripts/keyboard.py,hardware,y)</y>
+      <z>RunScript(special://skin/scripts/keyboard.py,hardware,z)</z>
+      <f>RunScript(special://skin/scripts/keyboard.py,hardware,f)</f>
+      <m>RunScript(special://skin/scripts/keyboard.py,hardware,m)</m>
+      <p>RunScript(special://skin/scripts/keyboard.py,hardware,p)</p>
+      <r>RunScript(special://skin/scripts/keyboard.py,hardware,r)</r>
+      <x>RunScript(special://skin/scripts/keyboard.py,hardware,x)</x>
+      <one>RunScript(special://skin/scripts/keyboard.py,hardware,1)</one>
+      <two>RunScript(special://skin/scripts/keyboard.py,hardware,2)</two>
+      <three>RunScript(special://skin/scripts/keyboard.py,hardware,3)</three>
+      <four>RunScript(special://skin/scripts/keyboard.py,hardware,4)</four>
+      <five>RunScript(special://skin/scripts/keyboard.py,hardware,5)</five>
+      <six>RunScript(special://skin/scripts/keyboard.py,hardware,6)</six>
+      <seven>RunScript(special://skin/scripts/keyboard.py,hardware,7)</seven>
+      <eight>RunScript(special://skin/scripts/keyboard.py,hardware,8)</eight>
+      <nine>RunScript(special://skin/scripts/keyboard.py,hardware,9)</nine>
+      <zero>RunScript(special://skin/scripts/keyboard.py,hardware,0)</zero>
+      <!-- Hardware Shift layer (typing while the on-screen keyboard is open;
+           closed it is swallowed like the plain letters). Uppercase travels
+           as plain ASCII (no encoding risk); shift symbols as tokens (German
+           hardware layout: !"§$%&/()=) mapped in keyboard.py HW_TOKENS.
+           Risk (Kodi wiki: shift alone may collapse to the plain key): then
+           the plain mapping fires instead, lowercase, no harm. -->
+      <a mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,A)</a>
+      <b mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,B)</b>
+      <c mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,C)</c>
+      <d mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,D)</d>
+      <e mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,E)</e>
+      <f mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,F)</f>
+      <g mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,G)</g>
+      <h mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,H)</h>
+      <i mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,I)</i>
+      <j mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,J)</j>
+      <k mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,K)</k>
+      <l mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,L)</l>
+      <m mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,M)</m>
+      <n mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,N)</n>
+      <o mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,O)</o>
+      <p mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,P)</p>
+      <q mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,Q)</q>
+      <r mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,R)</r>
+      <s mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,S)</s>
+      <t mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,T)</t>
+      <u mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,U)</u>
+      <v mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,V)</v>
+      <w mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,W)</w>
+      <x mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,X)</x>
+      <y mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,Y)</y>
+      <z mod="shift">RunScript(special://skin/scripts/keyboard.py,hardware,Z)</z>
+      <!-- German umlauts via unicode key id (0xF000 | codepoint, Kodi wiki
+           key-id rule; no shift mod needed, each case is its own id).
+           Verify on the box via kodi.log (OnKey code); adjust if the
+           platform reports different ids. -->
+      <key id="61668">RunScript(special://skin/scripts/keyboard.py,hardware,auml)</key>
+      <key id="61686">RunScript(special://skin/scripts/keyboard.py,hardware,ouml)</key>
+      <key id="61692">RunScript(special://skin/scripts/keyboard.py,hardware,uuml)</key>
+      <key id="61663">RunScript(special://skin/scripts/keyboard.py,hardware,szlig)</key>
+      <key id="61636">RunScript(special://skin/scripts/keyboard.py,hardware,Auml)</key>
+      <key id="61654">RunScript(special://skin/scripts/keyboard.py,hardware,Ouml)</key>
+      <key id="61660">RunScript(special://skin/scripts/keyboard.py,hardware,Uuml)</key>
+      <!-- US-xkb position layer (CoreELEC default, Kodi keeps US libinput
+           xkb regardless of locale.keyboardlayouts): German HW keys arrive
+           with US symbols, so map by POSITION. Unshifted syms have Kodi
+           names; shifted syms travel as PLAIN key-id (0xF000|sym, log-proven:
+           exclaim->0xF021 fires without mod while mod=shift key-ids stay
+           dead). Plain äöüß
+           (quote/semicolon/opensquarebracket/minus), German minus via
+           forwardslash, shifted ÄÖÜ?_" via key-id (" also covers Shift+2,
+           typed as Ä by frequency). § and * ride plain key-ids too
+           (Shift+3 yields numbersign, Shift+plus-key yields rightbrace);
+           + already rides closesquarebracket/plus by name. -->
+      <quote>RunScript(special://skin/scripts/keyboard.py,hardware,auml)</quote>
+      <semicolon>RunScript(special://skin/scripts/keyboard.py,hardware,ouml)</semicolon>
+      <opensquarebracket>RunScript(special://skin/scripts/keyboard.py,hardware,uuml)</opensquarebracket>
+      <minus>RunScript(special://skin/scripts/keyboard.py,hardware,szlig)</minus>
+      <forwardslash>RunScript(special://skin/scripts/keyboard.py,hardware,minus)</forwardslash>
+      <equals>RunScript(special://skin/scripts/keyboard.py,hardware,equal)</equals>
+      <!-- 61474 is the `"` sym (Shift+2 on German hardware, macOS + box):
+           insert dquot. Box Shift+Ä stays on its own umlaut id 61636, so the
+           old frequency mapping to Auml is gone. -->
+      <key id="61474">RunScript(special://skin/scripts/keyboard.py,hardware,dquot)</key>
+      <key id="61498">RunScript(special://skin/scripts/keyboard.py,hardware,Ouml)</key>
+      <key id="61563">RunScript(special://skin/scripts/keyboard.py,hardware,Uuml)</key>
+      <!-- 61503 is 0x3F `?` (German Shift+ß), 61535 is 0x5F `_` (German
+           Shift+minus): they were swapped, so `?` typed `_` and vice versa
+           on macOS and box alike. Corrected here. -->
+      <key id="61535">RunScript(special://skin/scripts/keyboard.py,hardware,underscore)</key>
+      <key id="61503">RunScript(special://skin/scripts/keyboard.py,hardware,qmark)</key>
+      <key id="61473">RunScript(special://skin/scripts/keyboard.py,hardware,exc)</key>
+      <key id="61476">RunScript(special://skin/scripts/keyboard.py,hardware,dollar)</key>
+      <key id="61477">RunScript(special://skin/scripts/keyboard.py,hardware,perc)</key>
+      <!-- Shift+3 yields numbersign (§), Shift+plus-key yields rightbrace (*):
+           plain key-id fallbacks for platforms that report shifted syms as
+           ids (box 1 reports names instead and swallows Shift+3 entirely,
+           so these stay silent there). Tokens live in HW_TOKENS. -->
+      <key id="61475">RunScript(special://skin/scripts/keyboard.py,hardware,sect)</key>
+      <key id="61565">RunScript(special://skin/scripts/keyboard.py,hardware,star)</key>
+      <!-- Mac § candidates (Shift+3 types nothing there today): 61607 is
+           0xA7, and section is the guess for the Kodi name of the sym.
+           No existing entries, so zero regression risk either way. -->
+      <key id="61607">RunScript(special://skin/scripts/keyboard.py,hardware,sect)</key>
+      <section>RunScript(special://skin/scripts/keyboard.py,hardware,sect)</section>
+      <!-- Box-proven arrivals (German syms, 2026-09-22 HandleKey log):
+           Shift+plus-key arrives as asterisk (must insert star), Shift+8 as
+           leftbracket/0x28 (must insert lparen, hence 61480 below), Shift+9
+           as rightbracket (rparen, correct). Shift+3 never reaches Kodi
+           (CoreELEC input layer swallows it, shift-160 corpse), so § stays
+           on-screen-only there. -->
+      <asterisk>RunScript(special://skin/scripts/keyboard.py,hardware,star)</asterisk>
+      <caret>RunScript(special://skin/scripts/keyboard.py,hardware,amp)</caret>
+      <closesquarebracket>RunScript(special://skin/scripts/keyboard.py,hardware,plus)</closesquarebracket>
+      <key id="61478">RunScript(special://skin/scripts/keyboard.py,hardware,amp)</key>
+      <key id="61480">RunScript(special://skin/scripts/keyboard.py,hardware,lparen)</key>
+      <key id="61481">RunScript(special://skin/scripts/keyboard.py,hardware,rparen)</key>
+      <plus>RunScript(special://skin/scripts/keyboard.py,hardware,plus)</plus>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <enter mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</enter>
+      <return mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</return>
+      <!-- Shift+F10: the Windows/Linux keyboard context-menu standard -->
+      <f10 mod="shift">RunScript(special://skin/scripts/keyboard.py,special,menu)</f10>
+      <!--/GEN:typing-->
+      <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
+      <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
+    </keyboard>
+    <universalremote>
+      <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
+    </universalremote>
+  </window1150>
+  <VideoOSD>
+    <keyboard>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <a>noop</a>
+      <b>noop</b>
+      <c>noop</c>
+      <d>noop</d>
+      <e>noop</e>
+      <g>noop</g>
+      <h>noop</h>
+      <i>noop</i>
+      <j>noop</j>
+      <k>noop</k>
+      <l>noop</l>
+      <n>noop</n>
+      <n mod="ctrl">noop</n>
+      <o>noop</o>
+      <o mod="ctrl,shift">noop</o>
+      <o mod="alt">noop</o>
+      <q>noop</q>
+      <s>noop</s>
+      <t>noop</t>
+      <u>noop</u>
+      <v>noop</v>
+      <w>noop</w>
+      <y>noop</y>
+      <z>noop</z>
+      <one>noop</one>
+      <two>noop</two>
+      <three>noop</three>
+      <four>noop</four>
+      <five>noop</five>
+      <six>noop</six>
+      <seven>noop</seven>
+      <eight>noop</eight>
+      <nine>noop</nine>
+      <zero>noop</zero>
+      <tab>noop</tab>
+      <printscreen>noop</printscreen>
+      <pageup>noop</pageup>
+      <pagedown>noop</pagedown>
+      <home>noop</home>
+      <end>noop</end>
+      <left mod="ctrl">noop</left>
+      <right mod="ctrl">noop</right>
+      <return mod="longpress">noop</return>
+      <enter mod="longpress">noop</enter>
+      <return mod="ctrl">noop</return>
+      <enter mod="ctrl">noop</enter>
+      <!--GEN:osd_keyboard-->
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
+      <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
+      <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
+      <enter>Select</enter>
+      <return>Select</return>
+      <p>RunScript(special://skin/scripts/keyboard.py,special,playpause)</p>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <x>RunScript(special://skin/scripts/keyboard.py,special,stop)</x>
+      <r>RunScript(special://skin/scripts/keyboard.py,special,rewind)</r>
+      <f>RunScript(special://skin/scripts/keyboard.py,special,forward)</f>
+      <comma>RunScript(special://skin/scripts/keyboard.py,special,prev)</comma>
+      <period>RunScript(special://skin/scripts/keyboard.py,special,next)</period>
+      <volume_up>RunScript(special://skin/scripts/keyboard.py,special,vol_up)</volume_up>
+      <volume_down>RunScript(special://skin/scripts/keyboard.py,special,vol_down)</volume_down>
+      <m>RunScript(special://skin/scripts/keyboard.py,special,mute)</m>
+      <volume_mute>RunScript(special://skin/scripts/keyboard.py,special,mute)</volume_mute>
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+      <!--/GEN:osd_keyboard-->
+    </keyboard>
+    <remote>
+      <!-- Void names: open foreign windows or disrupt (never navigation,
+           transport, volume, power or anything the old box may send as OK).
+           Catches every remote that sends these standard names. -->
+      <myvideo>noop</myvideo>
+      <mymusic>noop</mymusic>
+      <mypictures>noop</mypictures>
+      <mytv>noop</mytv>
+      <guide>noop</guide>
+      <livetv>noop</livetv>
+      <liveradio>noop</liveradio>
+      <recordedtv>noop</recordedtv>
+      <epgsearch>noop</epgsearch>
+      <red>noop</red>
+      <green>noop</green>
+      <yellow>noop</yellow>
+      <blue>noop</blue>
+      <favorites>noop</favorites>
+      <display>noop</display>
+      <record>noop</record>
+      <eject>noop</eject>
+      <print>noop</print>
+      <teletext>noop</teletext>
+      <subtitle>noop</subtitle>
+      <language>noop</language>
+      <playlist>noop</playlist>
+      <clear>noop</clear>
+      <hash>noop</hash>
+      <star>noop</star>
+      <last>noop</last>
+      <info>noop</info>
+      <title>noop</title>
+      <!-- Power: open OUR shutdown menu (overrides Kodi's remote.xml
+           <power>ShutDown()</power>). Also swallowed while the scanner is armed
+           (keyboard.py _scan_armed), so scanning the power key no longer
+           shuts the box down. -->
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <!-- OBC codes live in <universalremote> (see the Home note). -->
+    <universalremote>
+      <!-- Spare Meson-IR keys run into the void (unmapped = noop). The
+           app/colored buttons (YouTube/Netflix/Google/Prime) and P+/P- are
+           NOT hardcoded here: they live in the settings Remote tab block list
+           (remotes.py APP_BLOCKS, default ON) and are generated into the GEN
+           block below, so the user can toggle them there. obc14/obc26 stay as
+           permanent background voids. -->
+      <obc14>noop</obc14>
+      <obc26>noop</obc26>
+      <!--GEN:osd_remote-->
+      <obc39>RunScript(special://skin/scripts/keyboard.py,special,back)</obc39>
+      <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
+      <obc244>Select</obc244>
+      <obc47>RunScript(special://skin/scripts/keyboard.py,special,vol_up)</obc47>
+      <obc46>RunScript(special://skin/scripts/keyboard.py,special,vol_down)</obc46>
+      <obc63>RunScript(special://skin/scripts/keyboard.py,special,mute)</obc63>
+      <obc59>RunScript(special://skin/scripts/keyboard.py,special,power)</obc59>
+      <obc21>noop</obc21>
+      <obc31>noop</obc31>
+      <obc32>noop</obc32>
+      <obc34>noop</obc34>
+      <obc44>noop</obc44>
+      <obc45>noop</obc45>
+      <!--/GEN:osd_remote-->
+    </universalremote>
+  </VideoOSD>
+  <FullscreenVideo>
+    <keyboard>
+      <!-- Plain arrows are owned by the generated block below (transport:
+           up=next, down=prev, left=rewind, right=forward, user 2026-09-14).
+           OK stays native (opens the OSD). -->
+      <up mod="longpress">noop</up>
+      <down mod="longpress">noop</down>
+      <left mod="alt">noop</left>
+      <right mod="alt">noop</right>
+      <left mod="ctrl">noop</left>
+      <right mod="ctrl">noop</right>
+      <up mod="ctrl">noop</up>
+      <down mod="ctrl">noop</down>
+      <quote>noop</quote>
+      <opensquarebracket>noop</opensquarebracket>
+      <closesquarebracket>noop</closesquarebracket>
+      <minus>noop</minus>
+      <equals>noop</equals>
+      <plus>noop</plus>
+      <a>noop</a>
+      <a mod="ctrl">noop</a>
+      <b>noop</b>
+      <b mod="ctrl">noop</b>
+      <b mod="alt">noop</b>
+      <c>noop</c>
+      <d>noop</d>
+      <e>noop</e>
+      <g>noop</g>
+      <h>noop</h>
+      <i>noop</i>
+      <j>noop</j>
+      <k>noop</k>
+      <l>noop</l>
+      <menu>noop</menu>
+      <n>noop</n>
+      <o>noop</o>
+      <o mod="ctrl,shift">noop</o>
+      <o mod="alt">noop</o>
+      <q>noop</q>
+      <s>noop</s>
+      <s mod="alt">noop</s>
+      <t>noop</t>
+      <t mod="ctrl">noop</t>
+      <u>noop</u>
+      <v>noop</v>
+      <v mod="ctrl">noop</v>
+      <text>noop</text>
+      <w>noop</w>
+      <y>noop</y>
+      <z>noop</z>
+      <zoom>noop</zoom>
+      <f1>noop</f1>
+      <f2>noop</f2>
+      <f3>noop</f3>
+      <f4>noop</f4>
+      <f5>noop</f5>
+      <f6>noop</f6>
+      <f7>noop</f7>
+      <f8>noop</f8>
+      <f9>noop</f9>
+      <f10>noop</f10>
+      <f11>noop</f11>
+      <f11 mod="alt">noop</f11>
+      <f12>noop</f12>
+      <pageup>noop</pageup>
+      <pagedown>noop</pagedown>
+      <home>noop</home>
+      <end>noop</end>
+      <tab>noop</tab>
+      <printscreen>noop</printscreen>
+      <return mod="longpress">noop</return>
+      <enter mod="longpress">noop</enter>
+      <return mod="ctrl">noop</return>
+      <enter mod="ctrl">noop</enter>
+      <!--GEN:fullscreen_keyboard-->
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
+      <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
+      <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
+      <up>RunScript(special://skin/scripts/keyboard.py,special,next)</up>
+      <down>RunScript(special://skin/scripts/keyboard.py,special,prev)</down>
+      <left>RunScript(special://skin/scripts/keyboard.py,special,rewind)</left>
+      <right>RunScript(special://skin/scripts/keyboard.py,special,forward)</right>
+      <p>RunScript(special://skin/scripts/keyboard.py,special,playpause)</p>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <x>RunScript(special://skin/scripts/keyboard.py,special,stop)</x>
+      <r>RunScript(special://skin/scripts/keyboard.py,special,rewind)</r>
+      <f>RunScript(special://skin/scripts/keyboard.py,special,forward)</f>
+      <comma>RunScript(special://skin/scripts/keyboard.py,special,prev)</comma>
+      <period>RunScript(special://skin/scripts/keyboard.py,special,next)</period>
+      <volume_up>RunScript(special://skin/scripts/keyboard.py,special,vol_up)</volume_up>
+      <volume_down>RunScript(special://skin/scripts/keyboard.py,special,vol_down)</volume_down>
+      <m>RunScript(special://skin/scripts/keyboard.py,special,mute)</m>
+      <volume_mute>RunScript(special://skin/scripts/keyboard.py,special,mute)</volume_mute>
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+      <!--/GEN:fullscreen_keyboard-->
+    </keyboard>
+    <remote>
+      <!-- Void names: open foreign windows or disrupt (never navigation,
+           transport, volume, power or anything the old box may send as OK).
+           Catches every remote that sends these standard names. -->
+      <myvideo>noop</myvideo>
+      <mymusic>noop</mymusic>
+      <mypictures>noop</mypictures>
+      <mytv>noop</mytv>
+      <guide>noop</guide>
+      <livetv>noop</livetv>
+      <liveradio>noop</liveradio>
+      <recordedtv>noop</recordedtv>
+      <epgsearch>noop</epgsearch>
+      <red>noop</red>
+      <green>noop</green>
+      <yellow>noop</yellow>
+      <blue>noop</blue>
+      <favorites>noop</favorites>
+      <display>noop</display>
+      <record>noop</record>
+      <eject>noop</eject>
+      <print>noop</print>
+      <teletext>noop</teletext>
+      <subtitle>noop</subtitle>
+      <language>noop</language>
+      <playlist>noop</playlist>
+      <clear>noop</clear>
+      <hash>noop</hash>
+      <star>noop</star>
+      <last>noop</last>
+      <info>noop</info>
+      <title>noop</title>
+      <!-- Power: open OUR shutdown menu (overrides Kodi's remote.xml
+           <power>ShutDown()</power>). Also swallowed while the scanner is armed
+           (keyboard.py _scan_armed), so scanning the power key no longer
+           shuts the box down. -->
+      <power>RunScript(special://skin/scripts/keyboard.py,special,power)</power>
+    </remote>
+    <!-- OBC codes live in <universalremote> (see the Home note). -->
+    <universalremote>
+      <!-- Spare Meson-IR keys run into the void (unmapped = noop). The
+           app/colored buttons (YouTube/Netflix/Google/Prime) and P+/P- are
+           NOT hardcoded here: they live in the settings Remote tab block list
+           (remotes.py APP_BLOCKS, default ON) and are generated into the GEN
+           block below, so the user can toggle them there. obc14/obc26 stay as
+           permanent background voids. -->
+      <obc14>noop</obc14>
+      <obc26>noop</obc26>
+      <!--GEN:fullscreen_remote-->
+      <obc39>RunScript(special://skin/scripts/keyboard.py,special,back)</obc39>
+      <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
+      <obc89>RunScript(special://skin/scripts/keyboard.py,special,next)</obc89>
+      <obc88>RunScript(special://skin/scripts/keyboard.py,special,prev)</obc88>
+      <obc86>RunScript(special://skin/scripts/keyboard.py,special,rewind)</obc86>
+      <obc87>RunScript(special://skin/scripts/keyboard.py,special,forward)</obc87>
+      <obc47>RunScript(special://skin/scripts/keyboard.py,special,vol_up)</obc47>
+      <obc46>RunScript(special://skin/scripts/keyboard.py,special,vol_down)</obc46>
+      <obc63>RunScript(special://skin/scripts/keyboard.py,special,mute)</obc63>
+      <obc59>RunScript(special://skin/scripts/keyboard.py,special,power)</obc59>
+      <obc21>noop</obc21>
+      <obc31>noop</obc31>
+      <obc32>noop</obc32>
+      <obc34>noop</obc34>
+      <obc44>noop</obc44>
+      <obc45>noop</obc45>
+      <!--/GEN:fullscreen_remote-->
+    </universalremote>
+  </FullscreenVideo>
+  <!-- Shutdown menu (DialogButtonMenu.xml, window 10111): map the arrow/OK
+       keys to our dispatcher so navigation also works for remote codes that
+       only our keymap knows (Home/OSD/Fullscreen); keyboard codes already
+       work via Kodi's global map. Back stays native (closes the dialog). -->
+  <ShutdownMenu>
+    <keyboard>
+      <!--GEN:shutdown_keyboard-->
+      <up>Up</up>
+      <down>Down</down>
+      <left>Left</left>
+      <right>Right</right>
+      <enter>Select</enter>
+      <return>Select</return>
+      <!--/GEN:shutdown_keyboard-->
+    </keyboard>
+    <!-- OBC codes live in <universalremote> (see the Home note). -->
+    <universalremote>
+      <!--GEN:shutdown_remote-->
+      <obc89>Up</obc89>
+      <obc88>Down</obc88>
+      <obc86>Left</obc86>
+      <obc87>Right</obc87>
+      <obc244>Select</obc244>
+      <obc21>noop</obc21>
+      <obc31>noop</obc31>
+      <obc32>noop</obc32>
+      <obc34>noop</obc34>
+      <obc44>noop</obc44>
+      <obc45>noop</obc45>
+      <!--/GEN:shutdown_remote-->
+    </universalremote>
+  </ShutdownMenu>
+  <!-- Photo viewer (our own window, xml/Custom1151.xml, id 1151): the
+       transport keys that keyboard.py routes to photostep/photoplay/
+       photoclose. Keymaps are per window, so Home's bindings do not
+       reach the viewer; without this section comma/period could not
+       step images. Arrows stay native (they walk the OSD buttons). -->
+  <window1151>
+    <keyboard>
+      <!--GEN:photo_keyboard-->
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
+      <enter>Select</enter>
+      <return>Select</return>
+      <p>RunScript(special://skin/scripts/keyboard.py,special,playpause)</p>
+      <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <x>RunScript(special://skin/scripts/keyboard.py,special,stop)</x>
+      <comma>RunScript(special://skin/scripts/keyboard.py,special,prev)</comma>
+      <period>RunScript(special://skin/scripts/keyboard.py,special,next)</period>
+      <m>RunScript(special://skin/scripts/keyboard.py,special,mute)</m>
+      <volume_mute>RunScript(special://skin/scripts/keyboard.py,special,mute)</volume_mute>
+      <!--/GEN:photo_keyboard-->
+    </keyboard>
+  </window1151>
+</keymap>

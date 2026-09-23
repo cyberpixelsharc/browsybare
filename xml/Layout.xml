@@ -1,0 +1,3615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Layout constants: ALL positions/sizes of the file manager as include params (defaults). Tune the defaults to move/resize everything; the dev grid (bp.grid property) visualises the column edges.-->
+<includes>
+	<include name="Layout">
+		<param name="margin" default="47"/>
+		<param name="top_y" default="32"/>
+		<param name="ctrl_h" default="64"/>
+		<param name="name_x" default="103"/>
+		<param name="name_w" default="1382"/>
+		<param name="size_x" default="1521"/>
+		<param name="col_meta" default="1521"/>
+		<param name="size_w" default="160"/>
+		<param name="date_x" default="1703"/>
+		<param name="date_w" default="170"/>
+		<param name="row_h" default="68"/>
+		<param name="list_top" default="0"/>
+		<param name="right_x" default="1873"/>
+		<definition>
+		<control type="group">
+			<!-- File-manager chrome hidden while the photo viewer is open: its animation
+			     would re-render the list and top bar underneath every frame. -->
+			<visible>!String.IsEqual(Window(10000).Property(bp.status), error)</visible>
+			
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>1080</height>
+				<texture>drawn/fill.png</texture>
+				<colordiffuse>FF101014</colordiffuse>
+			</control>
+<!-- Single list (plugin source): 2 invisible top-padding rows keep zebra
+     parity; the dotdot row scrolls with the list. -->
+			<control type="list" id="33">
+				<left>0</left>
+				<top>$PARAM[list_top]</top>
+				<width>1920</width>
+				<bottom>0</bottom>
+				<!-- List disabled while a modal is open (wheel would scroll it behind). -->
+				<enable>!String.IsEqual(Window(10000).Property(bp.notice),open) + !String.IsEqual(Window(10000).Property(bp.info),open) + !String.IsEqual(Window(10000).Property(bp.keys),open)</enable>
+				<onup>30</onup>
+				<ondown condition="Player.HasAudio + !Player.HasVideo">338</ondown>
+				<!-- Control-level onback for every remote (window onback is dead for NAV_BACK).
+				     Picker cancels, else one folder up (audio lock). -->
+				<onback condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">RunScript(special://skin/scripts/main.py,pickcancel)</onback>
+				<onback condition="!String.IsEqual(Window(10000).Property(bp.drives),open) + !String.IsEqual(Window(10000).Property(bp.menu),open) + !String.IsEqual(Window(10000).Property(bp.settings),open) + !String.IsEqual(Window(10000).Property(bp.ctx),open) + !String.IsEqual(Window(10000).Property(bp.del),open) + !String.IsEqual(Window(10000).Property(bp.about),open) + !String.IsEqual(Window(10000).Property(bp.keys),open) + !String.IsEqual(Window(10000).Property(bp.info),open) + !String.IsEqual(Window(10000).Property(bp.photo),open) + !String.IsEqual(Window(10000).Property(bp.kb),open) + !String.IsEqual(Window(10000).Property(bp.pick.active),1) + [!Player.HasAudio|Player.HasVideo]">RunScript(special://skin/scripts/main.py,up)</onback>
+				<pagecontrol>9800</pagecontrol>
+				<itemgap>0</itemgap>
+				<content>plugin://browsybare/list?p=$INFO[Window(10000).Property(bp.path)]&amp;q=$INFO[Window(10000).Property(search.query)]&amp;h=$INFO[Skin.HasSetting(show.hidden)]&amp;sort=$INFO[Skin.String(sort)]&amp;ff=$INFO[Skin.HasSetting(folders.last)]&amp;cs=$INFO[Skin.HasSetting(blacklist.casesensitive)]&amp;r=$INFO[Window(10000).Property(bp.refresh)]</content>
+				<onclick condition="String.IsEqual(ListItem.Property(bp.dotdot),1)">RunScript(special://skin/scripts/main.py,up)</onclick>
+				<onclick condition="!String.IsEqual(ListItem.Property(bp.dotdot),1) + ListItem.IsFolder + !String.IsEqual(ListItem.Property(bp.padding),1) + !String.IsEqual(ListItem.Property(bp.kind),archive)">RunScript(special://skin/scripts/main.py,nav,$INFO[ListItem.Property(bp.url)])</onclick>
+				<onclick condition="String.IsEqual(ListItem.Property(bp.dir),1) + !String.IsEqual(ListItem.Property(bp.padding),1)">RunScript(special://skin/scripts/main.py,nav,$INFO[ListItem.Property(bp.url)])</onclick>
+				<onclick condition="[!String.IsEqual(ListItem.Property(bp.dotdot),1) + !ListItem.IsFolder + !String.IsEqual(Window(10000).Property(bp.pick.active),1)|!String.IsEqual(ListItem.Property(bp.dotdot),1) + String.IsEqual(ListItem.Property(bp.kind),archive) + !String.IsEqual(Window(10000).Property(bp.pick.active),1)] + !String.IsEqual(ListItem.Property(bp.padding),1) + !String.IsEqual(ListItem.Property(bp.dir),1)">RunScript(special://skin/scripts/main.py,open,$INFO[ListItem.Property(bp.url)])</onclick>
+				<scrolltime>400</scrolltime>
+				<focusedlayout height="$PARAM[row_h]">
+					<control type="image">
+						<visible>Integer.IsEven(ListItem.CurrentItem) + !Skin.HasSetting(zebra.hidden) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>0</left>
+						<top>0</top>
+						<width>1920</width>
+						<height>$PARAM[row_h]</height>
+						<texture>drawn/fill.png</texture>
+						<colordiffuse>FF1E1E26</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>30</left>
+						<top>8</top>
+						<width>1860</width>
+						<height>52</height>
+						<texture border="18">drawn/row.png</texture>
+				<colordiffuse>$INFO[Window(10000).Property(bp.accent.hov)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>ListItem.IsFolder + String.IsEmpty(ListItem.Property(bp.dotdot)) + !String.IsEqual(ListItem.Property(bp.padding),1) + !String.IsEqual(ListItem.Property(bp.kind),archive)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/folder.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>String.IsEqual(ListItem.Property(bp.dir),1) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/folder.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),video) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-play.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),audio) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-music.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),photo) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-image.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>[!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),file)|String.IsEqual(ListItem.Property(bp.kind),archive)] + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-text.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="label">
+						<left>$PARAM[name_x]</left>
+						<top>0</top>
+						<width>$PARAM[name_w]</width>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<align>left</align>
+						<aligny>center</aligny>
+						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<selectedcolor>FF9A9AA2</selectedcolor>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+					<control type="label">
+						<left>$PARAM[col_meta]</left>
+						<top>0</top>
+						<width>$PARAM[size_w]</width>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<align>right</align>
+						<aligny>center</aligny>
+						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<selectedcolor>FF9A9AA2</selectedcolor>
+						<label>$INFO[ListItem.Label2]</label>
+					</control>
+					<control type="label">
+						<left>$PARAM[date_x]</left>
+						<top>0</top>
+						<width>$PARAM[date_w]</width>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<align>right</align>
+						<aligny>center</aligny>
+						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<selectedcolor>FF9A9AA2</selectedcolor>
+						<label>$INFO[ListItem.Date]</label>
+					</control>
+				</focusedlayout>
+				<itemlayout height="$PARAM[row_h]">
+					<control type="image">
+						<visible>Integer.IsEven(ListItem.CurrentItem) + !Skin.HasSetting(zebra.hidden) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>0</left>
+						<top>0</top>
+						<width>1920</width>
+						<height>$PARAM[row_h]</height>
+						<texture>drawn/fill.png</texture>
+				<colordiffuse>FF1E1E26</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>ListItem.IsFolder + String.IsEmpty(ListItem.Property(bp.dotdot)) + !String.IsEqual(ListItem.Property(bp.padding),1) + !String.IsEqual(ListItem.Property(bp.kind),archive)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/folder.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>String.IsEqual(ListItem.Property(bp.dir),1) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/folder.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),video) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-play.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),audio) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-music.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),photo) + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-image.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="image">
+						<visible>[!ListItem.IsFolder + String.IsEqual(ListItem.Property(bp.kind),file)|String.IsEqual(ListItem.Property(bp.kind),archive)] + !String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<left>$PARAM[margin]</left>
+						<top>20</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio align="left" aligny="center">keep</aspectratio>
+						<texture>filetypes/file-text.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+					</control>
+					<control type="label">
+						<left>$PARAM[name_x]</left>
+						<top>0</top>
+						<width>$PARAM[name_w]</width>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<align>left</align>
+						<aligny>center</aligny>
+						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<selectedcolor>FF9A9AA2</selectedcolor>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+					<control type="label">
+						<left>$PARAM[col_meta]</left>
+						<top>0</top>
+						<width>$PARAM[size_w]</width>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<align>right</align>
+						<aligny>center</aligny>
+						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<selectedcolor>FF9A9AA2</selectedcolor>
+						<label>$INFO[ListItem.Label2]</label>
+					</control>
+					<control type="label">
+						<left>$PARAM[date_x]</left>
+						<top>0</top>
+						<width>$PARAM[date_w]</width>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<align>right</align>
+						<aligny>center</aligny>
+						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<selectedcolor>FF9A9AA2</selectedcolor>
+						<label>$INFO[ListItem.Date]</label>
+					</control>
+				</itemlayout>
+</control>
+			
+			<control type="scrollbar" id="9800">
+				<left>1914</left>
+				<top>$PARAM[list_top]</top>
+				<width>6</width>
+				<bottom>0</bottom>
+				<texturesliderbackground>drawn/blank.png</texturesliderbackground>
+				<texturesliderbar border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbar>
+				<texturesliderbarfocus border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbarfocus>
+				<scrolltime>400</scrolltime>
+				<orientation>vertical</orientation>
+			</control>
+			<!-- List loading veil (bp.listload): set on path change, marked ready by
+			     list.py, dropped by the daemon once Container(33) took over the items
+			     (timeout fallback). -->
+			<control type="image">
+				<visible>String.IsEqual(Window(10000).Property(bp.listload),1)</visible>
+				<left>0</left>
+				<top>128</top>
+				<width>1920</width>
+				<height>952</height>
+				<texture>drawn/fill.png</texture>
+				<colordiffuse>FF101014</colordiffuse>
+			</control>
+			
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>128</height>
+				<texture>drawn/fill.png</texture>
+				<colordiffuse>F21E1E26</colordiffuse>
+			</control>
+			<control type="image">
+				<left>0</left>
+				<top>126</top>
+				<width>1920</width>
+				<height>2</height>
+				<texture>drawn/fill.png</texture>
+				<colordiffuse>FF32323C</colordiffuse>
+			</control>
+									<!-- Search: Skin.SetString without a value opens the keyboard. -->
+			
+			<control type="button" id="31">
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>128</height>
+				<texturefocus />
+				<texturenofocus />
+				<onclick>noop</onclick>
+			</control>
+			
+			<control type="image">
+				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+				<left>1808</left>
+				<top>$PARAM[top_y]</top>
+				<width>64</width>
+				<height>$PARAM[ctrl_h]</height>
+				<texture>drawn/circle.png</texture>
+				<colordiffuse>FF101014</colordiffuse>
+			</control>
+			<control type="image">
+				<visible>Control.HasFocus(32) + !String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+				<left>1808</left>
+				<top>$PARAM[top_y]</top>
+				<width>64</width>
+				<height>$PARAM[ctrl_h]</height>
+				<texture>drawn/circle.png</texture>
+				<colordiffuse>$INFO[Window(10000).Property(bp.accent.hov)]</colordiffuse>
+				<animation effect="fade" start="0" end="100" time="150">Visible</animation>
+			</control>
+			
+			<control type="grouplist" id="36">
+				<orientation>horizontal</orientation>
+				<left>$PARAM[margin]</left>
+				<top>$PARAM[top_y]</top>
+				<width>1438</width>
+				<height>$PARAM[ctrl_h]</height>
+				<itemgap>0</itemgap>
+				
+				<onright condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onright>
+				<onright>74</onright>
+				
+				<onleft condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onleft>
+				<onleft>32</onleft>
+				<control type="button" id="30">
+					<width min="64" max="560">auto</width>
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/chip.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF101014">drawn/chip.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>24</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<!-- 5-space icon spacer: Kodi centers only the label, so the spacer centers
+					     icon+text in the auto-width pill. -->
+					<label>     $INFO[Window(10000).Property(bp.title)]</label>
+					<ondown condition="String.IsEqual(Window(10000).Property(bp.drives),open)">60</ondown>
+					<ondown>33</ondown>
+					<onleft condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onleft>
+					<onleft>32</onleft>
+					<!-- Right skips the 14px spacer (47): an image cannot take focus, so the first Right died on it at drive root. -->
+					<onright condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onright>
+					<onright condition="!String.IsEmpty(Window(10000).Property(bp.crumb.1))">40</onright>
+					<onright>74</onright>
+					<onclick condition="String.IsEqual(Window(10000).Property(bp.drives),open)">ClearProperty(bp.drives)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.drives),open)">RunScript(special://skin/scripts/main.py,drivelist)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.drives),open) + !String.IsEmpty(Window(10000).Property(bp.drive.1))">RunScript(special://skin/scripts/main.py,dropdown_open)</onclick>
+					<onclick>ClearProperty(bp.menu)</onclick>
+				</control>
+				<control type="image" id="47">
+					<width>14</width>
+					<height>$PARAM[ctrl_h]</height>
+				</control>
+				<control type="label" id="810">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.1))</visible>
+				</control>
+				<control type="button" id="40">
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus />
+					<texturenofocus />
+					<width min="20" max="1150">auto</width>
+					<textoffsetx>0</textoffsetx>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.1)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.1))</visible>
+					<ondown>33</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,goto,1)</onclick>
+				</control>
+				<control type="label" id="48">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="20" max="200">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ … </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.ellipsis))</visible>
+				</control>
+				<control type="label" id="811">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.2))</visible>
+				</control>
+				<control type="button" id="41">
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus />
+					<texturenofocus />
+					<width min="20" max="1150">auto</width>
+					<textoffsetx>0</textoffsetx>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.2)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.2))</visible>
+					<ondown>33</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,goto,2)</onclick>
+				</control>
+				<control type="label" id="812">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.3))</visible>
+				</control>
+				<control type="button" id="42">
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus />
+					<texturenofocus />
+					<width min="20" max="1150">auto</width>
+					<textoffsetx>0</textoffsetx>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.3)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.3))</visible>
+					<ondown>33</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,goto,3)</onclick>
+				</control>
+				<control type="label" id="813">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.4))</visible>
+				</control>
+				<control type="button" id="43">
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus />
+					<texturenofocus />
+					<width min="20" max="1150">auto</width>
+					<textoffsetx>0</textoffsetx>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.4)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.4))</visible>
+					<ondown>33</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,goto,4)</onclick>
+				</control>
+				<control type="label" id="814">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.5))</visible>
+				</control>
+				<control type="button" id="44">
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus />
+					<texturenofocus />
+					<width min="20" max="1150">auto</width>
+					<textoffsetx>0</textoffsetx>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.5)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.5))</visible>
+					<ondown>33</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,goto,5)</onclick>
+				</control>
+				<control type="label" id="815">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.6))</visible>
+				</control>
+				<control type="button" id="45">
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus />
+					<texturenofocus />
+					<width min="20" max="1150">auto</width>
+					<textoffsetx>0</textoffsetx>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.6)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.6))</visible>
+					<ondown>33</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,goto,6)</onclick>
+				</control>
+				<control type="label" id="816">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.7))</visible>
+				</control>
+				<control type="button" id="46">
+					<height>$PARAM[ctrl_h]</height>
+					<texturefocus />
+					<texturenofocus />
+					<width min="20" max="1150">auto</width>
+					<textoffsetx>0</textoffsetx>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.7)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.7))</visible>
+					<ondown>33</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,goto,7)</onclick>
+				</control>
+				<control type="label" id="817">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="10" max="60">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>/ </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.cur))</visible>
+				</control>
+				<control type="label" id="818">
+					<height>$PARAM[ctrl_h]</height>
+					<width min="20" max="1150">auto</width>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<label>$INFO[Window(10000).Property(bp.crumb.cur)] </label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.cur))</visible>
+				</control>
+			</control>
+			
+			<control type="image">
+				<left>71</left>
+				<top>50</top>
+				<width>28</width>
+				<height>28</height>
+				<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.current.icon)]</texture>
+				<visible>!String.IsEmpty(Window(10000).Property(bp.current.icon)) + !Control.HasFocus(30)</visible>
+			</control>
+			<control type="image">
+				<left>71</left>
+				<top>50</top>
+				<width>28</width>
+				<height>28</height>
+				<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.current.icon)]</texture>
+				<visible>!String.IsEmpty(Window(10000).Property(bp.current.icon)) + Control.HasFocus(30)</visible>
+			</control>
+			<control type="button" id="75">
+				<visible>!String.IsEmpty(Window(10000).Property(search.query)) + !String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+				<left>1510</left>
+				<top>$PARAM[top_y]</top>
+				<width>274</width>
+				<height>$PARAM[ctrl_h]</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/pill.png</texturefocus>
+				<texturenofocus colordiffuse="FF101014">drawn/pill.png</texturenofocus>
+				<font>font13</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>FF9A9AA2</textcolor>
+				<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+				<label>$INFO[Window(10000).Property(search.query)]</label>
+				<onleft>36</onleft>
+				<onright>74</onright>
+				<ondown>33</ondown>
+				<onclick>ClearProperty(search.query)</onclick>
+				<onclick>RunScript(special://skin/scripts/main.py,search)</onclick>
+				<onclick>SetFocus(74)</onclick>
+			</control>
+			<!-- Loupe idle circle: only without a query. -->
+			<control type="image">
+				<visible>String.IsEmpty(Window(10000).Property(search.query)) + !String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+				<left>1720</left>
+				<top>$PARAM[top_y]</top>
+				<width>64</width>
+				<height>$PARAM[ctrl_h]</height>
+				<texture colordiffuse="FF101014">drawn/circle.png</texture>
+			</control>
+			<control type="button" id="74">
+				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+				<left>1720</left>
+				<top>$PARAM[top_y]</top>
+				<width>64</width>
+				<height>$PARAM[ctrl_h]</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+				<texturenofocus>drawn/blank.png</texturenofocus>
+				<onclick>RunScript(special://skin/scripts/keyboard.py,open,search)</onclick>
+				<onleft condition="!String.IsEmpty(Window(10000).Property(search.query))">75</onleft>
+				<onleft>36</onleft>
+				<onright>32</onright>
+				<ondown>33</ondown>
+			</control>
+			
+			<control type="button" id="923">
+				<visible>String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+				<left>1598</left>
+				<top>$PARAM[top_y]</top>
+				<width>274</width>
+				<height>$PARAM[ctrl_h]</height>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/pill.png</texturefocus>
+				<texturenofocus colordiffuse="FF101014">drawn/pill.png</texturenofocus>
+				<font>font13</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>FF9A9AA2</textcolor>
+				<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+				<label>$LOCALIZE[31344]</label>
+				<onclick>RunScript(special://skin/scripts/main.py,pickcancel)</onclick>
+				<onleft>36</onleft>
+				<onright>36</onright>
+				<ondown>33</ondown>
+				<onback>RunScript(special://skin/scripts/main.py,pickcancel)</onback>
+			</control>
+			<control type="image">
+				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1) + !Control.HasFocus(74)</visible>
+				<left>1738</left>
+				<top>50</top>
+				<width>28</width>
+				<height>28</height>
+				<aspectratio align="left" aligny="center">keep</aspectratio>
+				<texture>header/search.png</texture>
+				<colordiffuse>FF9A9AA2</colordiffuse>
+			</control>
+			<control type="image">
+				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1) + Control.HasFocus(74)</visible>
+				<left>1738</left>
+				<top>50</top>
+				<width>28</width>
+				<height>28</height>
+				<aspectratio align="left" aligny="center">keep</aspectratio>
+				<texture>header/search.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+			</control>
+			<control type="button" id="32">
+				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+				<left>1808</left>
+				<top>$PARAM[top_y]</top>
+				<width>64</width>
+				<height>$PARAM[ctrl_h]</height>
+				<texturefocus>drawn/blank.png</texturefocus>
+				<texturenofocus>drawn/blank.png</texturenofocus>
+				<onleft>74</onleft>
+				<onright>30</onright>
+  <ondown condition="String.IsEqual(Window(10000).Property(bp.menu),open)">72</ondown>
+			<ondown>33</ondown>
+				<onclick condition="String.IsEqual(Window(10000).Property(bp.menu),open)">ClearProperty(bp.menu)</onclick>
+				<onclick condition="!String.IsEqual(Window(10000).Property(bp.menu),open)">ClearProperty(bp.drives)</onclick>
+				<onclick condition="!String.IsEqual(Window(10000).Property(bp.menu),open)">SetProperty(bp.menu,open)</onclick>
+				<onclick condition="!String.IsEqual(Window(10000).Property(bp.menu),open)">SetFocus(72)</onclick>
+			</control>
+			<control type="image">
+				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1) + !Control.HasFocus(32)</visible>
+				<left>1821</left>
+				<top>46</top>
+				<width>38</width>
+				<height>38</height>
+				<aspectratio align="center" aligny="center">keep</aspectratio>
+				<texture>header/list.png</texture>
+				<colordiffuse>FF9A9AA2</colordiffuse>
+			</control>
+			<control type="image">
+				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1) + Control.HasFocus(32)</visible>
+				<left>1821</left>
+				<top>46</top>
+				<width>38</width>
+				<height>38</height>
+				<aspectratio align="center" aligny="center">keep</aspectratio>
+				<texture>header/list.png</texture>
+				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
+			</control>
+			
+				<!-- Audio footer (background playback): single full-width surface, no
+				     fullscreen. Shared text via AudioFooterContent include; covers live in
+				     the INFO modal only. Click eater 336 keeps clicks off the list. -->
+			<control type="group">
+				<visible>Player.HasAudio + !Player.HasVideo</visible>
+				<left>0</left>
+				<top>880</top>
+				<width>1920</width>
+				<height>200</height>
+				<animation effect="fade" time="200">VisibleChange</animation>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>200</height>
+					<texture>drawn/fill.png</texture>
+					<colordiffuse>F21E1E26</colordiffuse>
+				</control>
+				<control type="image">
+					<left>0</left>
+					<top>-2</top>
+					<width>1920</width>
+					<height>2</height>
+					<texture>drawn/fill.png</texture>
+					<colordiffuse>FF2A2A33</colordiffuse>
+				</control>
+				
+				<control type="button" id="336">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>200</height>
+					<texturefocus />
+					<texturenofocus />
+					<onclick>noop</onclick>
+				</control>
+				
+				<control type="group">
+					<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+					<control type="group">
+						<left>0</left>
+						<top>0</top>
+						<include content="AudioFooterContent" file="IncludesAudioFooter.xml"/>
+						
+						<control type="slider" id="356">
+							<left>200</left>
+							<top>141</top>
+							<width>944</width>
+							<height>26</height>
+							<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbar>
+							<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
+							<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
+							<info>Player.Progress</info>
+							<action>seek</action>
+						</control>
+						<!-- Volume: ENABLED input slider behind takes drag/click/focus (no nib);
+						     DISABLED slider on top only draws the accent dot. -->
+						<control type="slider" id="410">
+							<left>1170.6</left>
+							<top>37</top>
+							<width>10.8</width>
+							<height>130</height>
+							<orientation>vertical</orientation>
+							<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbar>
+						</control>
+						<control type="slider" id="357">
+							<left>1170.6</left>
+							<top>37</top>
+							<width>10.8</width>
+							<height>130</height>
+							<orientation>vertical</orientation>
+							<enable>false</enable>
+							<texturesliderbardisabled colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbardisabled>
+							<textureslidernibdisabled colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibdisabled>
+							<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbar>
+							<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
+							<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
+							<info>Skin.Numeric(volume.level)</info>
+						</control>
+						<control type="radiobutton" id="337">
+							<left>1204</left>
+							<top>36</top>
+							<width>64</width>
+							<height>64</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonfocus>
+							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonnofocus>
+							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioofffocus>
+							<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradiooffnofocus>
+							<radiowidth>32</radiowidth>
+							<radioheight>32</radioheight>
+							<radioposx>16</radioposx>
+							<radioposy>16</radioposy>
+							<font></font>
+							<onleft>337</onleft>
+							<onright>339</onright>
+							<onup>33</onup>
+							<ondown>358</ondown>
+							<onclick condition="String.IsEqual(Window(10000).Property(bp.netplay),1)">RunScript(special://skin/scripts/main.py,audioprev)</onclick>
+							<onclick condition="!String.IsEqual(Window(10000).Property(bp.netplay),1)">PlayerControl(Previous)</onclick>
+						</control>
+						<control type="radiobutton" id="339">
+							<left>1288</left>
+							<top>36</top>
+							<width>64</width>
+							<height>64</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioonfocus>
+							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioonnofocus>
+							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioofffocus>
+							<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradiooffnofocus>
+							<radiowidth>32</radiowidth>
+							<radioheight>32</radioheight>
+							<radioposx>16</radioposx>
+							<radioposy>16</radioposy>
+							<font></font>
+							<onleft>337</onleft>
+							<onright>338</onright>
+							<onup>33</onup>
+							<ondown>358</ondown>
+							<onclick condition="Player.Paused">PlayerControl(Play)</onclick>
+							<onclick condition="!Player.Paused">RunScript(special://skin/scripts/main.py,skip,bwd)</onclick>
+						</control>
+						<control type="group">
+							<left>1372</left>
+							<top>20</top>
+							<width>96</width>
+							<height>96</height>
+							<control type="image">
+								<left>0</left>
+								<top>0</top>
+								<width>96</width>
+								<height>96</height>
+								<texture colordiffuse="FF18181E">drawn/circle.png</texture>
+							</control>
+							<control type="image">
+								<left>0</left>
+								<top>0</top>
+								<width>96</width>
+								<height>96</height>
+								<texture colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texture>
+								<visible>Control.HasFocus(338)</visible>
+							</control>
+							<control type="image">
+								<left>26</left>
+								<top>26</top>
+								<width>44</width>
+								<height>44</height>
+								<texture colordiffuse="$INFO[Skin.String(accent)]">osd/pause-fill.png</texture>
+								<visible>!Player.Paused</visible>
+							</control>
+							<control type="image">
+								<left>26</left>
+								<top>26</top>
+								<width>44</width>
+								<height>44</height>
+								<texture colordiffuse="$INFO[Skin.String(accent)]">osd/play-fill.png</texture>
+								<visible>Player.Paused</visible>
+							</control>
+							<control type="button" id="338">
+								<left>0</left>
+								<top>0</top>
+								<width>96</width>
+								<height>96</height>
+								<texturefocus />
+								<texturenofocus />
+								<font></font>
+								<onleft>339</onleft>
+							<onright>340</onright>
+							<onup>33</onup>
+							<ondown>359</ondown>
+							<onclick>PlayerControl(Play)</onclick>
+							</control>
+						</control>
+						<control type="radiobutton" id="340">
+							<left>1488</left>
+							<top>36</top>
+							<width>64</width>
+							<height>64</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonfocus>
+							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonnofocus>
+							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioofffocus>
+							<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradiooffnofocus>
+							<radiowidth>32</radiowidth>
+							<radioheight>32</radioheight>
+							<radioposx>16</radioposx>
+							<radioposy>16</radioposy>
+							<font></font>
+							<onleft>338</onleft>
+							<onright>341</onright>
+							<onup>33</onup>
+							<ondown>358</ondown>
+							<onclick>PlayerControl(Stop)</onclick>
+						</control>
+						<control type="radiobutton" id="341">
+							<left>1572</left>
+							<top>36</top>
+							<width>64</width>
+							<height>64</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioonfocus>
+							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioonnofocus>
+							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioofffocus>
+							<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradiooffnofocus>
+							<radiowidth>32</radiowidth>
+							<radioheight>32</radioheight>
+							<radioposx>16</radioposx>
+							<radioposy>16</radioposy>
+							<font></font>
+							<onleft>340</onleft>
+							<onright>342</onright>
+							<onup>33</onup>
+							<ondown>354</ondown>
+							<onclick condition="Player.Paused">PlayerControl(Play)</onclick>
+							<onclick condition="!Player.Paused">RunScript(special://skin/scripts/main.py,skip,fwd)</onclick>
+						</control>
+						<control type="radiobutton" id="342">
+							<left>1656</left>
+							<top>36</top>
+							<width>64</width>
+							<height>64</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonfocus>
+							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonnofocus>
+							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioofffocus>
+							<textureradiooffnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradiooffnofocus>
+							<radiowidth>32</radiowidth>
+							<radioheight>32</radioheight>
+							<radioposx>16</radioposx>
+							<radioposy>16</radioposy>
+							<font></font>
+							<onleft>341</onleft>
+							<onright>342</onright>
+							<onup>33</onup>
+							<ondown>355</ondown>
+							<onclick condition="String.IsEqual(Window(10000).Property(bp.netplay),1)">RunScript(special://skin/scripts/main.py,audionext)</onclick>
+							<onclick condition="!String.IsEqual(Window(10000).Property(bp.netplay),1)">PlayerControl(Next)</onclick>
+						</control>
+					<!-- Small state buttons (photoplayer size): 48px circles, 22px
+					     Bootstrap icons, right edge 1720. Accent icon = state
+					     active, gray = inactive. Hidden in picker mode (the picker bar
+					     overlays the footer bottom). ondown self-targets are a focus floor:
+					     spatial DOWN would reach the list rows behind the bar. -->
+					<control type="group">
+						<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
+						
+												<control type="button" id="359">
+							<left>1432</left>
+							<top>130</top>
+							<width>48</width>
+							<height>48</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<font></font>
+							<onclick>RunScript(special://skin/scripts/main.py,infoopen)</onclick>
+							<onleft>359</onleft>
+							<onright>358</onright>
+							<onup>338</onup>
+							<ondown>359</ondown>
+						</control>
+						<control type="image">
+							<left>1445</left>
+							<top>143</top>
+							<width>22</width>
+							<height>22</height>
+							<aspectratio>keep</aspectratio>
+					<texture colordiffuse="FF9A9AA2">osd/info-circle.png</texture>
+						</control>
+						<control type="button" id="358">
+							<left>1492</left>
+							<top>130</top>
+							<width>48</width>
+							<height>48</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<font></font>
+							<onclick>RunScript(special://skin/scripts/main.py,speed)</onclick>
+							<onleft>359</onleft>
+							<onright>353</onright>
+							<onup>340</onup>
+							<ondown>358</ondown>
+						</control>
+						<control type="group">
+							<visible>String.IsEqual(Window(10000).Property(bp.speed),1)</visible>
+							<control type="image">
+								<left>1504</left>
+								<top>142</top>
+								<width>24</width>
+								<height>24</height>
+								<texture colordiffuse="FF9A9AA2">osd/speedometer2.png</texture>
+							</control>
+						</control>
+						<control type="group">
+							<visible>!String.IsEqual(Window(10000).Property(bp.speed),1)</visible>
+							<control type="label">
+								<left>1492</left>
+								<top>141</top>
+								<width>48</width>
+								<height>18</height>
+								<font>font_flag</font>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<align>center</align>
+								<label>$INFO[Window(10000).Property(bp.speed)]</label>
+							</control>
+						</control>
+						<control type="button" id="353">
+							<left>1552</left>
+							<top>130</top>
+							<width>48</width>
+							<height>48</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<font></font>
+							<onclick>Mute()</onclick>
+							<onleft>358</onleft>
+							<onright>354</onright>
+							<onup>340</onup>
+							<ondown>353</ondown>
+						</control>
+						<control type="image">
+							<visible>Player.Muted</visible>
+						<left>1562</left>
+						<top>140</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio>keep</aspectratio>
+						<texture colordiffuse="$INFO[Skin.String(accent)]">osd/volume-mute.png</texture>
+						</control>
+						<control type="image">
+							<visible>!Player.Muted</visible>
+						<left>1562</left>
+						<top>140</top>
+						<width>28</width>
+						<height>28</height>
+						<aspectratio>keep</aspectratio>
+						<texture colordiffuse="FF9A9AA2">osd/volume-mute.png</texture>
+						</control>
+						<control type="button" id="354">
+							<left>1612</left>
+							<top>130</top>
+							<width>48</width>
+							<height>48</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<font></font>
+							<onclick>PlayerControl(Repeat)</onclick>
+							<onleft>353</onleft>
+							<onright>355</onright>
+							<onup>341</onup>
+							<ondown>354</ondown>
+						</control>
+						<control type="image">
+							<visible>!Playlist.IsRepeat + !Playlist.IsRepeatOne</visible>
+							<left>1625</left>
+							<top>143</top>
+							<width>22</width>
+							<height>22</height>
+							<aspectratio>keep</aspectratio>
+							<texture colordiffuse="FF9A9AA2">osd/repeat.png</texture>
+						</control>
+						<control type="image">
+							<visible>Playlist.IsRepeat</visible>
+							<left>1625</left>
+							<top>143</top>
+							<width>22</width>
+							<height>22</height>
+							<aspectratio>keep</aspectratio>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">osd/repeat.png</texture>
+						</control>
+						<control type="image">
+							<visible>Playlist.IsRepeatOne</visible>
+							<left>1625</left>
+							<top>143</top>
+							<width>22</width>
+							<height>22</height>
+							<aspectratio>keep</aspectratio>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">osd/repeat-1.png</texture>
+						</control>
+						<control type="button" id="355">
+							<left>1672</left>
+							<top>130</top>
+							<width>48</width>
+							<height>48</height>
+							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
+							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<font></font>
+							<onclick>PlayerControl(Random)</onclick>
+							<onleft>354</onleft>
+							<onright>355</onright>
+							<onup>342</onup>
+							<ondown>355</ondown>
+						</control>
+						<control type="image">
+							<visible>Playlist.IsRandom</visible>
+							<left>1685</left>
+							<top>143</top>
+							<width>22</width>
+							<height>22</height>
+							<aspectratio>keep</aspectratio>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">osd/shuffle.png</texture>
+						</control>
+						<control type="image">
+							<visible>!Playlist.IsRandom</visible>
+							<left>1685</left>
+							<top>143</top>
+							<width>22</width>
+							<height>22</height>
+							<aspectratio>keep</aspectratio>
+							<texture colordiffuse="FF9A9AA2">osd/shuffle.png</texture>
+						</control>
+					</control>
+					</control>
+				</control>
+			</control>
+											
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.drives),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="59">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + String.IsEmpty(Window(10000).Property(bp.drive.2)) + String.IsEmpty(Window(10000).Property(bp.drive.3)) + String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>92</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="95">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>92</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + String.IsEmpty(Window(10000).Property(bp.drive.2)) + String.IsEmpty(Window(10000).Property(bp.drive.3)) + String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + String.IsEmpty(Window(10000).Property(bp.drive.3)) + String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>168</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="96">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>168</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + String.IsEmpty(Window(10000).Property(bp.drive.3)) + String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>244</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="97">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>244</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>320</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="98">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>320</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>396</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="99">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>396</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>472</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="100">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>472</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>548</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="930">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>548</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + !String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>624</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="931">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>624</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + !String.IsEmpty(Window(10000).Property(bp.drive.8)) + String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + !String.IsEmpty(Window(10000).Property(bp.drive.8)) + !String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>700</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="932">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>700</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + !String.IsEmpty(Window(10000).Property(bp.drive.8)) + !String.IsEmpty(Window(10000).Property(bp.drive.9)) + String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="image">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + !String.IsEmpty(Window(10000).Property(bp.drive.8)) + !String.IsEmpty(Window(10000).Property(bp.drive.9)) + !String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>776</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="933">
+					<left>$PARAM[margin]</left>
+					<top>104</top>
+					<width>413</width>
+					<height>776</height>
+					<texturefocus />
+					<texturenofocus />
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !String.IsEmpty(Window(10000).Property(bp.drive.2)) + !String.IsEmpty(Window(10000).Property(bp.drive.3)) + !String.IsEmpty(Window(10000).Property(bp.drive.4)) + !String.IsEmpty(Window(10000).Property(bp.drive.5)) + !String.IsEmpty(Window(10000).Property(bp.drive.6)) + !String.IsEmpty(Window(10000).Property(bp.drive.7)) + !String.IsEmpty(Window(10000).Property(bp.drive.8)) + !String.IsEmpty(Window(10000).Property(bp.drive.9)) + !String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>				</control>
+				<control type="button" id="60">
+					<left>63</left>
+					<top>120</top>
+					<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.1)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,1)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>30</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.2))">61</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>137</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.1.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !Control.HasFocus(60)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>137</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.1.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + Control.HasFocus(60)</visible>
+				</control>
+		<control type="button" id="61">
+			<left>63</left>
+			<top>196</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.2)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.2))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,2)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>60</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.3))">62</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>213</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.2.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.2)) + !Control.HasFocus(61)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>213</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.2.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.2)) + Control.HasFocus(61)</visible>
+				</control>
+		<control type="button" id="62">
+			<left>63</left>
+			<top>272</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.3)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.3))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,3)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>61</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.4))">63</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>289</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.3.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.3)) + !Control.HasFocus(62)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>289</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.3.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.3)) + Control.HasFocus(62)</visible>
+				</control>
+		<control type="button" id="63">
+			<left>63</left>
+			<top>348</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.4)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.4))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,4)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>62</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.5))">64</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>365</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.4.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.4)) + !Control.HasFocus(63)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>365</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.4.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.4)) + Control.HasFocus(63)</visible>
+				</control>
+		<control type="button" id="64">
+			<left>63</left>
+			<top>424</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.5)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.5))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,5)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>63</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.6))">65</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>441</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.5.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.5)) + !Control.HasFocus(64)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>441</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.5.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.5)) + Control.HasFocus(64)</visible>
+				</control>
+		<control type="button" id="65">
+			<left>63</left>
+			<top>500</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.6)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.6))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,6)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>64</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.7))">66</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>517</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.6.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.6)) + !Control.HasFocus(65)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>517</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.6.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.6)) + Control.HasFocus(65)</visible>
+				</control>
+		<control type="button" id="66">
+			<left>63</left>
+			<top>576</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.7)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.7))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,7)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>65</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.8))">67</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>593</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.7.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.7)) + !Control.HasFocus(66)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>593</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.7.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.7)) + Control.HasFocus(66)</visible>
+				</control>
+		<control type="button" id="67">
+			<left>63</left>
+			<top>652</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.8)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.8))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,8)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>66</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.9))">68</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>669</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.8.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.8)) + !Control.HasFocus(67)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>669</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.8.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.8)) + Control.HasFocus(67)</visible>
+				</control>
+		<control type="button" id="68">
+			<left>63</left>
+			<top>728</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.9)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.9))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,9)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>67</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.drive.10))">69</ondown><ondown>60</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>745</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.9.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.9)) + !Control.HasFocus(68)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>745</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.9.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.9)) + Control.HasFocus(68)</visible>
+				</control>
+		<control type="button" id="69">
+			<left>63</left>
+			<top>804</top>
+				<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textoffsetx>56</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.drive.10)]</label>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
+					<onclick>RunScript(special://skin/scripts/main.py,drive,10)</onclick>
+					<onclick>ClearProperty(bp.drives)</onclick>
+					<onclick>SetFocus(30)</onclick>
+					<onback>ClearProperty(bp.drives)</onback>
+					<onback>SetFocus(30)</onback>					<onup>68</onup>
+					<ondown condition="String.IsEqual(Window(10000).Property(bp.drives),open)">60</ondown>
+					<ondown>33</ondown>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>821</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.10.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.10)) + !Control.HasFocus(69)</visible>
+				</control>
+				<control type="image">
+					<left>79</left>
+					<top>821</top>
+					<width>26</width>
+					<height>26</height>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.drive.10.icon)]</texture>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.10)) + Control.HasFocus(69)</visible>
+				</control>
+			</control>
+			
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.menu),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="58">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>ClearProperty(bp.menu)</onclick>
+					<onback>ClearProperty(bp.menu)</onback>
+					<onback>SetFocus(32)</onback>				</control>
+				<control type="image">
+					<left>1459</left>
+					<top>104</top>
+					<width>413</width>
+					<height>396</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="94">
+					<left>1459</left>
+					<top>104</top>
+					<width>413</width>
+					<height>396</height>
+					<texturefocus />
+					<texturenofocus />
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.menu)</onback>
+					<onback>SetFocus(32)</onback>				</control>
+				<control type="button" id="72">
+					<left>1475</left>
+					<top>120</top>
+					<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>right</align>
+					<aligny>center</aligny>
+					<textoffsetx>60</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$INFO[Window(10000).Property(bp.name)]</label>
+					<onclick>ClearProperty(bp.menu)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetProperty(bp.about,open)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetFocus(86)</onclick>
+					<onclick condition="String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.about)</onclick>
+					<onback>ClearProperty(bp.menu)</onback>
+					<onback>SetFocus(32)</onback>
+					<onup>32</onup>
+					<ondown>76</ondown>
+				</control>
+				<control type="button" id="70">
+					<left>1475</left>
+					<top>272</top>
+					<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>right</align>
+					<aligny>center</aligny>
+					<textoffsetx>60</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31307]</label>
+					<onup>76</onup>
+					<onclick>ClearProperty(bp.menu)</onclick>
+					<onclick>SetProperty(bp.settings,open)</onclick>
+					<onclick>ActivateWindow(1150)</onclick>
+					<onback>ClearProperty(bp.menu)</onback>
+					<onback>SetFocus(32)</onback>
+					<ondown>71</ondown>
+				</control>
+			<control type="button" id="71">
+					<left>1475</left>
+					<top>348</top>
+					<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>right</align>
+					<aligny>center</aligny>
+					<textoffsetx>60</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31308]</label>
+					<onup>70</onup>
+					<onclick>ClearProperty(bp.menu)</onclick>
+					<onclick>ActivateWindow(settings)</onclick>
+					<onback>ClearProperty(bp.menu)</onback>
+					<onback>SetFocus(32)</onback>
+					<ondown>73</ondown>
+				</control>
+			<control type="button" id="73">
+					<left>1475</left>
+					<top>424</top>
+					<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>right</align>
+					<aligny>center</aligny>
+					<textoffsetx>60</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31310]</label>
+					<onup>71</onup>
+					<onclick>ClearProperty(bp.menu)</onclick>
+					<onclick>RunScript(special://skin/scripts/main.py,poweropen)</onclick>
+					<onback>ClearProperty(bp.menu)</onback>
+					<onback>SetFocus(32)</onback>
+					<ondown>72</ondown>
+				</control>
+				<control type="button" id="76">
+					<left>1475</left>
+					<top>196</top>
+					<width>381</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>right</align>
+					<aligny>center</aligny>
+					<textoffsetx>60</textoffsetx>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31494]</label>
+					<onclick>ClearProperty(bp.menu)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.keys),open)">RunScript(special://skin/scripts/main.py,keysopen)</onclick>
+					<onclick condition="String.IsEqual(Window(10000).Property(bp.keys),open)">ClearProperty(bp.keys)</onclick>
+					<onback>ClearProperty(bp.menu)</onback>
+					<onback>SetFocus(32)</onback>
+					<onup>72</onup>
+					<ondown>70</ondown>
+				</control>
+				<control type="image">
+					<left>1806</left>
+					<top>133</top>
+					<width>34</width>
+					<height>34</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="FF9A9AA2">header/browsybare-icon.png</texture>
+					<visible>!Control.HasFocus(72)</visible>
+				</control>
+				<control type="image">
+					<left>1806</left>
+					<top>133</top>
+					<width>34</width>
+					<height>34</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">header/browsybare-icon.png</texture>
+					<visible>Control.HasFocus(72)</visible>
+				</control>
+				<control type="image">
+					<left>1810</left>
+					<top>213</top>
+					<width>26</width>
+					<height>26</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="FF9A9AA2">header/keyboard.png</texture>
+					<visible>!Control.HasFocus(76)</visible>
+				</control>
+				<control type="image">
+					<left>1810</left>
+					<top>213</top>
+					<width>26</width>
+					<height>26</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">header/keyboard.png</texture>
+					<visible>Control.HasFocus(76)</visible>
+				</control>
+				<control type="image">
+					<left>1810</left>
+					<top>289</top>
+					<width>26</width>
+					<height>26</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="FF9A9AA2">settings/gear.png</texture>
+					<visible>!Control.HasFocus(70)</visible>
+				</control>
+				<control type="image">
+					<left>1810</left>
+					<top>289</top>
+					<width>26</width>
+					<height>26</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">settings/gear.png</texture>
+					<visible>Control.HasFocus(70)</visible>
+				</control>
+				<control type="image">
+					<left>1806</left>
+					<top>361</top>
+					<width>34</width>
+					<height>34</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="FF9A9AA2">header/kodi-symbol.png</texture>
+					<visible>!Control.HasFocus(71)</visible>
+				</control>
+				<control type="image">
+					<left>1806</left>
+					<top>361</top>
+					<width>34</width>
+					<height>34</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">header/kodi-symbol.png</texture>
+					<visible>Control.HasFocus(71)</visible>
+				</control>
+				<control type="image">
+					<left>1808</left>
+					<top>439</top>
+					<width>30</width>
+					<height>30</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="FF9A9AA2">header/power.png</texture>
+					<visible>!Control.HasFocus(73)</visible>
+				</control>
+				<control type="image">
+					<left>1808</left>
+					<top>439</top>
+					<width>30</width>
+					<height>30</height>
+					<aspectratio>keep</aspectratio>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">header/power.png</texture>
+					<visible>Control.HasFocus(73)</visible>
+				</control>
+			</control>
+		</control>
+			
+
+						<!-- Own context menu (bp.ctx): the native dialog closes C++ side on ANY
+						     click, hence this overlay. Only outside clicks close. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.ctx),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="87">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>ClearProperty(bp.ctx)</onclick>
+					<onclick>ClearProperty(bp.ctx.reduced)</onclick>
+					<onback>ClearProperty(bp.ctx)</onback>
+					<onback>ClearProperty(bp.ctx.reduced)</onback>
+					<onback>SetFocus(33)</onback>
+				</control>
+				<control type="group">
+					<visible>!String.IsEqual(Window(10000).Property(bp.ctx.reduced),1)</visible>
+					<left>770</left>
+					<top>262</top>
+						<control type="image">
+							<left>0</left>
+							<top>0</top>
+							<width>380</width>
+							<height>556</height>
+							<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						</control>
+						<control type="button">
+							<left>0</left>
+							<top>0</top>
+							<width>380</width>
+							<height>556</height>
+							<texturefocus />
+							<texturenofocus />
+							<onclick>noop</onclick>
+						</control>
+					<control type="button" id="121">
+						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+						<left>20</left>
+						<top>20</top>
+						<width>340</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31327]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,rename,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
+						<onclick>ClearProperty(bp.ctx)</onclick>
+						<onup>450</onup>
+						<ondown condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">122</ondown>
+						<ondown>454</ondown>
+						<onback>ClearProperty(bp.ctx)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+					<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<left>20</left>
+						<top>96</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF5A5A62</textcolor>
+							<label>$LOCALIZE[31394]</label>
+						</control>
+					</control>
+					<control type="button" id="454">
+						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<left>20</left>
+						<top>96</top>
+						<width>340</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31394]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,clipcopy,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
+						<onclick>ClearProperty(bp.ctx)</onclick>
+						<onup condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">121</onup>
+						<onup>450</onup>
+						<ondown>455</ondown>
+						<onback>ClearProperty(bp.ctx)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+					<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<left>20</left>
+						<top>172</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF5A5A62</textcolor>
+							<label>$LOCALIZE[31410]</label>
+						</control>
+					</control>
+					<control type="button" id="455">
+						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<left>20</left>
+						<top>172</top>
+						<width>340</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31410]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,clipcut,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
+						<onclick>ClearProperty(bp.ctx)</onclick>
+						<onup>454</onup>
+						<ondown condition="String.IsEmpty(Window(10000).Property(bp.clip.path))">122</ondown>
+						<ondown>456</ondown>
+						<onback>ClearProperty(bp.ctx)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+					<control type="group">
+						<visible>String.IsEmpty(Window(10000).Property(bp.clip.path)) | String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<left>20</left>
+						<top>248</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF5A5A62</textcolor>
+							<label>$LOCALIZE[31417]</label>
+						</control>
+					</control>
+					<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+						<left>20</left>
+						<top>20</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF5A5A62</textcolor>
+							<label>$LOCALIZE[31327]</label>
+						</control>
+					</control>
+					<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+						<left>20</left>
+						<top>324</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF5A5A62</textcolor>
+							<label>$LOCALIZE[31328]</label>
+						</control>
+					</control>
+					<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+						<left>20</left>
+						<top>400</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>340</width><height>60</height>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF5A5A62</textcolor>
+							<label>$LOCALIZE[31329]</label>
+						</control>
+					</control>
+					<control type="button" id="456">
+						<visible>!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<left>20</left>
+						<top>248</top>
+						<width>340</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31417]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,clippaste)</onclick>
+						<onclick>ClearProperty(bp.ctx)</onclick>
+						<onup>455</onup>
+						<ondown>122</ondown>
+						<onback>ClearProperty(bp.ctx)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+					<control type="button" id="122">
+						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+						<left>20</left>
+						<top>324</top>
+						<width>340</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31328]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,delete,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
+						<onclick>ClearProperty(bp.ctx)</onclick>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">121</onup>
+						<onup condition="String.IsEmpty(Window(10000).Property(bp.clip.path))">455</onup>
+						<onup>456</onup>
+						<ondown>123</ondown>
+						<onback>ClearProperty(bp.ctx)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+					<control type="button" id="123">
+						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+						<left>20</left>
+						<top>400</top>
+						<width>340</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31329]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,mkdir)</onclick>
+						<onclick>ClearProperty(bp.ctx)</onclick>
+						<onup>122</onup>
+						<ondown>450</ondown>
+						<onback>ClearProperty(bp.ctx)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+					<control type="button" id="450">
+						<left>20</left>
+						<top>476</top>
+						<width>340</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31344]</label>
+						<onclick>ClearProperty(bp.ctx)</onclick>
+						<onclick>SetFocus(33)</onclick>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">456</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">455</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">450</onup>
+						<onup>123</onup>
+						
+						<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">121</ondown>
+						<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.net),1)">454</ondown>
+						<ondown>450</ondown>
+						<onback>ClearProperty(bp.ctx)</onback>
+						<onback>SetFocus(33)</onback>
+					</control>
+				</control>
+			</control>
+			
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.ctx.reduced),1)</visible>
+				<left>770</left>
+				<top>414</top>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>380</width>
+						<height>252</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					</control>
+					<control type="button">
+						<left>0</left>
+						<top>0</top>
+						<width>380</width>
+						<height>252</height>
+						<texturefocus />
+						<texturenofocus />
+						<onclick>noop</onclick>
+					</control>
+				<control type="button" id="451">
+					<visible>!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+					<left>20</left>
+					<top>20</top>
+					<width>340</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31329]</label>
+					<onclick>RunScript(special://skin/scripts/main.py,mkdir)</onclick>
+					<onclick>ClearProperty(bp.ctx)</onclick>
+					<onclick>ClearProperty(bp.ctx.reduced)</onclick>
+					<onup>452</onup>
+					<ondown condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">452</ondown>
+					<ondown condition="String.IsEmpty(Window(10000).Property(bp.clip.path))">452</ondown>
+					<ondown>453</ondown>
+					<onback>ClearProperty(bp.ctx)</onback>
+					<onback>ClearProperty(bp.ctx.reduced)</onback>
+					<onback>SetFocus(33)</onback>
+				</control>
+				<control type="group">
+					<visible>String.IsEmpty(Window(10000).Property(bp.clip.path)) | String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+					<left>20</left>
+					<top>96</top>
+					<control type="image">
+						<left>0</left><top>0</top><width>340</width><height>60</height>
+						<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left><top>0</top><width>340</width><height>60</height>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF5A5A62</textcolor>
+						<label>$LOCALIZE[31417]</label>
+					</control>
+				</control>
+				<control type="group">
+					<visible>String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)</visible>
+					<left>20</left>
+					<top>20</top>
+					<control type="image">
+						<left>0</left><top>0</top><width>340</width><height>60</height>
+						<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left><top>0</top><width>340</width><height>60</height>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF5A5A62</textcolor>
+						<label>$LOCALIZE[31329]</label>
+					</control>
+				</control>
+				<control type="button" id="453">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+					<left>20</left>
+					<top>96</top>
+					<width>340</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31417]</label>
+					<onclick>RunScript(special://skin/scripts/main.py,clippaste)</onclick>
+					<onclick>ClearProperty(bp.ctx)</onclick>
+					<onclick>ClearProperty(bp.ctx.reduced)</onclick>
+					<onup condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">451</onup>
+					<onup>452</onup>
+					<ondown>452</ondown>
+					<onback>ClearProperty(bp.ctx)</onback>
+					<onback>ClearProperty(bp.ctx.reduced)</onback>
+					<onback>SetFocus(33)</onback>
+				</control>
+				<control type="button" id="452">
+					<left>20</left>
+					<top>172</top>
+					<width>340</width>
+					<height>60</height>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>FF9A9AA2</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31344]</label>
+					<onclick>ClearProperty(bp.ctx)</onclick>
+					<onclick>ClearProperty(bp.ctx.reduced)</onclick>
+					<onclick>SetFocus(33)</onclick>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">453</onup>
+					<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">452</onup>
+					<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">451</onup>
+					<onup condition="String.IsEmpty(Window(10000).Property(bp.clip.path))">451</onup>
+					<onup>453</onup>
+					
+					<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">451</ondown>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">453</ondown>
+					<ondown>452</ondown>
+					<onback>ClearProperty(bp.ctx)</onback>
+					<onback>ClearProperty(bp.ctx.reduced)</onback>
+					<onback>SetFocus(33)</onback>
+				</control>
+			</control>
+<!-- Delete confirmation (bp.del): own modal, focus starts on No.
+     Yes runs main.py delconfirm. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.del),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="88">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>ClearProperty(bp.del)</onclick>
+					<onback>ClearProperty(bp.del)</onback>
+					<onback>SetFocus(33)</onback>
+				</control>
+				<control type="group">
+					<left>680</left>
+					<top>422</top>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>560</width>
+						<height>236</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						</control>
+					<control type="image">
+						<left>0</left><top>0</top><width>560</width><height>60</height>
+						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left><top>0</top><width>560</width><height>60</height>
+						<font>font25_modal</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FFF2F2F4</textcolor>
+						<scroll>true</scroll>
+						<scrollsuffix>   |   </scrollsuffix>
+						<label>$INFO[Window(10000).Property(bp.del.title.rep)]</label>
+					</control>
+					
+					<control type="button">
+						<left>0</left>
+						<top>0</top>
+						<width>560</width>
+						<height>236</height>
+						<texturefocus />
+						<texturenofocus />
+						<onclick>noop</onclick>
+					</control>
+					<control type="label">
+						<left>30</left>
+						<top>69</top>
+						<width>500</width>
+						<height>70</height>
+						<align>center</align>
+						<aligny>center</aligny>
+						<wrapmultiline>true</wrapmultiline>
+						<font>font13</font>
+						<textcolor>FF9A9AA2</textcolor>
+						<label>$INFO[Window(10000).Property(bp.del.line)]</label>
+						</control>
+					<control type="button" id="125">
+						<left>72</left>
+						<top>152</top>
+						<width>200</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31340]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,delconfirm)</onclick>
+						<onclick>ClearProperty(bp.del)</onclick>
+						<onleft>124</onleft>
+						<onback>ClearProperty(bp.del)</onback>
+						<onback>SetFocus(33)</onback>						<onright>124</onright>
+					</control>
+					<control type="button" id="124">
+						<left>288</left>
+						<top>152</top>
+						<width>200</width>
+						<height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<label>$LOCALIZE[31341]</label>
+					<onclick>ClearProperty(bp.del)</onclick>
+					<onclick>SetFocus(33)</onclick>
+					<onleft>125</onleft>
+						<onback>ClearProperty(bp.del)</onback>
+						<onback>SetFocus(33)</onback>						<onright>125</onright>
+					</control>
+				</control>
+			</control>
+			<include>PowerMenu</include>
+			<!-- Shutdown timer (bp.timer): presets run main.py timerset; top pill shows
+			     the state, bottom row closes. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.timer),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="970">
+					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>RunScript(special://skin/scripts/main.py,timerclose)</onclick>
+					<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					<onleft>970</onleft>
+					<onright>970</onright>
+					<onup>970</onup>
+					<ondown>970</ondown>
+				</control>
+				<control type="group">
+					<left>672</left><top>194</top>
+					<control type="image">
+						<left>0</left><top>0</top><width>576</width><height>692</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					</control>
+					<control type="button" id="977">
+						<left>0</left><top>0</top><width>576</width><height>692</height>
+						<texturefocus /><texturenofocus />
+						<onclick>noop</onclick>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+						<onleft>975</onleft>
+						<onright>975</onright>
+						<onup>975</onup>
+						<ondown>975</ondown>
+					</control>
+					<control type="image">
+						<left>0</left><top>0</top><width>576</width><height>60</height>
+						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left><top>0</top><width>576</width><height>60</height>
+						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<align>center</align><aligny>center</aligny>
+						<label>$LOCALIZE[20150]</label>
+					</control>
+					<control type="button" id="975">
+						<left>20</left><top>80</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$INFO[Window(10000).Property(bp.timer.cancel)]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timercancel)</onclick>
+						<onup>975</onup>
+						<ondown>969</ondown>
+						<onleft>975</onleft>
+						<onright>975</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+					<control type="button" id="969">
+						<left>20</left><top>156</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31414]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timerset,5)</onclick>
+						<onup>975</onup>
+						<ondown>971</ondown>
+						<onleft>969</onleft>
+						<onright>969</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+					<control type="button" id="971">
+						<left>20</left><top>232</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31406]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timerset,15)</onclick>
+						<onup>969</onup>
+						<ondown>972</ondown>
+						<onleft>971</onleft>
+						<onright>971</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+					<control type="button" id="972">
+						<left>20</left><top>308</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31407]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timerset,30)</onclick>
+						<onup>971</onup>
+						<ondown>973</ondown>
+						<onleft>972</onleft>
+						<onright>972</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+					<control type="button" id="973">
+						<left>20</left><top>384</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31408]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timerset,60)</onclick>
+						<onup>972</onup>
+						<ondown>968</ondown>
+						<onleft>973</onleft>
+						<onright>973</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+					<control type="button" id="968">
+						<left>20</left><top>460</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31413]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timerset,90)</onclick>
+						<onup>973</onup>
+						<ondown>974</ondown>
+						<onleft>968</onleft>
+						<onright>968</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+					<control type="button" id="974">
+						<left>20</left><top>536</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31409]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timerset,120)</onclick>
+						<onup>968</onup>
+						<ondown>976</ondown>
+						<onleft>974</onleft>
+						<onright>974</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+					<control type="button" id="976">
+						<left>20</left><top>612</top><width>536</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31344]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,timerclose)</onclick>
+						<onup>974</onup>
+						<ondown>976</ondown>
+						<onleft>976</onleft>
+						<onright>976</onright>
+						<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
+					</control>
+				</control>
+			</control>
+			<!-- Power confirm (bp.confirm): asked before destructive OS actions;
+			     focus starts on No. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.confirm),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="954">
+					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
+					<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+					<onleft>954</onleft>
+					<onright>954</onright>
+					<onup>954</onup>
+					<ondown>954</ondown>
+				</control>
+				<control type="group">
+					<left>680</left><top>400</top>
+					<control type="image">
+						<left>0</left><top>0</top><width>560</width><height>280</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						</control>
+					<control type="button" id="957">
+						<left>0</left><top>0</top><width>560</width><height>280</height>
+						<texturefocus /><texturenofocus />
+						<onclick>noop</onclick>
+						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+						<onleft>956</onleft>
+						<onright>955</onright>
+						<onup>956</onup>
+						<ondown>956</ondown>
+					</control>
+					<control type="image">
+						<left>0</left><top>0</top><width>560</width><height>60</height>
+						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left><top>0</top><width>560</width><height>60</height>
+						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<align>center</align><aligny>center</aligny>
+						<label>$INFO[Window(10000).Property(bp.confirm.title)]</label>
+					</control>
+					<control type="label">
+						<left>30</left><top>66</top><width>500</width><height>124</height>
+						<align>center</align><aligny>center</aligny>
+						<wrapmultiline>true</wrapmultiline>
+						<font>font13</font><textcolor>FF9A9AA2</textcolor>
+						<label>$INFO[Window(10000).Property(bp.confirm.line)]</label>
+						</control>
+					<control type="button" id="955">
+						<left>72</left><top>198</top><width>200</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31340]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,powerrun)</onclick>
+						<onleft>956</onleft>
+						<onright>956</onright>
+						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+					</control>
+					<control type="button" id="956">
+						<left>288</left><top>198</top><width>200</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31341]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
+						<onleft>955</onleft>
+						<onright>955</onright>
+						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+					</control>
+				</control>
+			</control>
+			<!-- Notice modal (bp.notice): install/update problem report. Focusable
+			     message rows (870-879) plus OK (862); ids stay clear of power rows 960+. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.notice),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="860">
+					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>RunScript(special://skin/scripts/main.py,noticeclose)</onclick>
+					<onback>RunScript(special://skin/scripts/main.py,noticeclose)</onback>
+					<onleft>860</onleft>
+					<onright>860</onright>
+					<onup>860</onup>
+					<ondown>860</ondown>
+				</control>
+				<control type="group">
+					<left>580</left><top>302</top>
+					<control type="image">
+						<left>0</left><top>0</top><width>760</width><height>476</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					</control>
+					<control type="button" id="861">
+						<left>0</left><top>0</top><width>760</width><height>476</height>
+						<texturefocus /><texturenofocus />
+						<onclick>noop</onclick>
+						<onback>RunScript(special://skin/scripts/main.py,noticeclose)</onback>
+						<onleft>862</onleft>
+						<onright>862</onright>
+						<onup>862</onup>
+						<ondown>862</ondown>
+					</control>
+					<control type="image">
+						<left>0</left><top>0</top><width>760</width><height>60</height>
+						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left><top>0</top><width>760</width><height>60</height>
+						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<align>center</align><aligny>center</aligny>
+						<label>$INFO[Window(10000).Property(bp.notice.head)]</label>
+					</control>
+					
+					<control type="grouplist" id="863">
+						<left>34</left><top>84</top><width>692</width><height>276</height>
+						<orientation>vertical</orientation>
+						<itemgap>6</itemgap>
+						<pagecontrol>864</pagecontrol>
+						<scrolltime>200</scrolltime>
+						<include content="NoticeRow"><param name="idx">1</param><param name="pidx">0</param><param name="nidx">2</param><param name="rid">870</param><param name="previd">870</param><param name="nextid">871</param></include>
+						<include content="NoticeRow"><param name="idx">2</param><param name="pidx">1</param><param name="nidx">3</param><param name="rid">871</param><param name="previd">870</param><param name="nextid">872</param></include>
+						<include content="NoticeRow"><param name="idx">3</param><param name="pidx">2</param><param name="nidx">4</param><param name="rid">872</param><param name="previd">871</param><param name="nextid">873</param></include>
+						<include content="NoticeRow"><param name="idx">4</param><param name="pidx">3</param><param name="nidx">5</param><param name="rid">873</param><param name="previd">872</param><param name="nextid">874</param></include>
+						<include content="NoticeRow"><param name="idx">5</param><param name="pidx">4</param><param name="nidx">6</param><param name="rid">874</param><param name="previd">873</param><param name="nextid">875</param></include>
+						<include content="NoticeRow"><param name="idx">6</param><param name="pidx">5</param><param name="nidx">7</param><param name="rid">875</param><param name="previd">874</param><param name="nextid">876</param></include>
+						<include content="NoticeRow"><param name="idx">7</param><param name="pidx">6</param><param name="nidx">8</param><param name="rid">876</param><param name="previd">875</param><param name="nextid">877</param></include>
+						<include content="NoticeRow"><param name="idx">8</param><param name="pidx">7</param><param name="nidx">9</param><param name="rid">877</param><param name="previd">876</param><param name="nextid">878</param></include>
+						<include content="NoticeRow"><param name="idx">9</param><param name="pidx">8</param><param name="nidx">10</param><param name="rid">878</param><param name="previd">877</param><param name="nextid">879</param></include>
+						<include content="NoticeRow"><param name="idx">10</param><param name="pidx">9</param><param name="nidx">11</param><param name="rid">879</param><param name="previd">878</param><param name="nextid">879</param></include>
+					</control>
+					<control type="scrollbar" id="864">
+						<left>732</left><top>84</top><width>8</width><height>276</height>
+						<texturesliderbackground>drawn/blank.png</texturesliderbackground>
+						<texturesliderbar border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbar>
+						<texturesliderbarfocus border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbarfocus>
+						<scrolltime>200</scrolltime>
+						<orientation>vertical</orientation>
+					</control>
+					<control type="button" id="862">
+						<left>270</left><top>390</top><width>220</width><height>64</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31343]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,noticeclose)</onclick>
+						<onleft>862</onleft>
+						<onright>862</onright>
+						
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.10))">879</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.9))">878</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.8))">877</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.7))">876</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.6))">875</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.5))">874</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.4))">873</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.3))">872</onup>
+						<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.2))">871</onup>
+						<onup>870</onup>
+						<ondown>862</ondown>
+						<onback>RunScript(special://skin/scripts/main.py,noticeclose)</onback>
+					</control>
+				</control>
+			</control>
+			<include>KeyboardOverlay</include>
+			<!-- InfoOverlay for the audio/video INFO modal (the photo window carries its own). -->
+			<!-- About overlay (bp.about): fields from addon.xml plus branding.json;
+			     footer line reads OS, Kodi version and screen size. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.about),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="86">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>ClearProperty(bp.about)</onclick>
+					<onclick>SetFocus(32)</onclick>
+					<onback>ClearProperty(bp.about)</onback>
+					<onback>SetFocus(32)</onback>
+					<onleft>86</onleft>
+					<onright>86</onright>
+					<onup>86</onup>
+					<ondown>86</ondown>
+				</control>
+				<control type="group">
+					<left>420</left>
+					<top>115</top>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1080</width>
+						<height>850</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					</control>
+					
+					<control type="button" id="93">
+						<left>0</left>
+						<top>0</top>
+						<width>1080</width>
+						<height>850</height>
+						<texturefocus />
+						<texturenofocus />
+						<onclick>noop</onclick>
+						<onback>ClearProperty(bp.about)</onback>
+						<onback>SetFocus(32)</onback>
+						<onleft>86</onleft>
+						<onright>86</onright>
+						<onup>86</onup>
+						<ondown>86</ondown>
+					</control>
+					<control type="image">
+						<left>475</left>
+						<top>40</top>
+						<width>130</width>
+						<height>130</height>
+						<aspectratio>keep</aspectratio>
+						<texture>special://skin/icon.png</texture>
+					</control>
+					<control type="label">
+						<left>60</left>
+						<top>198</top>
+						<width>960</width>
+						<height>50</height>
+						<font>font36_title</font>
+						<align>center</align>
+						<textcolor>FFF2F2F4</textcolor>
+						<label>$INFO[Window(10000).Property(bp.name)]</label>
+					</control>
+					<control type="label">
+						<left>60</left>
+						<top>264</top>
+						<width>960</width>
+						<height>30</height>
+						<font>font13</font>
+						<align>center</align>
+						<textcolor>FF9A9AA2</textcolor>
+						<label>$INFO[Window(10000).Property(bp.summary)]</label>
+					</control>
+					<control type="label">
+						<left>60</left>
+						<top>326</top>
+						<width>960</width>
+						<height>30</height>
+						<font>font20_title</font>
+						<align>center</align>
+						<textcolor>FF9A9AA2</textcolor>
+						<label>$LOCALIZE[31313] $INFO[Window(10000).Property(bp.version)]</label>
+					</control>
+					<control type="label">
+						<left>60</left>
+						<top>376</top>
+						<width>960</width>
+						<height>240</height>
+						<font>font13</font>
+						<align>center</align>
+						<wrapmultiline>true</wrapmultiline>
+						<textcolor>FF9A9AA2</textcolor>
+						<label>$INFO[Window(10000).Property(bp.description)]</label>
+					</control>
+					<control type="label">
+						<left>60</left>
+						<top>640</top>
+						<width>960</width>
+						<height>30</height>
+						<font>font13</font>
+						<align>center</align>
+						<textcolor>$INFO[Skin.String(accent)]</textcolor>
+						<label>$INFO[Window(10000).Property(bp.website)]</label>
+					</control>
+					<control type="label">
+						<left>60</left>
+						<top>700</top>
+						<width>960</width>
+						<height>30</height>
+						<font>font13</font>
+						<align>center</align>
+						<textcolor>FFF2F2F4</textcolor>
+						<label>$INFO[Window(10000).Property(bp.copyright)]</label>
+					</control>
+					
+					<control type="label">
+						<left>60</left>
+						<top>780</top>
+						<width>960</width>
+						<height>30</height>
+						<font>font20_title</font>
+						<align>center</align>
+						<textcolor>FF9A9AA2</textcolor>
+						<label>$INFO[Window(10000).Property(bp.sys.os)] | Kodi $INFO[System.BuildVersionShort] | $INFO[System.ScreenWidth]x$INFO[System.ScreenHeight]$INFO[Window(10000).Property(bp.sys.hz),@]</label>
+					</control>
+				</control>
+			</control>
+												<!-- Shortcut map (bp.keys): same look/behaviour as the INFO modal
+			     (880x680 panel, focusable rows with pill, scrollbar, wrap). -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.keys),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="948">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>ClearProperty(bp.keys)</onclick>
+					<onclick>SetFocus(32)</onclick>
+					<onback>ClearProperty(bp.keys)</onback>
+					<onback>SetFocus(32)</onback>
+					<onleft>948</onleft>
+					<onright>948</onright>
+					<onup>948</onup>
+					<ondown>760</ondown>
+				</control>
+				<control type="group">
+					<left>520</left>
+					<top>150</top>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>880</width>
+						<height>680</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					</control>
+					<control type="button" id="949">
+						<left>0</left>
+						<top>0</top>
+						<width>880</width>
+						<height>680</height>
+						<texturefocus />
+						<texturenofocus />
+						<onclick>noop</onclick>
+						<onback>ClearProperty(bp.keys)</onback>
+						<onback>SetFocus(32)</onback>
+						<onleft>760</onleft>
+						<onright>760</onright>
+						<onup>760</onup>
+						<ondown>760</ondown>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>880</width>
+						<height>60</height>
+						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left>
+						<top>0</top>
+						<width>880</width>
+						<height>60</height>
+						<font>font25_modal</font>
+						<textcolor>FFF2F2F4</textcolor>
+						<align>center</align>
+						<aligny>center</aligny>
+						<label>$LOCALIZE[31494]</label>
+					</control>
+					<control type="grouplist" id="944">
+						<left>24</left>
+						<top>76</top>
+						<width>832</width>
+						<height>582</height>
+						<orientation>vertical</orientation>
+						<itemgap>0</itemgap>
+						<scrolltime>200</scrolltime>
+						<onback>ClearProperty(bp.keys)</onback>
+						<onback>SetFocus(32)</onback>
+								<include content="ShortcutRow">
+								<param name="id" value="760"/>
+								<param name="up" value="770"/>
+								<param name="down" value="761"/>
+								<param name="key" value="31495"/>
+								<param name="k2" value="31495"/>
+								<param name="act" value="31507"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="761"/>
+								<param name="up" value="760"/>
+								<param name="down" value="762"/>
+								<param name="key" value="31496"/>
+								<param name="k2" value="31496"/>
+								<param name="act" value="31508"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="762"/>
+								<param name="up" value="761"/>
+								<param name="down" value="763"/>
+								<param name="key" value="31498"/>
+								<param name="k2" value="31498"/>
+								<param name="act" value="31510"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="763"/>
+								<param name="up" value="762"/>
+								<param name="down" value="764"/>
+								<param name="key" value="31499"/>
+								<param name="k2" value="31499"/>
+								<param name="act" value="31511"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="764"/>
+								<param name="up" value="763"/>
+								<param name="down" value="765"/>
+								<param name="key" value="31500"/>
+								<param name="k2" value="31500"/>
+								<param name="act" value="31512"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="765"/>
+								<param name="up" value="764"/>
+								<param name="down" value="766"/>
+								<param name="key" value="31501"/>
+								<param name="k2" value="31501"/>
+								<param name="act" value="31513"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="766"/>
+								<param name="up" value="765"/>
+								<param name="down" value="767"/>
+								<param name="key" value="31502"/>
+								<param name="k2" value="31502"/>
+								<param name="act" value="31514"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="767"/>
+								<param name="up" value="766"/>
+								<param name="down" value="768"/>
+								<param name="key" value="31503"/>
+								<param name="k2" value="31503"/>
+								<param name="act" value="31515"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="768"/>
+								<param name="up" value="767"/>
+								<param name="down" value="769"/>
+								<param name="key" value="31504"/>
+								<param name="k2" value="31504"/>
+								<param name="act" value="31516"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="769"/>
+								<param name="up" value="768"/>
+								<param name="down" value="770"/>
+								<param name="key" value="31505"/>
+								<param name="k2" value="31505"/>
+								<param name="act" value="31517"/>
+							</include>
+							<include content="ShortcutRow">
+								<param name="id" value="770"/>
+								<param name="up" value="769"/>
+								<param name="down" value="760"/>
+								<param name="key" value="31506"/>
+								<param name="k2" value="31519"/>
+								<param name="act" value="31518"/>
+							</include>
+					</control>
+				</control>
+			</control>
+						<!-- Copy/move progress (bp.prog): 10-segment bar (no property binding);
+									     OK 911 shows on error only. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.prog),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="910">
+					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>noop</onclick>
+					<onup>910</onup><ondown>910</ondown><onleft>910</onleft><onright>910</onright>
+					<onback>noop</onback>
+				</control>
+				<control type="group">
+					<left>680</left><top>422</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>560</width><height>236</height>
+							<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						</control>
+						<control type="image">
+							<left>0</left><top>0</top><width>560</width><height>60</height>
+							<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>560</width><height>60</height>
+							<font>font25_modal</font>
+							<align>center</align><aligny>center</aligny>
+							<textcolor>FFF2F2F4</textcolor>
+							<label>$INFO[Window(10000).Property(bp.prog.title)]</label>
+						</control>
+						<control type="button">
+							<left>0</left><top>0</top><width>560</width><height>236</height>
+							<texturefocus /><texturenofocus />
+							<onclick>noop</onclick>
+						</control>
+																		<control type="image">
+							<visible>!String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>40</left><top>103</top><width>480</width><height>11</height>
+							<texture colordiffuse="FF18181E">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f1),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>40</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f2),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>64</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f3),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>88</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f4),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>112</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f5),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>136</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f6),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>160</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f7),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>184</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f8),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>208</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f9),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>232</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f10),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>256</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f11),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>280</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f12),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>304</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f13),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>328</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f14),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>352</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f15),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>376</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f16),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>400</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f17),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>424</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f18),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>448</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f19),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>472</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.f20),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>496</left><top>103</top><width>22</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="button" id="912">
+							<visible>!String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>180</left><top>156</top><width>200</width><height>60</height>
+							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF9A9AA2</textcolor>
+							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+							<label>$LOCALIZE[31344]</label>
+							<onclick>SetProperty(bp.prog.cancel,1)</onclick>
+							<onup>912</onup><ondown>912</ondown><onleft>912</onleft><onright>912</onright>
+							<onback>SetProperty(bp.prog.cancel,1)</onback>
+						</control>
+<control type="label">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>30</left><top>84</top><width>500</width><height>52</height>
+							<align>center</align><aligny>center</aligny>
+							<wrapmultiline>true</wrapmultiline>
+							<font>font13</font>
+							<textcolor>FF9A9AA2</textcolor>
+							<label>$INFO[Window(10000).Property(bp.prog.msg)]</label>
+						</control>
+						<control type="button" id="911">
+							<visible>String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
+							<left>180</left><top>156</top><width>200</width><height>60</height>
+							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF9A9AA2</textcolor>
+							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+							<label>$LOCALIZE[31344]</label>
+							<onclick>ClearProperty(bp.prog)</onclick>
+							<onclick>ClearProperty(bp.prog.state)</onclick>
+							<onclick>SetFocus(33)</onclick>
+							<onback>ClearProperty(bp.prog)</onback>
+							<onback>ClearProperty(bp.prog.state)</onback>
+							<onback>SetFocus(33)</onback>
+						</control>
+				</control>
+			</control>
+		<!-- Audio loading overlay (bp.aload): spinner for slow network starts
+		     (DialogBusy is forbidden); the daemon clears it once playing. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.aload),1)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<control type="image">
+					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<texture colordiffuse="80101014">drawn/fill.png</texture>
+				</control>
+				<control type="image">
+					<left>924</left><top>504</top><width>72</width><height>72</height>
+					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">osd/arrow-clockwise.png</texture>
+				</control>
+			</control>
+		<!-- Directory-source confirm (bp.srcq): Yes left, No right, No focused. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.srcq),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="920">
+					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>ClearProperty(bp.srcq)</onclick>
+					<onclick>ClearProperty(bp.srcq.title)</onclick>
+					<onclick>ClearProperty(bp.srcq.line)</onclick>
+					<onclick>SetFocus(33)</onclick>
+					<onback>ClearProperty(bp.srcq)</onback>
+					<onback>ClearProperty(bp.srcq.title)</onback>
+					<onback>ClearProperty(bp.srcq.line)</onback>
+					<onback>SetFocus(33)</onback>
+				</control>
+				<control type="group">
+					<left>680</left><top>405</top>
+						<control type="image">
+							<left>0</left><top>0</top><width>560</width><height>270</height>
+							<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						</control>
+						<control type="image">
+							<left>0</left><top>0</top><width>560</width><height>60</height>
+							<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						</control>
+						<control type="label">
+							<left>0</left><top>0</top><width>560</width><height>60</height>
+							<font>font25_modal</font>
+							<align>center</align><aligny>center</aligny>
+							<textcolor>FFF2F2F4</textcolor>
+							<scroll>true</scroll><scrollsuffix>   |   </scrollsuffix>
+							<label>$INFO[Window(10000).Property(bp.srcq.title)]</label>
+						</control>
+						<control type="button">
+							<left>0</left><top>0</top><width>560</width><height>270</height>
+							<texturefocus /><texturenofocus />
+							<onclick>noop</onclick>
+						</control>
+						<control type="label">
+							<left>40</left><top>76</top><width>480</width><height>100</height>
+							<align>center</align><aligny>center</aligny>
+							<wrapmultiline>true</wrapmultiline>
+							<font>font13</font>
+							<textcolor>FF9A9AA2</textcolor>
+							<label>$INFO[Window(10000).Property(bp.srcq.line)]</label>
+						</control>
+						<control type="button" id="922">
+							<left>72</left><top>188</top><width>200</width><height>60</height>
+							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF9A9AA2</textcolor>
+							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+							<label>$LOCALIZE[31340]</label>
+							<onclick>RunScript(special://skin/scripts/main.py,srcadd)</onclick>
+							<onleft>921</onleft><onright>921</onright>
+							<onup>922</onup><ondown>922</ondown>
+							<onback>ClearProperty(bp.srcq)</onback>
+							<onback>ClearProperty(bp.srcq.title)</onback>
+							<onback>ClearProperty(bp.srcq.line)</onback>
+							<onback>SetFocus(33)</onback>
+						</control>
+						<control type="button" id="921">
+							<left>288</left><top>188</top><width>200</width><height>60</height>
+							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<font>font13</font><align>center</align><aligny>center</aligny>
+							<textcolor>FF9A9AA2</textcolor>
+							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+							<label>$LOCALIZE[31341]</label>
+							<onclick>ClearProperty(bp.srcq)</onclick>
+							<onclick>ClearProperty(bp.srcq.title)</onclick>
+							<onclick>ClearProperty(bp.srcq.line)</onclick>
+							<onclick>SetFocus(33)</onclick>
+							<onleft>922</onleft><onright>922</onright>
+							<onup>921</onup><ondown>921</ondown>
+							<onback>ClearProperty(bp.srcq)</onback>
+							<onback>ClearProperty(bp.srcq.title)</onback>
+							<onback>ClearProperty(bp.srcq.line)</onback>
+							<onback>SetFocus(33)</onback>
+						</control>
+				</control>
+			</control>
+
+		<control type="group">
+			<visible>!String.IsEmpty(Window(10000).Property(bp.grid))</visible>
+			<control type="image"><left>$PARAM[margin]</left><top>0</top><width>2</width><height>1080</height><texture>drawn/fill.png</texture><colordiffuse>80FF4FA3</colordiffuse></control>
+			<control type="image"><left>$PARAM[name_x]</left><top>0</top><width>2</width><height>1080</height><texture>drawn/fill.png</texture><colordiffuse>80FF4FA3</colordiffuse></control>
+			<control type="image"><left>$PARAM[size_x]</left><top>0</top><width>2</width><height>1080</height><texture>drawn/fill.png</texture><colordiffuse>80FF4FA3</colordiffuse></control>
+			<control type="image"><left>$PARAM[date_x]</left><top>0</top><width>2</width><height>1080</height><texture>drawn/fill.png</texture><colordiffuse>80FF4FA3</colordiffuse></control>
+			<control type="image"><left>$PARAM[right_x]</left><top>0</top><width>2</width><height>1080</height><texture>drawn/fill.png</texture><colordiffuse>80FF4FA3</colordiffuse></control>
+			<control type="image"><left>0</left><top>$PARAM[list_top]</top><width>1920</width><height>2</height><texture>drawn/fill.png</texture><colordiffuse>80FF4FA3</colordiffuse></control>
+		</control>
+		
+		<include>InfoOverlay</include>
+		</definition>
+	</include>
+	<!-- Notice row: focusable wrapped message; the last visible row falls
+	     through to OK (862). -->
+	<include name="NoticeRow">
+		<param name="idx" default="1"/>
+		<param name="pidx" default="0"/>
+		<param name="nidx" default="2"/>
+		<param name="rid" default="870"/>
+		<param name="previd" default="870"/>
+		<param name="nextid" default="871"/>
+		<definition>
+			<control type="group">
+				<height>88</height>
+				<visible>!String.IsEmpty(Window(10000).Property(bp.notice.$PARAM[idx]))</visible>
+				<control type="image">
+					<left>0</left><top>0</top><width>692</width><height>88</height>
+					<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texture>
+					<visible>Control.HasFocus($PARAM[rid])</visible>
+				</control>
+				
+				<control type="label">
+					<left>22</left><top>0</top><width>648</width><height>88</height>
+					<font>font13</font><textcolor>FF9A9AA2</textcolor>
+					<align>left</align><aligny>center</aligny>
+					<wrapmultiline>true</wrapmultiline>
+					<visible>!Control.HasFocus($PARAM[rid])</visible>
+					<label>$INFO[Window(10000).Property(bp.notice.$PARAM[idx])]</label>
+				</control>
+				<control type="label">
+					<left>22</left><top>0</top><width>648</width><height>88</height>
+					<font>font13</font><textcolor>$INFO[Skin.String(accent)]</textcolor>
+					<align>left</align><aligny>center</aligny>
+					<wrapmultiline>true</wrapmultiline>
+					<visible>Control.HasFocus($PARAM[rid])</visible>
+					<label>$INFO[Window(10000).Property(bp.notice.$PARAM[idx])]</label>
+				</control>
+				<control type="button" id="$PARAM[rid]">
+					<left>0</left><top>0</top><width>692</width><height>88</height>
+					<texturefocus /><texturenofocus />
+					<onclick>noop</onclick>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.$PARAM[pidx]))">$PARAM[previd]</onup>
+					
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.10))">879</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.9))">878</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.8))">877</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.7))">876</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.6))">875</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.5))">874</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.4))">873</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.3))">872</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.notice.2))">871</onup>
+					<onup>870</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.notice.$PARAM[nidx]))">$PARAM[nextid]</ondown>
+					<ondown>862</ondown>
+					<onleft>$PARAM[rid]</onleft>
+					<onright>$PARAM[rid]</onright>
+					<onback>RunScript(special://skin/scripts/main.py,noticeclose)</onback>
+				</control>
+			</control>
+		</definition>
+	</include>
+	<!-- Shortcut row (keys modal): same look/behaviour as InfoRow, but the
+	     labels are static localized strings passed as include params. The
+	     grouplist auto-chains its id-less group children; the inner button
+	     carries the ids and the explicit wrap. -->
+	<include name="ShortcutRow">
+		<param name="id">760</param>
+		<param name="up">770</param>
+		<param name="down">761</param>
+		<param name="key">31495</param>
+		<param name="k2">31495</param>
+		<param name="act">31507</param>
+		<definition>
+			<control type="group">
+				<height>52</height>
+				<control type="image">
+					<visible>Control.HasFocus($PARAM[id])</visible>
+					<left>0</left>
+					<top>4</top>
+					<width>832</width>
+					<height>44</height>
+					<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texture>
+				</control>
+				<control type="label">
+					<visible>!System.Platform.OSX</visible>
+					<left>20</left>
+					<top>8</top>
+					<width>250</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>FFF2F2F4</textcolor>
+					<align>left</align>
+					<aligny>center</aligny>
+					<label>$LOCALIZE[$PARAM[key]]</label>
+				</control>
+				<control type="label">
+					<visible>System.Platform.OSX</visible>
+					<left>20</left>
+					<top>8</top>
+					<width>250</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>FFF2F2F4</textcolor>
+					<align>left</align>
+					<aligny>center</aligny>
+					<label>$LOCALIZE[$PARAM[k2]]</label>
+				</control>
+				<control type="button" id="$PARAM[id]">
+					<left>0</left>
+					<top>0</top>
+					<width>832</width>
+					<height>52</height>
+					<texturefocus />
+					<texturenofocus />
+					<font></font>
+					<label></label>
+					<onclick>noop</onclick>
+					<onback>ClearProperty(bp.keys)</onback>
+					<onback>SetFocus(32)</onback>
+					<onup>$PARAM[up]</onup>
+					<ondown>$PARAM[down]</ondown>
+					<onleft>$PARAM[id]</onleft>
+					<onright>$PARAM[id]</onright>
+				</control>
+				<control type="label">
+					<left>300</left>
+					<top>8</top>
+					<width>512</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>FF9A9AA2</textcolor>
+					<align>right</align>
+					<aligny>center</aligny>
+					<label>$LOCALIZE[$PARAM[act]]</label>
+				</control>
+				<control type="image">
+					<left>20</left>
+					<top>51</top>
+					<width>792</width>
+					<height>1</height>
+					<texture>drawn/fill.png</texture>
+					<colordiffuse>26FFFFFF</colordiffuse>
+				</control>
+			</control>
+		</definition>
+	</include>
+</includes>

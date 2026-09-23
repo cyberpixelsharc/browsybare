@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Disabled by design: no fullscreen audio player. Stub for window 12006
+     (Backspace lands here while audio plays): window onloads stop playback
+     and return Home. -->
+<window>
+	<onload>PlayerControl(Stop)</onload>
+	<onload>ActivateWindow(Home)</onload>
+	<controls>
+		<control type="image">
+			<left>0</left>
+			<top>0</top>
+			<width>1</width>
+			<height>1</height>
+		</control>
+	</controls>
+</window>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Own seek bar (minimal). -->
+<window>
+	<controls>
+		<control type="progress">
+			<left>0</left>
+			<bottom>0</bottom>
+			<width>1920</width>
+			<height>10</height>
+			<info>Player.Seekbar</info>
+			<texturebg colordiffuse="33FFFFFF">drawn/white.png</texturebg>
+			<midtexture colordiffuse="bp_accent">drawn/white.png</midtexture>
+			<scrolltime>200</scrolltime>
+		</control>
+	</controls>
+</window>

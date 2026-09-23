@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Player INFO modal (bp.info, shared by audio/video/photo). Rows live in
+     grouplist 522 (scrollbar 523 in the right margin); cover strip first
+     (bp.info.cover.1..3, no space without covers). One parameterized InfoRow
+     include renders all 20 rows; rows fill from main.py info_scan, waiting
+     indicator until bp.info.done. Backdrop click or Back closes. -->
+<includes>
+	<include name="InfoRow">
+		<param name="idx">1</param>
+		<param name="id">710</param>
+		<param name="up">710</param>
+		<param name="upidx">0</param>
+		<param name="nextidx">2</param>
+		<param name="next">711</param>
+		<definition>
+			<control type="group">
+				<visible>!String.IsEmpty(Window(10000).Property(bp.info.$PARAM[idx].key))</visible>
+				<height>52</height>
+				<control type="image">
+					<visible>Control.HasFocus($PARAM[id])</visible>
+					<left>0</left>
+					<top>4</top>
+					<width>832</width>
+					<height>44</height>
+					<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texture>
+				</control>
+				<control type="label">
+					<visible>String.IsEmpty(Window(10000).Property(bp.info.$PARAM[idx].track))</visible>
+					<left>20</left>
+					<top>8</top>
+					<width>250</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>FFF2F2F4</textcolor>
+					<align>left</align>
+					<aligny>center</aligny>
+					<label>$INFO[Window(10000).Property(bp.info.$PARAM[idx].key)]</label>
+				</control>
+				<control type="label">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.info.$PARAM[idx].track))</visible>
+					<left>62</left>
+					<top>8</top>
+					<width>208</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>FFF2F2F4</textcolor>
+					<align>left</align>
+					<aligny>center</aligny>
+					<label>$INFO[Window(10000).Property(bp.info.$PARAM[idx].key)]</label>
+				</control>
+				<control type="group">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.info.$PARAM[idx].track))</visible>
+					<left>20</left>
+					<top>9</top>
+					<width>34</width>
+					<height>34</height>
+					<control type="image">
+						<left>5</left>
+						<top>5</top>
+						<width>24</width>
+						<height>24</height>
+						<texture colordiffuse="FF9A9AA2">osd/circle.png</texture>
+						<visible>!String.IsEqual(Window(10000).Property(bp.info.$PARAM[idx].current),1)</visible>
+					</control>
+					<control type="image">
+						<left>5</left>
+						<top>5</top>
+						<width>24</width>
+						<height>24</height>
+						<texture colordiffuse="$INFO[Skin.String(accent)]">osd/check-circle.png</texture>
+						<visible>String.IsEqual(Window(10000).Property(bp.info.$PARAM[idx].current),1)</visible>
+					</control>
+				</control>
+				<control type="button" id="$PARAM[id]">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.info.$PARAM[idx].key))</visible>
+					<left>0</left>
+					<top>0</top>
+					<width>832</width>
+					<height>52</height>
+					<texturefocus />
+					<texturenofocus />
+					<font></font>
+					<label></label>
+					<onclick condition="!String.IsEmpty(Window(10000).Property(bp.info.$PARAM[idx].track))">RunScript(special://skin/scripts/main.py,trackselect,$PARAM[idx])</onclick>
+					<onclick condition="String.IsEmpty(Window(10000).Property(bp.info.$PARAM[idx].track))">noop</onclick>
+					<onback>RunScript(special://skin/scripts/main.py,infoclose)</onback>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.$PARAM[upidx].key))">$PARAM[up]</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.20.key))">729</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.19.key))">728</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.18.key))">727</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.17.key))">726</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.16.key))">725</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.15.key))">724</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.14.key))">723</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.13.key))">722</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.12.key))">721</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.11.key))">720</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.10.key))">719</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.9.key))">718</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.8.key))">717</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.7.key))">716</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.6.key))">715</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.5.key))">714</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.4.key))">713</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.3.key))">712</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.info.2.key))">711</onup>
+					<onup>$PARAM[up]</onup>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.$PARAM[nextidx].key))">$PARAM[next]</ondown>
+					<ondown>710</ondown>
+					<onleft>$PARAM[id]</onleft>
+					<onright>$PARAM[id]</onright>
+				</control>
+				<control type="label">
+					<left>300</left>
+					<top>8</top>
+					<width>512</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>FF9A9AA2</textcolor>
+					<scroll>true</scroll>
+					<scrollspeed>30</scrollspeed>
+					<scrollsuffix>   |   </scrollsuffix>
+					<align>right</align>
+					<aligny>center</aligny>
+					<label>$INFO[Window(10000).Property(bp.info.$PARAM[idx].value.rep)]</label>
+				</control>
+				<control type="image">
+					<left>20</left>
+					<top>51</top>
+					<width>792</width>
+					<height>1</height>
+					<texture>drawn/fill.png</texture>
+					<colordiffuse>26FFFFFF</colordiffuse>
+				</control>
+			</control>
+		</definition>
+	</include>
+	<include name="InfoOverlay">
+		<control type="group">
+			<visible>String.IsEqual(Window(10000).Property(bp.info),open)</visible>
+			<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+			<animation effect="slide" start="0,24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+			<control type="button" id="520">
+				<left>0</left>
+				<top>0</top>
+				<width>1920</width>
+				<height>1080</height>
+				<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+				<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+				<onclick>RunScript(special://skin/scripts/main.py,infoclose)</onclick>
+				<onback>RunScript(special://skin/scripts/main.py,infoclose)</onback>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.1.key))">710</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.2.key))">711</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.3.key))">712</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.4.key))">713</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.5.key))">714</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.6.key))">715</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.7.key))">716</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.8.key))">717</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.9.key))">718</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.10.key))">719</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.11.key))">720</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.12.key))">721</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.13.key))">722</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.14.key))">723</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.15.key))">724</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.16.key))">725</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.17.key))">726</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.18.key))">727</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.19.key))">728</ondown>
+				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.20.key))">729</ondown>
+			</control>
+			<control type="group">
+				<left>520</left>
+				<top>150</top>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>880</width>
+					<height>680</height>
+					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				</control>
+				
+				<control type="button" id="521">
+					<left>0</left>
+					<top>0</top>
+					<width>880</width>
+					<height>680</height>
+					<texturefocus />
+					<texturenofocus />
+					<onclick>noop</onclick>
+				</control>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>880</width>
+					<height>60</height>
+					<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+				</control>
+			<control type="label">
+				<left>0</left>
+				<top>0</top>
+				<width>880</width>
+				<height>60</height>
+				<font>font25_modal</font>
+				<textcolor>FFF2F2F4</textcolor>
+				<align>center</align>
+				<aligny>center</aligny>
+				<label>$LOCALIZE[31426]</label>
+			</control>
+				<control type="label">
+					<visible>String.IsEmpty(Window(10000).Property(bp.info.1.key)) + !String.IsEqual(Window(10000).Property(bp.info.done),1)</visible>
+					<left>24</left>
+					<top>76</top>
+					<width>832</width>
+					<height>582</height>
+					<font>font13</font>
+					<textcolor>FF9A9AA2</textcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>$LOCALIZE[31470]</label>
+				</control>
+				<control type="grouplist" id="522">
+					<left>24</left>
+					<top>76</top>
+					<width>832</width>
+					<height>582</height>
+					<orientation>vertical</orientation>
+					<itemgap>0</itemgap>
+					<pagecontrol>523</pagecontrol>
+					<scrolltime>200</scrolltime>
+					<onback>RunScript(special://skin/scripts/main.py,infoclose)</onback>
+				<!-- Cover strip: pictures side by side above row 1; hidden slots take
+				     no space. -->
+				<control type="group">
+					<visible>!String.IsEmpty(Window(10000).Property(bp.info.cover.1))</visible>
+					<height>200</height>
+					<control type="image">
+						<visible>!String.IsEmpty(Window(10000).Property(bp.info.cover.1))</visible>
+						<left>20</left>
+						<top>8</top>
+						<width>180</width>
+						<height>180</height>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[Window(10000).Property(bp.info.cover.1)]</texture>
+					</control>
+					<control type="image">
+						<visible>!String.IsEmpty(Window(10000).Property(bp.info.cover.2))</visible>
+						<left>216</left>
+						<top>8</top>
+						<width>180</width>
+						<height>180</height>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[Window(10000).Property(bp.info.cover.2)]</texture>
+					</control>
+					<control type="image">
+						<visible>!String.IsEmpty(Window(10000).Property(bp.info.cover.3))</visible>
+						<left>412</left>
+						<top>8</top>
+						<width>180</width>
+						<height>180</height>
+						<aspectratio>keep</aspectratio>
+						<texture>$INFO[Window(10000).Property(bp.info.cover.3)]</texture>
+					</control>
+					<control type="image">
+						<left>20</left>
+						<top>199</top>
+						<width>792</width>
+						<height>1</height>
+						<texture>drawn/fill.png</texture>
+						<colordiffuse>26FFFFFF</colordiffuse>
+					</control>
+				</control>
+				<include content="InfoRow">
+					<param name="idx" value="1"/>
+					<param name="id" value="710"/>
+					<param name="up" value="710"/>
+					<param name="upidx" value="0"/>
+					<param name="nextidx" value="2"/>
+					<param name="next" value="711"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="2"/>
+					<param name="id" value="711"/>
+					<param name="up" value="710"/>
+					<param name="upidx" value="1"/>
+					<param name="nextidx" value="3"/>
+					<param name="next" value="712"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="3"/>
+					<param name="id" value="712"/>
+					<param name="up" value="711"/>
+					<param name="upidx" value="2"/>
+					<param name="nextidx" value="4"/>
+					<param name="next" value="713"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="4"/>
+					<param name="id" value="713"/>
+					<param name="up" value="712"/>
+					<param name="upidx" value="3"/>
+					<param name="nextidx" value="5"/>
+					<param name="next" value="714"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="5"/>
+					<param name="id" value="714"/>
+					<param name="up" value="713"/>
+					<param name="upidx" value="4"/>
+					<param name="nextidx" value="6"/>
+					<param name="next" value="715"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="6"/>
+					<param name="id" value="715"/>
+					<param name="up" value="714"/>
+					<param name="upidx" value="5"/>
+					<param name="nextidx" value="7"/>
+					<param name="next" value="716"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="7"/>
+					<param name="id" value="716"/>
+					<param name="up" value="715"/>
+					<param name="upidx" value="6"/>
+					<param name="nextidx" value="8"/>
+					<param name="next" value="717"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="8"/>
+					<param name="id" value="717"/>
+					<param name="up" value="716"/>
+					<param name="upidx" value="7"/>
+					<param name="nextidx" value="9"/>
+					<param name="next" value="718"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="9"/>
+					<param name="id" value="718"/>
+					<param name="up" value="717"/>
+					<param name="upidx" value="8"/>
+					<param name="nextidx" value="10"/>
+					<param name="next" value="719"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="10"/>
+					<param name="id" value="719"/>
+					<param name="up" value="718"/>
+					<param name="upidx" value="9"/>
+					<param name="nextidx" value="11"/>
+					<param name="next" value="720"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="11"/>
+					<param name="id" value="720"/>
+					<param name="up" value="719"/>
+					<param name="upidx" value="10"/>
+					<param name="nextidx" value="12"/>
+					<param name="next" value="721"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="12"/>
+					<param name="id" value="721"/>
+					<param name="up" value="720"/>
+					<param name="upidx" value="11"/>
+					<param name="nextidx" value="13"/>
+					<param name="next" value="722"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="13"/>
+					<param name="id" value="722"/>
+					<param name="up" value="721"/>
+					<param name="upidx" value="12"/>
+					<param name="nextidx" value="14"/>
+					<param name="next" value="723"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="14"/>
+					<param name="id" value="723"/>
+					<param name="up" value="722"/>
+					<param name="upidx" value="13"/>
+					<param name="nextidx" value="15"/>
+					<param name="next" value="724"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="15"/>
+					<param name="id" value="724"/>
+					<param name="up" value="723"/>
+					<param name="upidx" value="14"/>
+					<param name="nextidx" value="16"/>
+					<param name="next" value="725"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="16"/>
+					<param name="id" value="725"/>
+					<param name="up" value="724"/>
+					<param name="upidx" value="15"/>
+					<param name="nextidx" value="17"/>
+					<param name="next" value="726"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="17"/>
+					<param name="id" value="726"/>
+					<param name="up" value="725"/>
+					<param name="upidx" value="16"/>
+					<param name="nextidx" value="18"/>
+					<param name="next" value="727"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="18"/>
+					<param name="id" value="727"/>
+					<param name="up" value="726"/>
+					<param name="upidx" value="17"/>
+					<param name="nextidx" value="19"/>
+					<param name="next" value="728"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="19"/>
+					<param name="id" value="728"/>
+					<param name="up" value="727"/>
+					<param name="upidx" value="18"/>
+					<param name="nextidx" value="20"/>
+					<param name="next" value="729"/>
+				</include>
+				<include content="InfoRow">
+					<param name="idx" value="20"/>
+					<param name="id" value="729"/>
+					<param name="up" value="728"/>
+					<param name="upidx" value="19"/>
+					<param name="nextidx" value="21"/>
+					<param name="next" value="710"/>
+				</include>
+				</control>
+				<control type="scrollbar" id="523">
+					<left>874</left>
+					<top>76</top>
+					<width>6</width>
+					<height>582</height>
+					<texturesliderbackground>drawn/blank.png</texturesliderbackground>
+					<texturesliderbar border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbar>
+					<texturesliderbarfocus border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbarfocus>
+					<orientation>vertical</orientation>
+					<showonepage>false</showonepage>
+				</control>
+			</control>
+		</control>
+	</include>
+</includes>

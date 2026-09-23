@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bootstrap stub: bounces to Home (a wiped addon folder would strand
+     the skin on black). Sync replaces it with the Estuary original. -->
+<window>
+	<onload>ReplaceWindow(Home)</onload>
+	<controls>
+	</controls>
+</window>

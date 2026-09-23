@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BROWSYBARE-STUB: bootstrap placeholder for Estuary's SettingsCategory
+     window. Kodi preloads it at skin init (KEEP_IN_MEMORY); if the file is
+     missing, that load fails and the settings category window stays empty.
+     The first sync replaces this stub with the Estuary original. -->
+<window>
+	<defaultcontrol always="true">1</defaultcontrol>
+	<controls>
+		<control type="label">
+			<left>80</left>
+			<top>80</top>
+			<width>1760</width>
+			<height>60</height>
+			<font>font13</font>
+			<textcolor>bp_text</textcolor>
+			<label>$LOCALIZE[31303]</label>
+		</control>
+		<control type="button" id="1">
+			<left>80</left>
+			<top>180</top>
+			<width>400</width>
+			<height>60</height>
+			<texturefocus />
+			<texturenofocus />
+			<font>font13</font>
+			<textcolor>bp_text</textcolor>
+			<focusedcolor>bp_accent</focusedcolor>
+			<label>$LOCALIZE[31303]</label>
+			<onclick>ActivateWindow(Home)</onclick>
+		</control>
+	</controls>
+</window>

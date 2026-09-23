@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Confirm dialog: dark panel. Control ids are mandated. Bootstrap stub
+     (the skin-switch question needs it); sync replaces it with Estuary.
+     Focus uses an opaque accent blend (the store may be empty). No click-outside close. -->
+<window>
+	<controls>
+		<control type="group">
+			<centerleft>50%</centerleft>
+			<centertop>50%</centertop>
+			<width>760</width>
+			<height>300</height>
+			<control type="image">
+				<width>760</width>
+				<height>300</height>
+				<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+			</control>
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>760</width>
+				<height>60</height>
+				<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+			</control>
+			<control type="label" id="1">
+				<left>0</left>
+				<top>2</top>
+				<width>760</width>
+				<height>60</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<font>font25_title</font>
+				<textcolor>FFF2F2F4</textcolor>
+			</control>
+			<!-- Click absorber over the message: transparent image, never a button
+			     (a button would steal focus on mouse move). -->
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>760</width>
+				<height>300</height>
+				<texture>drawn/blank.png</texture>
+			</control>
+			<control type="textbox" id="9">
+				<left>40</left>
+				<top>83</top>
+				<width>680</width>
+				<height>110</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<font>font13</font>
+				<textcolor>FF9A9AA2</textcolor>
+				<wrap>multi</wrap>
+			</control>
+			<control type="progress" id="20">
+				<left>40</left>
+				<top>205</top>
+				<width>680</width>
+				<height>6</height>
+				<texturesliderbackground colordiffuse="FF2E2E39">drawn/white.png</texturesliderbackground>
+				<textureslidernib colordiffuse="FF8EB7D7">drawn/white.png</textureslidernib>
+				<visible>!String.IsEmpty(Control.GetLabel(20))</visible>
+			</control>
+			<control type="grouplist">
+				<orientation>horizontal</orientation>
+				<align>center</align>
+				<itemgap>16</itemgap>
+				<top>216</top>
+				<left>0</left>
+				<width>760</width>
+			<control type="button" id="11">
+				<width>200</width>
+				<height>60</height>
+				<font>font13</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>FFF2F2F4</textcolor>
+				<focusedcolor>FF8EB7D7</focusedcolor>
+				<texturefocus border="18" colordiffuse="FF292D38">drawn/row.png</texturefocus>
+				<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+			</control>
+			<control type="button" id="10">
+				<width>200</width>
+				<height>60</height>
+				<font>font13</font>
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>FFF2F2F4</textcolor>
+				<focusedcolor>FF8EB7D7</focusedcolor>
+				<texturefocus border="18" colordiffuse="FF292D38">drawn/row.png</texturefocus>
+				<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+			</control>
+				<control type="button" id="12">
+					<width>200</width>
+					<height>60</height>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>FFF2F2F4</textcolor>
+					<focusedcolor>FF8EB7D7</focusedcolor>
+					<texturefocus border="18" colordiffuse="FF292D38">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<visible>!String.IsEmpty(Control.GetLabel(12))</visible>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

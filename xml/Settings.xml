@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bootstrap stub: bounces to Home so the first sync can run.
+     Sync replaces it with the Estuary original. -->
+<window>
+	<onload>ActivateWindow(Home)</onload>
+	<controls>
+		<control type="label">
+			<left>80</left>
+			<top>80</top>
+			<width>1760</width>
+			<height>60</height>
+			<font>font13</font>
+			<textcolor>bp_text</textcolor>
+			<label>$LOCALIZE[31303]</label>
+		</control>
+	</controls>
+</window>

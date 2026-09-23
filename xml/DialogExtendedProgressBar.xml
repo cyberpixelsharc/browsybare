@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Own extended progress dialog (10151): 9 textbox, 20 progress. -->
+<window>
+	<controls>
+		<control type="group">
+			<centerleft>50%</centerleft>
+			<centertop>50%</centertop>
+			<width>760</width>
+			<height>200</height>
+			<control type="image">
+				<width>760</width>
+				<height>200</height>
+				<colordiffuse>bp_bar</colordiffuse>
+				<texture>drawn/white.png</texture>
+			</control>
+			<control type="textbox" id="9">
+				<left>40</left>
+				<top>36</top>
+				<width>680</width>
+				<height>90</height>
+				<align>center</align>
+				<aligny>top</aligny>
+				<font>font12</font>
+				<textcolor>bp_text</textcolor>
+				<wrap>multi</wrap>
+			</control>
+			<control type="progress" id="20">
+				<left>40</left>
+				<top>148</top>
+				<width>680</width>
+				<height>24</height>
+				<texturebg colordiffuse="bp_border">drawn/white.png</texturebg>
+				<midtexture colordiffuse="bp_accent">drawn/white.png</midtexture>
+			</control>
+		</control>
+	</controls>
+</window>
