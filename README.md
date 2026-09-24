@@ -1,3 +1,5 @@
+![Browsybare: A minimalist file manager skin for Kodi](media/github/browsybare-social-preview.jpg)
+
 # Browsybare
 
 Minimalist Kodi skin: one interface = file manager. No library, no metadata scraping.
