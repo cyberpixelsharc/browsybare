@@ -101,6 +101,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Install as addon zip or copy the folder to `addons/<id>/`, then switch the skin to Browsybare.
 * First load syncs the Estuary base layer into the install folder when the marker is stale (Kodi/Estuary version plus content hashes). Only the base is copied, own windows, scripts, merged colors, merged languages, merged includes, fonts, power menu, and keymap stay protected or are regenerated.
 * Failures show an error dialog and an error label instead of the list. Corrupt addon data is healed by remove and recreate. Downgrade and reinstall show a one-time report modal together with any install errors.
+* Built-in update check: the About modal (hamburger menu, skin name) compares the installed version against the latest GitHub release and reports the result right on the button -- information only, nothing is downloaded or installed.
 * User commands are gated during the sync. Fast quit waits for the daemons with a bounded handshake.
 
 ## Requirement

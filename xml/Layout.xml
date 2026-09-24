@@ -1812,6 +1812,7 @@
 					<label>$INFO[Window(10000).Property(bp.name)]</label>
 					<onclick>ClearProperty(bp.menu)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetProperty(bp.about,open)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetProperty(bp.update.text,$LOCALIZE[31522])</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetFocus(86)</onclick>
 					<onclick condition="String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.about)</onclick>
 					<onback>ClearProperty(bp.menu)</onback>
@@ -2873,9 +2874,9 @@
 					<onclick>SetFocus(32)</onclick>
 					<onback>ClearProperty(bp.about)</onback>
 					<onback>SetFocus(32)</onback>
-					<onleft>86</onleft>
-					<onright>86</onright>
-					<onup>89</onup>
+					<onleft>89</onleft>
+					<onright>84</onright>
+					<onup>84</onup>
 					<ondown>89</ondown>
 				</control>
 				<control type="group">
@@ -2954,23 +2955,44 @@
 						<label>$INFO[Window(10000).Property(bp.description)]</label>
 					</control>
 					<control type="button" id="89">
-						<left>220</left>
+						<left>65</left>
 						<top>633</top>
-						<width>640</width>
+						<width>560</width>
 						<height>44</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus />
-						<font>font13</font>
+						<font>font20_title</font>
 						<align>center</align>
 						<aligny>center</aligny>
 						<textcolor>$INFO[Skin.String(accent)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>github.com/cyberpixelsharc/browsybare</label>
 						<onclick>RunScript(special://skin/scripts/main.py,openlink)</onclick>
-						<onup>86</onup>
-						<ondown>86</ondown>
-						<onleft>86</onleft>
-						<onright>86</onright>
+						<onup>89</onup>
+						<ondown>89</ondown>
+						<onleft>84</onleft>
+						<onright>84</onright>
+						<onback>ClearProperty(bp.about)</onback>
+						<onback>SetFocus(32)</onback>
+					</control>
+					<control type="button" id="84">
+						<left>635</left>
+						<top>633</top>
+						<width>380</width>
+						<height>44</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus />
+						<font>font20_title</font>
+						<align>center</align>
+						<aligny>center</aligny>
+						<textcolor>$INFO[Skin.String(accent)]</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$INFO[Window(10000).Property(bp.update.text)]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,updatecheck)</onclick>
+						<onup>84</onup>
+						<ondown>84</ondown>
+						<onleft>89</onleft>
+						<onright>89</onright>
 						<onback>ClearProperty(bp.about)</onback>
 						<onback>SetFocus(32)</onback>
 					</control>

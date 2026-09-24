@@ -2458,6 +2458,65 @@ def openlink():
         pass
 
 
+def _version_tuple(text):
+    parts = re.findall(r"\d+", text or "")
+    return tuple(int(p) for p in parts[:4]) if parts else (0,)
+
+
+def update_check():
+    """Info-only: ask GitHub for the newest release tag and compare it with the
+    installed version. The result replaces the button text for 3 s
+    (no download/install)."""
+    win = xbmcgui.Window(10000)
+    current = win.getProperty("bp.version") or ""
+    try:
+        import urllib.request
+        req = urllib.request.Request(
+            "https://api.github.com/repos/cyberpixelsharc/browsybare/releases/latest",
+            headers={"User-Agent": "Browsybare"})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        latest = (data.get("tag_name") or "").lstrip("vV").strip()
+    except Exception as e:
+        log("update check failed: %s" % e)
+        _update_result(win, 31526)
+        return
+    if latest and _version_tuple(latest) > _version_tuple(current):
+        _update_result(win, 31525, latest)
+    else:
+        _update_result(win, 31524)
+
+
+def _update_text(win, sid, value=None):
+    text = xbmc.getLocalizedString(sid)
+    if value is not None:
+        try:
+            text = text % value
+        except Exception:
+            text = "%s %s" % (text, value)
+    try:
+        win.setProperty("bp.update.text", text)
+    except Exception:
+        pass
+
+
+def _update_result(win, sid, value=None):
+    """Show the result for 3 s, then fall back to the default label. The gen
+    token makes a newer click win over an older reset."""
+    _update_text(win, sid, value)
+    token = str(time.time())
+    try:
+        win.setProperty("bp.update.gen", token)
+    except Exception:
+        return
+    time.sleep(3)
+    try:
+        if win.getProperty("bp.update.gen") == token:
+            _update_text(win, 31522)
+    except Exception:
+        pass
+
+
 def _video_player_id():
     """Active video player id via JSON-RPC, or None."""
     try:
@@ -2771,7 +2830,7 @@ if __name__ == "__main__":
                      "photoexif", "photoclose", "photostep", "photoplay",
                      "photoshow", "photomode", "photointerval",
                      "photorepeat", "photoshuffle",
-                     "resetopen", "keysopen", "settings_tab",
+                     "resetopen", "keysopen", "settings_tab", "updatecheck",
                    "remdeftoggle", "rowmenuopen", "rowmenutoggle",
                    "rowmenuremove", "rowmenuclose", "rowmenuedit", "intensity", "intensity_next",
                    "guisound", "guisound_next",
@@ -2891,6 +2950,8 @@ if __name__ == "__main__":
             keysopen()
         elif cmd == "openlink":
             openlink()
+        elif cmd == "updatecheck":
+            update_check()
         elif cmd == "infoclose":
             infoclose()
         elif cmd == "trackselect":

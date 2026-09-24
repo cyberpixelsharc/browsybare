@@ -785,3 +785,23 @@ msgstr "ISO"
 msgid "No web browser found"
 msgctxt "#31521"
 msgstr "Kein Webbrowser gefunden"
+
+msgid "Check for updates"
+msgctxt "#31522"
+msgstr "Nach Updates suchen"
+
+msgid "Update check"
+msgctxt "#31523"
+msgstr "Update-Prüfung"
+
+msgid "No new version available"
+msgctxt "#31524"
+msgstr "Keine neue Version verfügbar"
+
+msgid "New version available: %s"
+msgctxt "#31525"
+msgstr "Neue Version verfügbar: %s"
+
+msgid "Update check failed"
+msgctxt "#31526"
+msgstr "Update-Prüfung fehlgeschlagen"
