@@ -213,8 +213,7 @@
 					<visible>Control.HasFocus(87) + VideoPlayer.Content(LiveTV)</visible>
 				</control>
 			</control>
-			<!-- Volume: ENABLED input behind (drag/click/focus, no nib); DISABLED
-			     display on top (accent dot only). -->
+			<!-- Volume: ENABLED input behind (no nib); DISABLED display on top (accent dot only). -->
 			<control type="slider" id="400">
 				<left>1170.6</left>
 				<top>37</top>

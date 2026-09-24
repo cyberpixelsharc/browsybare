@@ -21,11 +21,12 @@ import remotes
 
 # ---------------------------------------------------------------- sync
 
-# Top-level locations Estuary must never clobber
+# Top-level locations Estuary must never clobber. changelog.txt is blocked
+# although we ship none, so the manager shows no foreign changelog.
 PROTECTED_DIRS = {"scripts", "docs", "dev", "changelogs"}
 PROTECTED_FILES = {
     "addon.xml", "icon.png", "fanart.jpg",
-    "README.md", "LICENSE",
+    "changelog.txt", "README.md", "LICENSE",
 }
 # Bootstrap stubs that must be Estuary originals after a sync (a zip update
 # can re-overwrite them while the marker still says up to date).
@@ -96,7 +97,7 @@ def estuary_version(est):
     try:
         with open(os.path.join(est, "addon.xml"), "r", encoding="utf-8") as f:
             head = f.read(2000)
-        m = re.search(r'<addon[^>]*\bversion="([^"]+)"', head)
+        m = re.search(r'<addon[^>]*?\sversion="([^"]+)"', head)
         if m:
             return m.group(1)
     except Exception:
@@ -664,7 +665,7 @@ def skin_version(root=None):
     try:
         with open(os.path.join(root or skin_root(), "addon.xml"), "r", encoding="utf-8") as f:
             head = f.read(2000)
-        m = re.search(r'<addon[^>]*\bversion="([^"]+)"', head)
+        m = re.search(r'<addon[^>]*?\sversion="([^"]+)"', head)
         if m:
             return m.group(1)
     except Exception:
@@ -892,7 +893,7 @@ def branding():
     try:
         with open(os.path.join(skin_root(), "addon.xml"), encoding="utf-8") as f:
             xml = f.read()
-        m = re.search(r'<addon[^>]*\bversion="([^"]+)"', xml)
+        m = re.search(r'<addon[^>]*?\sversion="([^"]+)"', xml)
         if m:
             version = m.group(1)
         summaries = dict(re.findall(r'<summary\s+lang="([^"]+)">(.*?)</summary>', xml, re.S))
@@ -919,14 +920,11 @@ def branding():
             description = descriptions[cands[0]]
     except Exception:
         pass
-    data = read_json(os.path.join(skin_root(), "data", "branding.json"), {})
     win = xbmcgui.Window(10000)
     win.setProperty("bp.name", skin_name())
     win.setProperty("bp.version", version)
     win.setProperty("bp.summary", summary)
     win.setProperty("bp.description", description)
-    win.setProperty("bp.website", data.get("website", ""))
-    win.setProperty("bp.copyright", data.get("copyright", ""))
     # About footer: OS + refresh rate as properties.
     win.setProperty("bp.sys.os", sys_os_line())
     win.setProperty("bp.sys.hz", sys_refresh_rate())

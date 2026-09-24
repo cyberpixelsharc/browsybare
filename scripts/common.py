@@ -71,7 +71,7 @@ def skin_name():
     try:
         with open(os.path.join(skin_root(), "addon.xml"), "r", encoding="utf-8") as f:
             head = f.read(2000)
-        m = re.search(r'<addon[^>]*\bname="([^"]+)"', head)
+        m = re.search(r'<addon[^>]*?\sname="([^"]+)"', head)
         if m:
             return m.group(1)
     except Exception:

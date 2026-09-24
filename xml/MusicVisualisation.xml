@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Disabled by design: no fullscreen audio player. Stub for window 12006
-     (Backspace lands here while audio plays): window onloads stop playback
-     and return Home. -->
+<!-- Disabled by design: no fullscreen audio player. Stub for window 12006 (Backspace lands here): onloads stop playback and return Home. -->
 <window>
 	<onload>PlayerControl(Stop)</onload>
 	<onload>ActivateWindow(Home)</onload>

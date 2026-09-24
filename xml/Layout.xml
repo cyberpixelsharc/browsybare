@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Layout constants: ALL positions/sizes of the file manager as include params (defaults). Tune the defaults to move/resize everything; the dev grid (bp.grid property) visualises the column edges.-->
+<!-- Layout constants: all file-manager geometry as include params. The dev grid (bp.grid) visualises the column edges. -->
 <includes>
 	<include name="Layout">
 		<param name="margin" default="47"/>
@@ -17,8 +17,7 @@
 		<param name="right_x" default="1873"/>
 		<definition>
 		<control type="group">
-			<!-- File-manager chrome hidden while the photo viewer is open: its animation
-			     would re-render the list and top bar underneath every frame. -->
+			<!-- Chrome hidden while the photo viewer is open: its animation would re-render the list underneath every frame. -->
 			<visible>!String.IsEqual(Window(10000).Property(bp.status), error)</visible>
 			
 			<control type="image">
@@ -29,8 +28,7 @@
 				<texture>drawn/fill.png</texture>
 				<colordiffuse>FF101014</colordiffuse>
 			</control>
-<!-- Single list (plugin source): 2 invisible top-padding rows keep zebra
-     parity; the dotdot row scrolls with the list. -->
+<!-- Single list (plugin source): 2 invisible top-padding rows keep zebra parity; the dotdot row scrolls along. -->
 			<control type="list" id="33">
 				<left>0</left>
 				<top>$PARAM[list_top]</top>
@@ -40,8 +38,7 @@
 				<enable>!String.IsEqual(Window(10000).Property(bp.notice),open) + !String.IsEqual(Window(10000).Property(bp.info),open) + !String.IsEqual(Window(10000).Property(bp.keys),open)</enable>
 				<onup>30</onup>
 				<ondown condition="Player.HasAudio + !Player.HasVideo">338</ondown>
-				<!-- Control-level onback for every remote (window onback is dead for NAV_BACK).
-				     Picker cancels, else one folder up (audio lock). -->
+				<!-- Control-level onback (window onback is dead for NAV_BACK). Picker cancels, else one folder up (audio lock). -->
 				<onback condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">RunScript(special://skin/scripts/main.py,pickcancel)</onback>
 				<onback condition="!String.IsEqual(Window(10000).Property(bp.drives),open) + !String.IsEqual(Window(10000).Property(bp.menu),open) + !String.IsEqual(Window(10000).Property(bp.settings),open) + !String.IsEqual(Window(10000).Property(bp.ctx),open) + !String.IsEqual(Window(10000).Property(bp.del),open) + !String.IsEqual(Window(10000).Property(bp.about),open) + !String.IsEqual(Window(10000).Property(bp.keys),open) + !String.IsEqual(Window(10000).Property(bp.info),open) + !String.IsEqual(Window(10000).Property(bp.photo),open) + !String.IsEqual(Window(10000).Property(bp.kb),open) + !String.IsEqual(Window(10000).Property(bp.pick.active),1) + [!Player.HasAudio|Player.HasVideo]">RunScript(special://skin/scripts/main.py,up)</onback>
 				<pagecontrol>9800</pagecontrol>
@@ -300,9 +297,7 @@
 				<scrolltime>400</scrolltime>
 				<orientation>vertical</orientation>
 			</control>
-			<!-- List loading veil (bp.listload): set on path change, marked ready by
-			     list.py, dropped by the daemon once Container(33) took over the items
-			     (timeout fallback). -->
+			<!-- List loading veil: set on path change, dropped once Container(33) took over (daemon timeout fallback). -->
 			<control type="image">
 				<visible>String.IsEqual(Window(10000).Property(bp.listload),1)</visible>
 				<left>0</left>
@@ -385,8 +380,7 @@
 					<textoffsetx>24</textoffsetx>
 					<textcolor>FF9A9AA2</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-					<!-- 5-space icon spacer: Kodi centers only the label, so the spacer centers
-					     icon+text in the auto-width pill. -->
+					<!-- Icon spacer: Kodi centers only the label, so the spacer centers icon+text in the auto-width pill. -->
 					<label>     $INFO[Window(10000).Property(bp.title)]</label>
 					<ondown condition="String.IsEqual(Window(10000).Property(bp.drives),open)">60</ondown>
 					<ondown>33</ondown>
@@ -758,9 +752,7 @@
 				<colordiffuse>$INFO[Skin.String(accent)]</colordiffuse>
 			</control>
 			
-				<!-- Audio footer (background playback): single full-width surface, no
-				     fullscreen. Shared text via AudioFooterContent include; covers live in
-				     the INFO modal only. Click eater 336 keeps clicks off the list. -->
+				<!-- Audio footer: single full-width surface (background playback, no fullscreen). Shared text via AudioFooterContent; click eater 336 keeps clicks off the list. -->
 			<control type="group">
 				<visible>Player.HasAudio + !Player.HasVideo</visible>
 				<left>0</left>
@@ -813,8 +805,7 @@
 							<info>Player.Progress</info>
 							<action>seek</action>
 						</control>
-						<!-- Volume: ENABLED input slider behind takes drag/click/focus (no nib);
-						     DISABLED slider on top only draws the accent dot. -->
+						<!-- Volume: ENABLED slider behind takes input (no nib); DISABLED one on top only draws the accent dot. -->
 						<control type="slider" id="410">
 							<left>1170.6</left>
 							<top>37</top>
@@ -1002,11 +993,7 @@
 							<onclick condition="String.IsEqual(Window(10000).Property(bp.netplay),1)">RunScript(special://skin/scripts/main.py,audionext)</onclick>
 							<onclick condition="!String.IsEqual(Window(10000).Property(bp.netplay),1)">PlayerControl(Next)</onclick>
 						</control>
-					<!-- Small state buttons (photoplayer size): 48px circles, 22px
-					     Bootstrap icons, right edge 1720. Accent icon = state
-					     active, gray = inactive. Hidden in picker mode (the picker bar
-					     overlays the footer bottom). ondown self-targets are a focus floor:
-					     spatial DOWN would reach the list rows behind the bar. -->
+					<!-- Small state buttons: 48px circles, accent = active, gray = inactive. Hidden in picker mode; ondown self-targets keep spatial DOWN off the list behind the bar. -->
 					<control type="group">
 						<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
 						
@@ -2012,8 +1999,7 @@
 		</control>
 			
 
-						<!-- Own context menu (bp.ctx): the native dialog closes C++ side on ANY
-						     click, hence this overlay. Only outside clicks close. -->
+						<!-- Own context menu: the native dialog closes C++ side on ANY click. Only outside clicks close. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.ctx),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -2430,8 +2416,7 @@
 					<onback>SetFocus(33)</onback>
 				</control>
 			</control>
-<!-- Delete confirmation (bp.del): own modal, focus starts on No.
-     Yes runs main.py delconfirm. -->
+<!-- Delete confirmation: focus starts on No; Yes runs delconfirm. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.del),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -2534,8 +2519,7 @@
 				</control>
 			</control>
 			<include>PowerMenu</include>
-			<!-- Shutdown timer (bp.timer): presets run main.py timerset; top pill shows
-			     the state, bottom row closes. -->
+			<!-- Shutdown timer: presets run timerset; top pill shows the state, bottom row closes. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.timer),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -2699,8 +2683,7 @@
 					</control>
 				</control>
 			</control>
-			<!-- Power confirm (bp.confirm): asked before destructive OS actions;
-			     focus starts on No. -->
+			<!-- Power confirm before destructive OS actions; focus starts on No. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.confirm),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -2777,8 +2760,7 @@
 					</control>
 				</control>
 			</control>
-			<!-- Notice modal (bp.notice): install/update problem report. Focusable
-			     message rows (870-879) plus OK (862); ids stay clear of power rows 960+. -->
+			<!-- Notice modal: install/update problem report. Message rows 870-879 plus OK (862); ids stay clear of power rows 960+. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.notice),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -2875,8 +2857,7 @@
 			</control>
 			<include>KeyboardOverlay</include>
 			<!-- InfoOverlay for the audio/video INFO modal (the photo window carries its own). -->
-			<!-- About overlay (bp.about): fields from addon.xml plus branding.json;
-			     footer line reads OS, Kodi version and screen size. -->
+		<!-- About overlay: addon.xml fields, website/copyright hardcoded. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.about),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -2894,8 +2875,8 @@
 					<onback>SetFocus(32)</onback>
 					<onleft>86</onleft>
 					<onright>86</onright>
-					<onup>86</onup>
-					<ondown>86</ondown>
+					<onup>89</onup>
+					<ondown>89</ondown>
 				</control>
 				<control type="group">
 					<left>420</left>
@@ -2972,15 +2953,26 @@
 						<textcolor>FF9A9AA2</textcolor>
 						<label>$INFO[Window(10000).Property(bp.description)]</label>
 					</control>
-					<control type="label">
-						<left>60</left>
-						<top>640</top>
-						<width>960</width>
-						<height>30</height>
+					<control type="button" id="89">
+						<left>220</left>
+						<top>633</top>
+						<width>640</width>
+						<height>44</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus />
 						<font>font13</font>
 						<align>center</align>
+						<aligny>center</aligny>
 						<textcolor>$INFO[Skin.String(accent)]</textcolor>
-						<label>$INFO[Window(10000).Property(bp.website)]</label>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>github.com/cyberpixelsharc/browsybare</label>
+						<onclick>RunScript(special://skin/scripts/main.py,openlink)</onclick>
+						<onup>86</onup>
+						<ondown>86</ondown>
+						<onleft>86</onleft>
+						<onright>86</onright>
+						<onback>ClearProperty(bp.about)</onback>
+						<onback>SetFocus(32)</onback>
 					</control>
 					<control type="label">
 						<left>60</left>
@@ -2990,7 +2982,7 @@
 						<font>font13</font>
 						<align>center</align>
 						<textcolor>FFF2F2F4</textcolor>
-						<label>$INFO[Window(10000).Property(bp.copyright)]</label>
+						<label>© 2026 Browsybare contributors</label>
 					</control>
 					
 					<control type="label">
@@ -3005,8 +2997,7 @@
 					</control>
 				</control>
 			</control>
-												<!-- Shortcut map (bp.keys): same look/behaviour as the INFO modal
-			     (880x680 panel, focusable rows with pill, scrollbar, wrap). -->
+												<!-- Shortcut map: INFO-modal look (880x680 panel, focusable rows with pill, wrap). -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.keys),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -3171,8 +3162,7 @@
 					</control>
 				</control>
 			</control>
-						<!-- Copy/move progress (bp.prog): 10-segment bar (no property binding);
-									     OK 911 shows on error only. -->
+						<!-- Copy/move progress: 10-segment bar (no property binding); OK 911 shows on error only. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.prog),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -3352,8 +3342,7 @@
 						</control>
 				</control>
 			</control>
-		<!-- Audio loading overlay (bp.aload): spinner for slow network starts
-		     (DialogBusy is forbidden); the daemon clears it once playing. -->
+		<!-- Audio loading overlay: spinner for slow network starts (DialogBusy is forbidden); the daemon clears it once playing. -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.aload),1)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
@@ -3467,8 +3456,7 @@
 		<include>InfoOverlay</include>
 		</definition>
 	</include>
-	<!-- Notice row: focusable wrapped message; the last visible row falls
-	     through to OK (862). -->
+	<!-- Notice row: focusable wrapped message; the last visible row falls through to OK (862). -->
 	<include name="NoticeRow">
 		<param name="idx" default="1"/>
 		<param name="pidx" default="0"/>
@@ -3527,10 +3515,7 @@
 			</control>
 		</definition>
 	</include>
-	<!-- Shortcut row (keys modal): same look/behaviour as InfoRow, but the
-	     labels are static localized strings passed as include params. The
-	     grouplist auto-chains its id-less group children; the inner button
-	     carries the ids and the explicit wrap. -->
+	<!-- Shortcut row: InfoRow look with static localized strings via include params. Inner button carries ids and wrap. -->
 	<include name="ShortcutRow">
 		<param name="id">760</param>
 		<param name="up">770</param>

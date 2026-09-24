@@ -2441,6 +2441,23 @@ def keysopen():
     log("keys modal open")
 
 
+def openlink():
+    """Open the project page in the system browser (About modal link)."""
+    import webbrowser
+    try:
+        if webbrowser.open("https://github.com/cyberpixelsharc/browsybare"):
+            return
+    except Exception:
+        pass
+    try:
+        xbmcgui.Dialog().notification(
+            xbmc.getLocalizedString(31448) or "Browsybare",
+            xbmc.getLocalizedString(31521),
+            xbmcgui.NOTIFICATION_WARNING, 4000)
+    except Exception:
+        pass
+
+
 def _video_player_id():
     """Active video player id via JSON-RPC, or None."""
     try:
@@ -2872,6 +2889,8 @@ if __name__ == "__main__":
             infoopen()
         elif cmd == "keysopen":
             keysopen()
+        elif cmd == "openlink":
+            openlink()
         elif cmd == "infoclose":
             infoclose()
         elif cmd == "trackselect":

@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Own settings DIALOG (id 1150, custom range): keeps some 800 controls
-     off Home and renders ON TOP of the current window, so the file manager
-     stays visible (dimmed by the 80101014 backdrop) behind it. type="dialog"
-     is Kodi's official custom-dialog mechanism; modality="modal" catches
-     input (no visible condition, so it is modal anyway). backgroundcolor 0 =
-     no clear, otherwise the dialog would black out Home. ActivateWindow(1150)
-     opens, Dialog.Close(1150) closes; bp.settings set on load, cleared on
-     unload. The on-screen keyboard is included below, so it works inside the
-     dialog; the picker (main.py pickopen) leaves the dialog for Home. -->
+<!-- Own settings DIALOG (id 1150): renders over Home, so the file manager stays visible dimmed behind it (backgroundcolor 0 = no clear). Open via ActivateWindow(1150), close via Dialog.Close(1150). Keyboard included below; pickopen leaves the dialog for Home. -->
 <window id="1150" type="dialog" modality="modal">
 	<backgroundcolor>0</backgroundcolor>
 	<defaultcontrol always="true">300</defaultcontrol>
@@ -74,8 +66,7 @@
 						<onclick>noop</onclick>
 						
 											</control>
-					<!-- Tab bar: straight bar joining the header. New tabs: add an entry below;
-					     grouplist 91 shows only the active tab children. -->
+					<!-- Tab bar joining the header. New tabs: add an entry below. -->
 																									
 					<control type="image">
 						<left>0</left><top>60</top><width>770</width><height>144</height>
@@ -5078,8 +5069,7 @@
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.9))+String.IsEqual(Window(10000).Property(bp.accent.slot),9)</visible>
 							</control>
 						</control>
-						<!-- No drag slider and no scripted setPercent (hung Kodi); dots apply
-						     directly, hover lives on the row pill. -->
+						<!-- No drag slider or scripted setPercent (hung Kodi); dots apply directly. -->
 					<control type="group">
 					<visible>String.IsEmpty(Window(10000).Property(bp.settings.tab)) | String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
 						<height>68</height>

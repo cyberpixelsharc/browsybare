@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Player INFO modal (bp.info, shared by audio/video/photo). Rows live in
-     grouplist 522 (scrollbar 523 in the right margin); cover strip first
-     (bp.info.cover.1..3, no space without covers). One parameterized InfoRow
-     include renders all 20 rows; rows fill from main.py info_scan, waiting
-     indicator until bp.info.done. Backdrop click or Back closes. -->
+<!-- Player INFO modal (shared audio/video/photo). Rows in grouplist 522, cover strip first; rows fill from info_scan, waiting note until bp.info.done. -->
 <includes>
 	<include name="InfoRow">
 		<param name="idx">1</param>
@@ -230,8 +226,7 @@
 					<pagecontrol>523</pagecontrol>
 					<scrolltime>200</scrolltime>
 					<onback>RunScript(special://skin/scripts/main.py,infoclose)</onback>
-				<!-- Cover strip: pictures side by side above row 1; hidden slots take
-				     no space. -->
+				<!-- Cover strip above row 1; hidden slots take no space. -->
 				<control type="group">
 					<visible>!String.IsEmpty(Window(10000).Property(bp.info.cover.1))</visible>
 					<height>200</height>

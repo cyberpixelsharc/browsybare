@@ -11,7 +11,7 @@
 			<height>60</height>
 			<font>font13</font>
 			<textcolor>bp_text</textcolor>
-			<label>$LOCALIZE[31303]</label>
+			<label></label>
 		</control>
 	</controls>
 </window>

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- BROWSYBARE-STUB: bootstrap placeholder for Estuary's SettingsCategory
-     window. Kodi preloads it at skin init (KEEP_IN_MEMORY); if the file is
-     missing, that load fails and the settings category window stays empty.
-     The first sync replaces this stub with the Estuary original. -->
+<!-- BROWSYBARE-STUB for Estuary's SettingsCategory (KEEP_IN_MEMORY preload fails without it). Labels stay empty, no user-facing text; sync replaces it with the original. -->
 <window>
 	<defaultcontrol always="true">1</defaultcontrol>
 	<controls>
@@ -13,7 +10,7 @@
 			<height>60</height>
 			<font>font13</font>
 			<textcolor>bp_text</textcolor>
-			<label>$LOCALIZE[31303]</label>
+			<label></label>
 		</control>
 		<control type="button" id="1">
 			<left>80</left>
@@ -25,7 +22,7 @@
 			<font>font13</font>
 			<textcolor>bp_text</textcolor>
 			<focusedcolor>bp_accent</focusedcolor>
-			<label>$LOCALIZE[31303]</label>
+			<label></label>
 			<onclick>ActivateWindow(Home)</onclick>
 		</control>
 	</controls>

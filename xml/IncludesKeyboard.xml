@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- On-screen keyboard (bp.kb): state owned by scripts/keyboard.py. Slots
-     1..52 render bp.kb.kN and post keyboard.py key N; panel 948x510 (13
-     columns, the 13th holds password symbols). -->
+<!-- On-screen keyboard: slots 1..52 render bp.kb.kN (13 columns, 13th holds password symbols). State in keyboard.py. -->
 <includes>
 	<include name="KeyboardOverlay">
 		<control type="group">
@@ -871,8 +869,7 @@
 					<onup>166</onup>
 					<ondown>178</ondown>
 				</control>
-				<!-- Case cycle per OK: 0 normal, 1 one-shot uppercase, 2 caps lock.
-				     State in bp.kb.case. -->
+				<!-- Case cycle per OK: 0 normal, 1 one-shot, 2 caps lock (bp.kb.case). -->
 				<control type="image">
 					<visible>[String.IsEqual(Window(10000).Property(bp.kb.case),0)|String.IsEmpty(Window(10000).Property(bp.kb.case))]</visible>
 					<left>49</left><top>420</top><width>40</width><height>40</height>

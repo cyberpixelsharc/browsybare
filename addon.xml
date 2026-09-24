@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="browsybare" name="Browsybare" version="0.3.0" provider-name="cyberpixelsharc">
+<addon id="browsybare" name="Browsybare" version="0.3.5" provider-name="cyberpixelsharc">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0"/>
 		<import addon="xbmc.python" version="3.0.0"/>
@@ -13,16 +13,19 @@
 		<platform>all</platform>
 		<license>MIT</license>
 		<summary lang="en_GB">A minimalist file manager skin for Kodi</summary>
-		<summary lang="de_DE">Minimalistischer Dateimanager-Skin für Kodi</summary>
+		<summary lang="de_DE">Ein minimalistischer Dateimanager-Skin für Kodi</summary>
 		<summary lang="fr_FR">Un habillage gestionnaire de fichiers minimaliste pour Kodi</summary>
 		<summary lang="es_ES">Una piel minimalista de gestor de archivos para Kodi</summary>
-		<description lang="en_GB">This skin reduces Kodi to a file manager: pick a drive, browse folders, play media files. No library, no metadata scraping. The underlying framework (settings, player, system dialogs) is taken at runtime from the installed Estuary skin.</description>
-		<description lang="de_DE">Dieser Skin reduziert Kodi auf einen Dateimanager: Laufwerk wählen, Ordner durchblättern, Mediendateien abspielen. Ohne Bibliothek, ohne Metadaten-Scraping. Der Unterbau (Einstellungen, Player, System-Dialoge) wird zur Laufzeit vom installierten Estuary-Skin übernommen.</description>
-		<description lang="fr_FR">Cet habillage réduit Kodi à un gestionnaire de fichiers : choisissez un lecteur, parcourez les dossiers, lisez les fichiers multimédias. Ni médiathèque, ni récupération de métadonnées. L'infrastructure (paramètres, lecteur, dialogues système) est reprise à l'exécution de l'habillage Estuary installé.</description>
-		<description lang="es_ES">Esta piel reduce Kodi a un gestor de archivos: elige una unidad, explora carpetas, reproduce archivos multimedia. Sin biblioteca, sin extracción de metadatos. La infraestructura (ajustes, reproductor, diálogos del sistema) se toma en tiempo de ejecución de la piel Estuary instalada.</description>
+		<description lang="en_GB">This skin reduces Kodi to a file manager: pick a source, browse folders, play media files. No library, no metadata scraping. The underlying framework (settings, player, system dialogs) is taken at runtime from the installed Estuary skin.</description>
+		<description lang="de_DE">Dieser Skin reduziert Kodi auf einen Dateimanager: Quelle wählen, Ordner durchblättern, Mediendateien abspielen. Ohne Bibliothek, ohne Metadaten-Scraping. Der Unterbau (Einstellungen, Player, System-Dialoge) wird zur Laufzeit vom installierten Estuary-Skin übernommen.</description>
+		<description lang="fr_FR">Cet habillage réduit Kodi à un gestionnaire de fichiers : choisissez une source, parcourez les dossiers, lisez les fichiers multimédias. Ni médiathèque, ni récupération de métadonnées. L'infrastructure (paramètres, lecteur, dialogues système) est reprise à l'exécution de l'habillage Estuary installé.</description>
+		<description lang="es_ES">Esta piel reduce Kodi a un gestor de archivos: elige una fuente, explora carpetas, reproduce archivos multimedia. Sin biblioteca, sin extracción de metadatos. La infraestructura (ajustes, reproductor, diálogos del sistema) se toma en tiempo de ejecución de la piel Estuary instalada.</description>
 		<assets>
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
+			<screenshot>media/screenshots/01.jpg</screenshot>
+			<screenshot>media/screenshots/02.jpg</screenshot>
+			<screenshot>media/screenshots/03.jpg</screenshot>
 		</assets>
 	</extension>
 </addon>

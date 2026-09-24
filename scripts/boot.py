@@ -120,7 +120,7 @@ def _addon_id():
     try:
         with open(os.path.join(skin_root(), "addon.xml"), "r", encoding="utf-8") as f:
             head = f.read(2000)
-        m = re.search(r'<addon[^>]*\bid="([^"]+)"', head)
+        m = re.search(r'<addon[^>]*?\sid="([^"]+)"', head)
         return m.group(1) if m else ""
     except Exception:
         return ""

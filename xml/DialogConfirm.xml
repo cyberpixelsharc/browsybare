@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Confirm dialog: dark panel. Control ids are mandated. Bootstrap stub
-     (the skin-switch question needs it); sync replaces it with Estuary.
-     Focus uses an opaque accent blend (the store may be empty). No click-outside close. -->
+<!-- Confirm dialog: dark panel (control ids mandated). Ours permanently, never replaced by sync. Opaque accent focus (store may be empty). -->
 <window>
 	<controls>
 		<control type="group">
@@ -31,8 +29,7 @@
 				<font>font25_title</font>
 				<textcolor>FFF2F2F4</textcolor>
 			</control>
-			<!-- Click absorber over the message: transparent image, never a button
-			     (a button would steal focus on mouse move). -->
+			<!-- Click absorber: transparent image, never a button (a button would steal focus on mouse move). -->
 			<control type="image">
 				<left>0</left>
 				<top>0</top>

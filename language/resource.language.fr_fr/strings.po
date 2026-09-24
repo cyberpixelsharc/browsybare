@@ -780,3 +780,7 @@ msgstr "Ctrl+Entrée"
 msgid "ISO"
 msgctxt "#31520"
 msgstr "ISO"
+
+msgid "No web browser found"
+msgctxt "#31521"
+msgstr "Aucun navigateur web trouvé"

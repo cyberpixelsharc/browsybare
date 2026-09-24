@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- SINGLE SOURCE for the footer text (title/path/time). Transport plus
-     sliders stay in Layout.xml: duplicate ids would route focus to the
-     first (possibly hidden) instance. -->
+<!-- Single source for footer text. Transport/sliders stay in Layout.xml (duplicate ids would steal focus). -->
 <includes>
 	<include name="AudioFooterContent">
 		

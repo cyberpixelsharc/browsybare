@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Photo viewer window (id 1151): own fullscreen window so Ken Burns
-     animates without re-rendering the Home file manager underneath.
-     The file MUST be named Custom1151.xml: Kodi registers custom windows
-     by file name, a free id inside is not enough ("Unable to locate
-     window" otherwise). Opened via ActivateWindow(1151) from
-     fileops.photo_open, closed via photoclose (ActivateWindow(Home)).
-     Carries its own InfoOverlay for the photo EXIF modal. -->
+<!-- Photo viewer (id 1151): own window, so Ken Burns never re-renders Home. File MUST be named Custom1151.xml (Kodi registers by file name). Open via photo_open, close via photoclose; carries its own InfoOverlay. -->
 <window id="1151">
 	<defaultcontrol>901</defaultcontrol>
 	<onback>RunScript(special://skin/scripts/main.py,photoclose)</onback>
@@ -51,9 +45,7 @@
 				<aspectratio>scale</aspectratio>
 				<fadetime>800</fadetime>
 				<texture>$INFO[Window(10000).Property(bp.photo.path)]</texture>
-				<!-- Ken Burns: one control, four bp.photo.kb corner variants panning centre
-				     to corner and back. Switching at the centre is seamless;
-				     reversible=false stops a lost variant instead of rewinding it. -->
+				<!-- Ken Burns: one control, four bp.photo.kb corner variants (centre to corner and back, seamless at the centre). -->
 				<animation type="Conditional" condition="String.IsEqual(Window(10000).Property(bp.photo),open) + String.IsEqual(Window(10000).Property(bp.photo.mode),2) + String.IsEqual(Window(10000).Property(bp.photo.kb),0)" reversible="false" pulse="true">
 					<effect type="zoom" start="108" end="116" time="12000" center="auto" tween="sine" easing="inout" />
 					<effect type="slide" start="0,0" end="30,18" time="12000" tween="sine" easing="inout" />
@@ -73,8 +65,7 @@
 			</control>
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.photo.osd),1)</visible>
-			<!-- Bottom control overlay: file name above, folder path below, transport
-			     plus function rows (wrapping). Hides after 7 s idle. -->
+			<!-- Bottom overlay: file name, folder path, transport plus function rows. Hides after 7 s idle. -->
 			<control type="image">
 				<left>0</left>
 				<top>880</top>
@@ -473,10 +464,7 @@
 			</control>
 			</control>
 
-		<!-- Loading spinner (bp.photo.loading): the viewer opens with an empty
-		     texture while the first image is downloaded and scaled (network
-		     sources take seconds), so this covers the otherwise black phase.
-		     Drawn after the OSD, before the InfoOverlay. -->
+		<!-- Loading spinner: covers the black phase while the first image downloads. Drawn after the OSD, before the InfoOverlay. -->
 		<control type="group">
 			<visible>String.IsEqual(Window(10000).Property(bp.photo.loading),1)</visible>
 			<animation effect="fade" start="0" end="100" time="120">Visible</animation>

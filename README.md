@@ -2,7 +2,7 @@
 
 Minimalist Kodi skin: one interface = file manager. No library, no metadata scraping.
 
-Pick a drive, browse folders, play files. Audio plays in a footer overlay, video fullscreen with its own OSD, photos in a dedicated fullscreen viewer. Everything else (Kodi's system settings, the player core, system dialogs) is taken at runtime from the installed Estuary skin as the base layer.
+Pick a source, browse folders, play files. Audio plays in a footer overlay, video fullscreen with its own OSD, photos in a dedicated fullscreen viewer. Everything else (Kodi's system settings, the player core, system dialogs) is taken at runtime from the installed Estuary skin as the base layer.
 
 ## Screenshots
 
