@@ -28,7 +28,7 @@ NET_SCAN_MAX = 60
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import safe_label, path_dec, natkey, read_json, write_json, state_file, cache_key, log as _common_log
+from common import safe_label, redact, path_dec, natkey, read_json, write_json, state_file, cache_key, log as _common_log
 from blacklist import blocked, load_active
 import sources
 
@@ -133,10 +133,10 @@ def folder_size_incremental(path, show_hidden, patterns, monitor, win, cur, cach
             if win.getProperty("bp.exit") == "1":
                 break
             if cur_path(win) != cur:
-                log("path changed during scan, abort %s" % safe_label(path))
+                log("path changed during scan, abort %s" % redact(path))
                 break
             if time.time() - start > timeout:
-                log("timeout %.1fs for %s (partial %d files, %d bytes)" % (timeout, safe_label(path), count, total))
+                log("timeout %.1fs for %s (partial %d files, %d bytes)" % (timeout, redact(path), count, total))
                 timed_out = True
                 break
             dirnames[:] = [d for d in dirnames
@@ -293,14 +293,14 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
             dated += 1
         if is_dir and not mtime:
             # Diagnostic (once per folder thanks to the cache).
-            log("netstat: folder without date: %s" % safe_label(child))
+            log("netstat: folder without date: %s" % redact(child))
         if is_dir:
             cache[ckey] = {"size": 0, "mtime": mtime, "dir": True, "tried": True}
         else:
             cache[ckey] = {"size": size, "mtime": mtime}
         changed = True
     if sized or dated or failed:
-        log("netstat: %s: %d sized, %d dated, %d failed" % (safe_label(cur), sized, dated, failed))
+        log("netstat: %s: %d sized, %d dated, %d failed" % (redact(cur), sized, dated, failed))
     if changed:
         save_cache(cache)
         trigger_refresh(win)
@@ -383,7 +383,7 @@ def main():
                 _scan_network_files(cur, cache, win, monitor, show_hidden,
                                     patterns, case_sensitive)
             if cur and os.path.isdir(cur) and cur != last_path:
-                log("path changed: %s" % safe_label(cur))
+                log("path changed: %s" % redact(cur))
                 last_path = cur
 
             if sizes_on and cur and os.path.isdir(cur):
@@ -423,7 +423,7 @@ def main():
                         # partial from interrupted quick scan -> queue for exact
                         pending_exact.append(fpath)
                         continue
-                    log("quick scan %s (1s)" % safe_label(fpath))
+                    log("quick scan %s (1s)" % redact(fpath))
                     fast = try_fast_du(fpath)
                     if fast is not None and not monitor.abortRequested() and cur_path(win) == cur:
                         cache[fpath] = {"size": fast, "mtime": mtime, "updated": time.time(), "partial": True, "approx": True}
@@ -457,14 +457,14 @@ def main():
                     if cached and cached.get("mtime") == mtime and not cached.get("partial"):
                         # exact or final approx -> already done
                         continue
-                    log("exact scan %s" % safe_label(fpath))
+                    log("exact scan %s" % redact(fpath))
                     size, timed_out = folder_size_incremental(fpath, show_hidden, patterns, monitor, win, cur, cache, EXACT_TIMEOUT, case_sensitive)
                     if monitor.abortRequested() or cur_path(win) != cur:
                         break
                     entry = {"size": size, "mtime": mtime, "updated": time.time()}
                     if timed_out:
                         entry["approx"] = True
-                        log("exact timeout for %s: ~%d bytes" % (safe_label(fpath), size))
+                        log("exact timeout for %s: ~%d bytes" % (redact(fpath), size))
                     cache[fpath] = entry
                     save_cache(cache)
                     phase2_refreshed = True

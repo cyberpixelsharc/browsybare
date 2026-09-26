@@ -11,7 +11,7 @@ import xbmc
 import xbmcvfs
 
 from common import (read_json as _read_json, state_file as _state_file,
-                    safe_label as safe_label, log as _log)
+                    safe_label as safe_label, redact, log as _log)
 _safe_label = safe_label
 
 
@@ -373,11 +373,11 @@ def dav_details(url, timeout=8, attempts=2):
             if _attempt + 1 < max(1, attempts):
                 time.sleep(0.4)
         if not body:
-            _log("sources: dav details failed for %s (%s)" % (safe_label(url), last))
+            _log("sources: dav details failed for %s (%s)" % (redact(url), last))
             return {}
         root = ET.fromstring(body)
     except Exception as e:
-        _log("sources: dav details failed for %s: %s" % (safe_label(url), e))
+        _log("sources: dav details failed for %s: %s" % (redact(url), e))
         return {}
     # Prefix turning a server href into the child URL the listing uses: the
     # original "scheme://userinfo@host:port" verbatim (byte-for-byte match).
@@ -908,8 +908,8 @@ def visible(drives):
 def next_visible_after(cur_root, drives, visible):
     """Next active drive after `cur_root` in the full drive order (wraps).
     Used when the browsed drive is hidden live."""
-    vis = {(d.get("path") or "").rstrip("/") for d in visible}
-    order = [(d.get("path") or "").rstrip("/") for d in drives]
+    vis = {rstrip_slash(d.get("path") or "") for d in visible}
+    order = [rstrip_slash(d.get("path") or "") for d in drives]
     try:
         pos = order.index(cur_root)
     except ValueError:

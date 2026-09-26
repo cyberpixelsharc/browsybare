@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Shared toolbox for all Browsybare scripts (log/localize/dialog flags/IO). Everything points HERE, never back to main.py, keeping the import graph acyclic."""
 import json
+import hashlib
 import os
 import re
 import tempfile
@@ -13,6 +14,51 @@ import xbmcvfs
 LOG = "[skin] "
 # Percent-encoded userinfo ("%3A%2F%2Fuser%3Apw%40host"): used by mask_creds.
 _ENCODED_CREDS = re.compile(r"(?i)(%3a%2f%2f)([^%]+)(%3a)([^%]+)(%40)")
+
+# log() replaces paths and file names with a stable short-hash marker so
+# kodi.log never carries plaintext user paths. URLs and absolute paths are
+# unambiguous; file names are heuristic (a token run ending in a known
+# extension -- started by a capital/digit for multi-word names, so it does not
+# swallow a lowercase duty prefix).
+_EXT = (r"mp4|mkv|avi|mov|m4v|mpg|mpeg|webm|flv|wmv|ts|m2ts|ogv|3gp|"
+        r"mp3|flac|m4a|aac|ogg|opus|wav|aiff|wma|ape|"
+        r"jpg|jpeg|png|gif|bmp|tiff|tif|webp|heic|heif|avif|"
+        r"srt|ass|ssa|sub|vtt|zip|rar|7z|tar|gz|iso|"
+        r"pdf|txt|epub|mobi|doc|docx|xls|xlsx|ppt|pptx")
+_PATH_MASK = re.compile(r"[A-Za-z][A-Za-z0-9+.\-]*://[^\s'\"<>|]+|(?<![\w])/[^\s'\"<>|]+")
+_FILE_MASK = re.compile(
+    r"(?<![\w])(?:[A-Z0-9][A-Za-z0-9_()\[\]&,+\-]*"
+    r"(?: [A-Za-z0-9_()\[\]&,+\-]+){0,10}"
+    r"|[A-Za-z0-9_()\[\]&,+\-][A-Za-z0-9_.()\[\]&,+\-]*)"
+    r"\.(?i:" + _EXT + r")\b")
+
+
+def _short_hash(text):
+    try:
+        return hashlib.sha1(text.encode("utf-8", "surrogatepass")).hexdigest()[:8]
+    except Exception:
+        return "?"
+
+
+def mask_paths(s):
+    """Redact URLs, absolute paths and file names from a log message."""
+    try:
+        s = _PATH_MASK.sub(lambda m: "[path:%s]" % _short_hash(m.group(0)), s or "")
+        s = _FILE_MASK.sub(lambda m: "[file:%s]" % _short_hash(m.group(0)), s)
+        return s
+    except Exception:
+        return s
+
+
+def redact(value):
+    """Stable '[file:<8hex>]' marker for a path/name in a log line, so callers
+    never emit a basename. Same hash family as the resume store keys."""
+    try:
+        raw = cache_key(value or "")
+        return "[file:%s]" % hashlib.sha256(
+            raw.encode("utf-8", "surrogatepass")).hexdigest()[:8]
+    except Exception:
+        return "[file]"
 
 
 def mask_creds(s):
@@ -56,10 +102,10 @@ def mask_creds(s):
 
 def log(msg):
     # Sanitized: raw paths may carry surrogates the logging binding rejects;
-    # strip CR/LF (log forging) and mask network credentials (see mask_creds).
+    # strip CR/LF (log forging), mask network credentials and plaintext paths.
     try:
         s = safe_label(msg).replace("\r", "\\r").replace("\n", "\\n")
-        xbmc.log(LOG + mask_creds(s), xbmc.LOGINFO)
+        xbmc.log(LOG + mask_paths(mask_creds(s)), xbmc.LOGINFO)
     except Exception:
         try:
             print(msg)
@@ -251,7 +297,7 @@ def fs_path(path):
     import unicodedata
     for entry in entries:
         if unicodedata.normalize("NFC", entry) == unicodedata.normalize("NFC", name):
-            log("fs_path: resolved special-case name (NFC/NFD): %s" % name[-40:])
+            log("fs_path: resolved special-case name (NFC/NFD): %s" % redact(name[-40:]))
             return os.path.join(directory, entry)
     return path
 

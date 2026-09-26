@@ -805,3 +805,43 @@ msgstr "Neue Version verfügbar: %s"
 msgid "Update check failed"
 msgctxt "#31526"
 msgstr "Update-Prüfung fehlgeschlagen"
+
+msgid "Playback"
+msgctxt "#31527"
+msgstr "Wiedergabe"
+
+msgid "Should the playback resume at %s?"
+msgctxt "#31528"
+msgstr "Soll die Wiedergabe bei %s fortgesetzt werden?"
+
+msgid "Resume"
+msgctxt "#31529"
+msgstr "Fortsetzung"
+
+msgid "Restart"
+msgctxt "#31530"
+msgstr "Neustart"
+
+msgid "Download %s"
+msgctxt "#31531"
+msgstr "Herunterladen: %s"
+
+msgid "Downloading..."
+msgctxt "#31532"
+msgstr "Wird heruntergeladen..."
+
+msgid "Saved to Downloads"
+msgctxt "#31533"
+msgstr "In Downloads gespeichert"
+
+msgid "Download failed"
+msgctxt "#31534"
+msgstr "Download fehlgeschlagen"
+
+msgid "Update"
+msgctxt "#31535"
+msgstr "Aktualisierung"
+
+msgid "Download version %s into your Downloads folder?"
+msgctxt "#31536"
+msgstr "Version %s in den Downloads-Ordner herunterladen?"

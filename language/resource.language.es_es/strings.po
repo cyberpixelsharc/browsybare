@@ -804,3 +804,43 @@ msgstr "Nueva versión disponible: %s"
 msgid "Update check failed"
 msgctxt "#31526"
 msgstr "Error de comprobación"
+
+msgid "Playback"
+msgctxt "#31527"
+msgstr "Reproducción"
+
+msgid "Should the playback resume at %s?"
+msgctxt "#31528"
+msgstr "¿Debe reanudarse la reproducción en %s?"
+
+msgid "Resume"
+msgctxt "#31529"
+msgstr "Reanudar"
+
+msgid "Restart"
+msgctxt "#31530"
+msgstr "Reiniciar"
+
+msgid "Download %s"
+msgctxt "#31531"
+msgstr "Descargar %s"
+
+msgid "Downloading..."
+msgctxt "#31532"
+msgstr "Descargando..."
+
+msgid "Saved to Downloads"
+msgctxt "#31533"
+msgstr "Guardado en Descargas"
+
+msgid "Download failed"
+msgctxt "#31534"
+msgstr "Error al descargar"
+
+msgid "Update"
+msgctxt "#31535"
+msgstr "Actualización"
+
+msgid "Download version %s into your Downloads folder?"
+msgctxt "#31536"
+msgstr "¿Descargar la versión %s en la carpeta Descargas?"

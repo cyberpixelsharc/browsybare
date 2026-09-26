@@ -13,10 +13,11 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-from common import fs_path, log, L, skin_name, safe_label, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable
+from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable
 from urllib.parse import quote
 import keyboard
 import blacklist
+import resume
 import sources
 from navigation import _current_dir, nav
 
@@ -105,7 +106,8 @@ def _vfs_rmtree(path):
     """Recursively remove a network folder via the VFS. Returns True on success.
 
     Kodi's WebDAV listing returns the folder itself as a phantom child; skip
-    it to avoid infinite recursion."""
+    it to avoid infinite recursion. A falsey delete/rmdir is only a failure when
+    the target still exists (a vanished entry / no-op backend must not error)."""
     base = path.rstrip("/")
     tail = base.rsplit("/", 1)[-1]
     dirs, files = [], []
@@ -115,15 +117,19 @@ def _vfs_rmtree(path):
             dirs = list(res[0] or [])
             files = list(res[1] or [])
     except Exception:
-        return False
+        # A transient listing failure must not abort: still try the children
+        # that are known and the (possibly empty) rmdir pass below.
+        dirs, files = [], []
     ok = True
     for f in files:
         if f.rstrip("/") == tail:
             continue
+        child = base + "/" + f
         try:
-            if not xbmcvfs.delete(base + "/" + f):
-                ok = False
+            done = bool(xbmcvfs.delete(child))
         except Exception:
+            done = False
+        if not done and _vfs_exists(child):
             ok = False
     for d in dirs:
         if d.rstrip("/") == tail:
@@ -131,20 +137,30 @@ def _vfs_rmtree(path):
         if not _vfs_rmtree(base + "/" + d):
             ok = False
     try:
-        if not xbmcvfs.rmdir(base):
-            ok = False
+        done = bool(xbmcvfs.rmdir(base))
     except Exception:
+        done = False
+    if not done and _vfs_exists(base):
         ok = False
     return ok
+
+
+def _vfs_exists(path):
+    try:
+        return bool(xbmcvfs.exists(path))
+    except Exception:
+        return True  # unknown: assume it is still there (report the failure)
 
 
 def _vfs_delete(path):
     if _is_dir(path):
         return _vfs_rmtree(path)
     try:
-        return bool(xbmcvfs.delete(path))
+        if xbmcvfs.delete(path):
+            return True
     except Exception:
-        return False
+        pass
+    return not _vfs_exists(path)
 
 
 def _display_name(path):
@@ -190,7 +206,7 @@ def rename(path=None):
             xbmcvfs.rename(p, new_path)
         else:
             os.rename(p, new_path)
-        log("rename: %s -> %s" % (p, new_path))
+        log("rename: %s -> %s" % (redact(p), redact(new_path)))
         xbmc.executebuiltin("Container.Refresh")
         win.setProperty("bp.refresh", str(time.time()))
     except Exception as e:
@@ -232,7 +248,7 @@ def ctx(path):
     xbmc.executebuiltin("Dialog.Close(10106)")
     time.sleep(0.3)
     xbmc.executebuiltin("SetFocus(%d)" % (450 if ro else 121))
-    log("ctx: %s" % p)
+    log("ctx: %s" % redact(p))
 
 
 def ctx_current():
@@ -285,7 +301,7 @@ def mkdircreate():
             # protocols and fails silently for davs://. Returns False on failure.
             if not xbmcvfs.mkdir(new_path):
                 raise OSError("VFS mkdir failed")
-            log("mkdir: %s" % new_path)
+            log("mkdir: %s" % redact(new_path))
             xbmc.executebuiltin("Container.Refresh")
             win.setProperty("bp.refresh", str(time.time()))
         except Exception as e:
@@ -299,7 +315,7 @@ def mkdircreate():
         return
     try:
         os.makedirs(new_path)
-        log("mkdir: %s" % new_path)
+        log("mkdir: %s" % redact(new_path))
         xbmc.executebuiltin("Container.Refresh")
         win.setProperty("bp.refresh", str(time.time()))
     except Exception as e:
@@ -350,7 +366,7 @@ def delete(path):
     # refocus away. The legacy SDK ControlButton has no setFocus().
     time.sleep(0.4)
     xbmc.executebuiltin("SetFocus(124)")
-    log("delete armed: %s" % p)
+    log("delete armed: %s" % redact(p))
 
 
 def delconfirm():
@@ -368,7 +384,7 @@ def delconfirm():
             _rmtree(p)
         else:
             os.remove(p)
-        log("delete: %s" % p)
+        log("delete: %s" % redact(p))
         xbmc.executebuiltin("Container.Refresh")
         win.setProperty("bp.refresh", str(time.time()))
     except Exception as e:
@@ -412,7 +428,7 @@ def _clip_set(path, mode):
         skin_name(),
         L(31420 if mode == "copy" else 31421) % name,
         xbmcgui.NOTIFICATION_INFO, 2000)
-    log("clipboard %s: %s" % (mode, p))
+    log("clipboard %s: %s" % (mode, redact(p)))
     _focus_list()
 
 
@@ -616,7 +632,7 @@ def clip_paste():
         else:
             _copy_tree(src, target, state)
         _prog_set(100)
-        log("clipboard paste (%s): %s -> %s" % (mode, src, target))
+        log("clipboard paste (%s): %s -> %s" % (mode, redact(src), redact(target)))
         win.clearProperty("bp.clip.path")
         win.clearProperty("bp.clip.mode")
         win.clearProperty("bp.clip.name")
@@ -629,7 +645,7 @@ def clip_paste():
         time.sleep(0.2)
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:
-        log("clipboard paste cancelled: %s -> %s" % (src, target))
+        log("clipboard paste cancelled: %s -> %s" % (redact(src), redact(target)))
         # Remove the partial copy (a move only deletes the source after a full copy).
         try:
             if os.path.isdir(target) and not os.path.islink(target):
@@ -738,14 +754,14 @@ def _play_audio_folder(path):
         t3 = time.time()
         log("audio playlist: %d tracks from %s, start '%s' @%d "
             "(list %.1fs, add %.1fs, play %.1fs)"
-            % (len(files), folder, os.path.basename(path), idx,
+            % (len(files), redact(folder), redact(path), idx,
                t1 - t0, t2 - t1, t3 - t2))
     else:
         # clicked file filtered out of the folder list: play it standalone
         xbmc.Player().play(play_str(path))
         t3 = time.time()
         log("audio: standalone start '%s' (not in folder list, play %.1fs)"
-            % (os.path.basename(path), t3 - t2))
+            % (redact(path), t3 - t2))
 
 
 def _ticker(text, char_px, width=1100):
@@ -786,7 +802,7 @@ def _play_video_folder(path):
         t3 = time.time()
         log("video playlist: %d tracks from %s, start '%s' @%d "
             "(list %.1fs, add %.1fs, play %.1fs)"
-            % (len(files), folder, os.path.basename(path), idx,
+            % (len(files), redact(folder), redact(path), idx,
                t1 - t0, t2 - t1, t3 - t2))
     else:
         # single video or not in list: fall back to standalone play.
@@ -795,11 +811,11 @@ def _play_video_folder(path):
             t3 = time.time()
             log("video playlist: %d tracks from %s, start '%s' @%d (single, "
                 "list %.1fs, add %.1fs, play %.1fs)"
-                % (len(files), folder, os.path.basename(path), idx,
+                % (len(files), redact(folder), redact(path), idx,
                    t1 - t0, t2 - t1, t3 - t2))
         else:
             xbmc.executebuiltin("PlayMedia(%s)" % json.dumps(play_str(path), ensure_ascii=False))
-            log("video: standalone start '%s' (not in folder list)" % os.path.basename(path))
+            log("video: standalone start '%s' (not in folder list)" % redact(path))
 
 
 # Audio-focus jump window after Enter on an audio file (seconds)
@@ -1453,9 +1469,9 @@ def _decode_heic(src):
             except Exception:
                 err_s = "?"
             log("heic: sips failed for %s (rc=%s %s)"
-                % (safe_label(src), r.returncode, err_s))
+                % (redact(src), r.returncode, err_s))
         except Exception as e:
-            log("heic: sips failed for %s: %s" % (safe_label(src), e))
+            log("heic: sips failed for %s: %s" % (redact(src), e))
         try:
             os.remove(tmp)
         except OSError:
@@ -1506,10 +1522,10 @@ def _oriented_photo_ffmpeg(path, orientation, out):
         except Exception:
             err_s = "?"
         log("exif: ffmpeg failed for %s (rc=%s %s)"
-            % (safe_label(path), r.returncode, err_s))
+            % (redact(path), r.returncode, err_s))
         return False
     except Exception as e:
-        log("exif: ffmpeg failed for %s: %s" % (safe_label(path), e))
+        log("exif: ffmpeg failed for %s: %s" % (redact(path), e))
         return False
 
 
@@ -1523,7 +1539,7 @@ def _download_vfs(path):
             total = 0
         if total and total > 64 * 1024 * 1024:
             log("exif: network file too large (%s bytes), skipped: %s"
-                % (total, safe_label(path)))
+                % (total, redact(path)))
             return None
         import tempfile
         fd, tmp = tempfile.mkstemp(prefix="exif-", suffix=".jpg")
@@ -1543,7 +1559,7 @@ def _download_vfs(path):
                 pass
             raise
     except Exception as e:
-        log("exif: download failed for %s: %s" % (safe_label(path), e))
+        log("exif: download failed for %s: %s" % (redact(path), e))
         return None
 
 
@@ -1654,7 +1670,7 @@ def _oriented_photo(path):
                 return out
         os.makedirs(out_dir, exist_ok=True)
     except Exception as e:
-        log("exif: orientation failed for %s: %s" % (safe_label(path), e))
+        log("exif: orientation failed for %s: %s" % (redact(path), e))
         return path if not is_heic else None
     src = path
     tmp = None
@@ -1680,12 +1696,12 @@ def _oriented_photo(path):
                 im.convert("RGB").save(out, "JPEG", quality=90)
                 if _photo_cache_ok(out):
                     log("exif: oriented %s (tag %s) via Pillow %s"
-                        % (safe_label(path), ori, pil_info))
+                        % (redact(path), ori, pil_info))
                     return out
                 raise IOError("Pillow wrote an incomplete JPEG")
             except Exception as e:
                 log("exif: Pillow failed for %s (tag %s, Pillow %s): %s"
-                    % (safe_label(path), ori, pil_info, e))
+                    % (redact(path), ori, pil_info, e))
                 try:
                     os.remove(out)
                 except OSError:
@@ -1700,11 +1716,11 @@ def _oriented_photo(path):
                 % (pil_info, ori, py))
         if _oriented_photo_syspython(src, out) and _photo_cache_ok(out):
             log("exif: oriented %s (tag %s) via system python"
-                % (safe_label(path), ori))
+                % (redact(path), ori))
             return out
         if _oriented_photo_ffmpeg(src, ori, out) and _photo_cache_ok(out):
             log("exif: oriented %s (tag %s) via ffmpeg"
-                % (safe_label(path), ori))
+                % (redact(path), ori))
             return out
         if is_heic and heic_tmp and os.path.isfile(heic_tmp):
             # Decoded but no rotation backend: serve the JPEG as-is (Kodi 21
@@ -1712,16 +1728,16 @@ def _oriented_photo(path):
             try:
                 shutil.copyfile(heic_tmp, out)
                 if _photo_cache_ok(out):
-                    log("heic: decoded %s (no rotation backend)" % safe_label(path))
+                    log("heic: decoded %s (no rotation backend)" % redact(path))
                     return out
             except Exception:
                 pass
         if is_heic:
             # No decoder: skip instead of a black frame or wrong native decode.
-            log("heic: undecodable, skipped: %s" % safe_label(path))
+            log("heic: undecodable, skipped: %s" % redact(path))
             return None
         log("exif: orientation skipped for %s (tag %s, no backend)"
-            % (safe_label(path), ori))
+            % (redact(path), ori))
         return path
     finally:
         for extra in (heic_tmp, tmp):
@@ -1819,10 +1835,10 @@ def _kb_scale_file(src, out, cap):
                 im.thumbnail((cap, cap))
                 im.convert("RGB").save(out, "JPEG", quality=90)
             if _photo_cache_ok(out):
-                log("kb: scaled %s via Pillow" % safe_label(src))
+                log("kb: scaled %s via Pillow" % redact(src))
                 return True
     except Exception as e:
-        log("kb: Pillow failed for %s: %s" % (safe_label(src), e))
+        log("kb: Pillow failed for %s: %s" % (redact(src), e))
         try:
             os.remove(out)
         except OSError:
@@ -1837,7 +1853,7 @@ def _kb_scale_file(src, out, cap):
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 timeout=90)
             if r.returncode == 4 and _photo_cache_ok(out):
-                log("kb: scaled %s via system python" % safe_label(src))
+                log("kb: scaled %s via system python" % redact(src))
                 return True
             if r.returncode == 0:
                 proven_small = True
@@ -1862,10 +1878,10 @@ def _kb_scale_file(src, out, cap):
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                     timeout=90)
                 if r.returncode == 0 and _photo_cache_ok(out):
-                    log("kb: scaled %s via ffmpeg" % safe_label(src))
+                    log("kb: scaled %s via ffmpeg" % redact(src))
                     return True
             except Exception as e:
-                log("kb: ffmpeg failed for %s: %s" % (safe_label(src), e))
+                log("kb: ffmpeg failed for %s: %s" % (redact(src), e))
     try:
         if _photo_cache_ok(out):
             return True
@@ -1960,7 +1976,7 @@ def _kb_photo(path):
             return out
         return base
     except Exception as e:
-        log("kb: scale failed for %s: %s" % (safe_label(path), e))
+        log("kb: scale failed for %s: %s" % (redact(path), e))
         return base
     finally:
         if tmp:
@@ -2034,7 +2050,7 @@ def _photo_preload(win, plist, idx):
         try:
             ok = _photo_prepare(path) is not None
         except Exception as e:
-            log("photo preload failed for %s: %s" % (safe_label(path), e))
+            log("photo preload failed for %s: %s" % (redact(path), e))
         finally:
             win.clearProperty("bp.photo.preloading")
         # Publish into this viewer session only (gen guard).
@@ -2080,7 +2096,7 @@ def _photo_show(win, plist, idx):
     else:
         disp_path = _still_photo(p)
     if disp_path is None:
-        log("photo: skip undecodable %s" % safe_label(p))
+        log("photo: skip undecodable %s" % redact(p))
         return False
     win.setProperty("bp.photo.idx", str(idx))
     win.setProperty("bp.photo.count", str(len(plist)))
@@ -2178,7 +2194,7 @@ def _photo_open_ui(win, path):
     plist, idx = _photo_playlist(path)
     idx = _first_displayable(plist, idx)
     if idx < 0:
-        log("photo: nothing displayable in %s" % safe_label(path))
+        log("photo: nothing displayable in %s" % redact(path))
         return
     win.setProperty("bp.photo.list", json.dumps([path_enc(p) for p in plist]))
     win.clearProperty("bp.photo.playing")
@@ -2250,7 +2266,7 @@ def _photo_open_ui(win, path):
         time.sleep(0.06)
         if xbmc.getCondVisibility("Control.HasFocus(901)"):
             break
-    log("photo open: %s (%d/%d)" % (safe_label(path), idx + 1, len(plist)))
+    log("photo open: %s (%d/%d)" % (redact(path), idx + 1, len(plist)))
 
 
 def photo_step(delta):
@@ -2534,7 +2550,37 @@ def _stop_video_if_any():
         pass
 
 
-def open_file(path):
+def _seek_after_start(seconds):
+    """Seek to `seconds` once the player is actually running (bounded)."""
+    p = xbmc.Player()
+    deadline = time.time() + 5.0
+    while time.time() < deadline:
+        try:
+            if p.isPlaying() and p.getTotalTime() > 0:
+                break
+        except Exception:
+            pass
+        time.sleep(0.1)
+    try:
+        p.seekTime(float(seconds))
+        log("resume: seek to %.0fs" % float(seconds))
+    except Exception as e:
+        log("resume: seek failed: %s" % e)
+
+
+def _resume_prompt(path, entry):
+    """Continue-watching modal; the buttons run main.py resumeyes/resumeno."""
+    win = xbmcgui.Window(10000)
+    win.setProperty("bp.resume.path", path_enc(path))
+    win.setProperty("bp.resume.t", str(entry.get("t", 0)))
+    win.setProperty("bp.resume.line", L(31528) % resume.fmt(entry.get("t", 0)))
+    win.setProperty("bp.resume", "open")
+    time.sleep(0.4)
+    xbmc.executebuiltin("SetFocus(906)")
+    log("resume prompt: %s @%s" % (redact(path), resume.fmt(entry.get("t", 0))))
+
+
+def open_file(path, resume_pos=None):
     path = (path or "").strip()
     if not path:
         return
@@ -2547,6 +2593,11 @@ def open_file(path):
         return
     ext = os.path.splitext(path)[1].lower()
     if ext in PLAYABLE_EXT:
+        if resume_pos is None:
+            entry = resume.get(path)
+            if resume.promptable(entry):
+                _resume_prompt(path, entry)
+                return
         if ext in AUDIO_EXT:
             # Network audio: raise bp.aload BEFORE the core blocks the main
             # thread (measured ~10 s on WebDAV); the home daemon clears it.
@@ -2559,22 +2610,26 @@ def open_file(path):
             _play_audio_folder(path)
             if net:
                 time.sleep(0.5)
+            if resume_pos:
+                _seek_after_start(resume_pos)
             _focus_play_button()
         else:
             _stop_video_if_any()
             _play_video_folder(path)
+            if resume_pos:
+                _seek_after_start(resume_pos)
             _focus_video_button()
     elif ext in IMAGE_EXT:
         # HEIC on a platform without a decoder stays inert instead of a black frame.
         if ext in HEIC_EXT and not heic_capable():
-            log("open: HEIC skipped (no decoder): %s" % safe_label(path))
+            log("open: HEIC skipped (no decoder): %s" % redact(path))
             return
         # Own fullscreen overlay instead of the core picture viewer (black flash).
         photo_open(path)
     elif ext in ARCHIVE_EXT:
         # Archives stay inert files (core flags them IsFolder, but we show a
         # file icon).
-        log("open: archives parked for %s" % path)
+        log("open: archives parked for %s" % redact(path))
         return
     else:
-        log("open: no handler yet for %s" % path)
+        log("open: no handler yet for %s" % redact(path))

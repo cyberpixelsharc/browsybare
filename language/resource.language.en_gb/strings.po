@@ -804,3 +804,43 @@ msgstr "New version available: %s"
 msgid "Update check failed"
 msgctxt "#31526"
 msgstr "Update check failed"
+
+msgid "Playback"
+msgctxt "#31527"
+msgstr "Playback"
+
+msgid "Should the playback resume at %s?"
+msgctxt "#31528"
+msgstr "Should the playback resume at %s?"
+
+msgid "Resume"
+msgctxt "#31529"
+msgstr "Resume"
+
+msgid "Restart"
+msgctxt "#31530"
+msgstr "Restart"
+
+msgid "Download %s"
+msgctxt "#31531"
+msgstr "Download %s"
+
+msgid "Downloading..."
+msgctxt "#31532"
+msgstr "Downloading..."
+
+msgid "Saved to Downloads"
+msgctxt "#31533"
+msgstr "Saved to Downloads"
+
+msgid "Download failed"
+msgctxt "#31534"
+msgstr "Download failed"
+
+msgid "Update"
+msgctxt "#31535"
+msgstr "Update"
+
+msgid "Download version %s into your Downloads folder?"
+msgctxt "#31536"
+msgstr "Download version %s into your Downloads folder?"

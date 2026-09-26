@@ -13,7 +13,7 @@ import xbmc
 import xbmcgui
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import safe_label, path_enc, state_dir, log as _clog
+from common import safe_label, redact, path_enc, state_dir, log as _clog
 
 LOG = "[skin] "
 
@@ -317,7 +317,7 @@ def dispatch():
             xbmc.executebuiltin("SetFocus(30)")
             if xbmc.getCondVisibility("Control.HasFocus(30)"):
                 break
-        _log("keyboard: search '%s'" % text)
+        _log("keyboard: search '%s'" % redact(text))
         return
     if not text.strip():
         return
@@ -344,7 +344,7 @@ def dispatch():
                     _gui.NOTIFICATION_ERROR, 4000)
             except Exception:
                 pass
-            _log("keyboard: netsource rejected '%s'" % text.strip())
+            _log("keyboard: netsource rejected '%s'" % redact(text.strip()))
             return
         win.setProperty("bp.net.pending", text.strip())
         open_kb("netlabel")

@@ -8,7 +8,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import log as _common_log
+from common import log as _common_log, redact
 
 
 
@@ -24,7 +24,7 @@ def needle_from_url(url):
         needle = vals[0].strip().lower() if vals else ""
     except Exception:
         needle = ""
-    log("needle=%r from %s" % (needle, url))
+    log("needle=%r from %s" % (needle, redact(url)))
     return needle
 
 
@@ -35,7 +35,7 @@ def hidden_from_url(url):
         on = bool(vals and vals[0].strip())
     except Exception:
         on = False
-    log("show_hidden=%s from %s" % (on, url))
+    log("show_hidden=%s from %s" % (on, redact(url)))
     return on
 
 
@@ -48,7 +48,7 @@ def sort_from_url(url):
             mode = "name"
     except Exception:
         mode = "name"
-    log("sort=%r from %s" % (mode, url))
+    log("sort=%r from %s" % (mode, redact(url)))
     return mode
 
 
@@ -59,7 +59,7 @@ def foldersfirst_from_url(url):
         on = not bool(vals and vals[0].strip())
     except Exception:
         on = True
-    log("folders_first=%s from %s" % (on, url))
+    log("folders_first=%s from %s" % (on, redact(url)))
     return on
 
 
@@ -70,5 +70,5 @@ def casesensitive_from_url(url):
         on = bool(vals and vals[0].strip())
     except Exception:
         on = False
-    log("case_sensitive=%s from %s" % (on, url))
+    log("case_sensitive=%s from %s" % (on, redact(url)))
     return on

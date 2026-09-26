@@ -15,7 +15,7 @@ import sources
 from blacklist import blocked
 from navigation import drive_root_of
 from sources import is_network_path
-from common import safe_label, path_dec, natkey, write_json, state_file, cache_key, heic_capable, log as _common_log
+from common import safe_label, redact, path_dec, natkey, write_json, state_file, cache_key, heic_capable, log as _common_log
 
 import xbmc
 import xbmcgui
@@ -215,7 +215,7 @@ def append_matches(items, root, needle, show_hidden=False, patterns=None, folder
                     log("match cap %d reached" % MAX_MATCHES)
                     return
             except Exception as e:
-                log("skip match in %s: %r (%s)" % (root, safe_label(name), e))
+                log("skip match in %s: %r (%s)" % (redact(root), redact(name), e))
                 continue
 
 
@@ -445,7 +445,7 @@ def list_network(handle, path, picker_active=False):
                         pass
                 items.append((item, core_url(child), is_dir, natkey(safe_label(name))))
             except Exception as e:
-                log("skip network entry %r: %s" % (safe_label(name), e))
+                log("skip network entry %r: %s" % (redact(name), e))
                 continue
     # Padding rows: 2 top (top bar overlay; also for the single error row) plus
     # the overlaid bottom bars (audio footer 200px = 3 rows, picker 100px = 1 row).
@@ -476,7 +476,7 @@ def list_network(handle, path, picker_active=False):
         xbmcplugin.addDirectoryItem(handle, url, item, is_folder, total)
     xbmcplugin.endOfDirectory(handle, True)
     log("network %d items from %s%s (hidden=%s, sort=%s, ff=%s, cs=%s, blacklist=%d, skipped_hidden=%d, skipped_blocked=%d)"
-        % (total, path, (" err=%s" % err) if err else "", show_hidden, sort,
+        % (total, redact(path), (" err=%s" % err) if err else "", show_hidden, sort,
            folders_first_flag, case_sensitive, len(patterns),
            skipped_hidden, skipped_blocked))
 
@@ -535,7 +535,7 @@ def main():
                 # Sort by the natural folded display name (natkey), not raw codepoints.
                 entries = sorted(os.scandir(path), key=lambda e: natkey(safe_label(e.name)))
             except OSError as e:
-                log("scandir failed for %s: %s" % (path, e))
+                log("scandir failed for %s: %s" % (redact(path), e))
                 entries = []
             skipped_hidden = 0
             skipped_blocked = 0
@@ -604,7 +604,7 @@ def main():
                 except Exception as e:
                     # One bad entry must never kill the listing -- Kodi segfaults
                     # on some inside its bindings instead of raising.
-                    log("skip entry in %s: %r (%s)" % (path, safe_label(entry.name), e))
+                    log("skip entry in %s: %r (%s)" % (redact(path), redact(entry.name), e))
                     continue
     # Sorting: .. on top; folders-first groups in every mode, then the mode's
     # key; ff travels via URL like h (reload trigger).
@@ -651,7 +651,7 @@ def main():
         xbmcplugin.addDirectoryItem(handle, url, item, is_folder, total)
     xbmcplugin.endOfDirectory(handle, True)
     log("%d items from %s (needle=%r, hidden=%s, sort=%s, ff=%s, cs=%s, blacklist=%d, skipped_hidden=%d, skipped_blocked=%d)"
-        % (total, path, needle, show_hidden, sort, folders_first_flag, case_sensitive, len(patterns),
+        % (total, redact(path), needle, show_hidden, sort, folders_first_flag, case_sensitive, len(patterns),
            skipped_hidden, skipped_blocked))
 
 

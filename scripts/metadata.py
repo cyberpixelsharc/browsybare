@@ -1292,6 +1292,8 @@ def _read_aiff(path):
 _AAC_SR = (96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000,
            12000, 11025, 8000, 7350)
 _AAC_CH = {0: 2, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 8}
+AAC_SAMPLE_BYTES = 2 * 1024 * 1024  # frame-sampling window (bounded read)
+AAC_SAMPLE_FRAMES = 3000
 
 
 def _adts_header(b):
@@ -1306,8 +1308,10 @@ def _adts_header(b):
 
 
 def _read_aac(path):
-    """Raw ADTS AAC: duration estimated from the first frame's bitrate and the
-    file size (after optional ID3). Exact for CBR, an estimate for VBR."""
+    """Raw ADTS AAC: parse a bounded window of frames and average the frame
+    length, then estimate duration/bitrate from the file size. CBR is accurate,
+    VBR is close (a full frame walk read the whole file -- slow on a network
+    share for one metadata read)."""
     out = {}
     try:
         size = _size(path)
@@ -1317,17 +1321,30 @@ def _read_aac(path):
             if head[:3] == b"ID3":
                 start = 10 + _synchsafe(head[6:10])
             f.seek(start)
-            first = _adts_header(f.read(7))
-            if not first:
+            buf = f.read(AAC_SAMPLE_BYTES)
+            i = 0
+            n = len(buf)
+            sr = ch = 0
+            total = blocks = frames = 0
+            while frames < AAC_SAMPLE_FRAMES and n - i >= 7:
+                h = _adts_header(buf[i:i + 7])
+                if not h or not h[0] or h[2] < 7 or i + h[2] > n:
+                    break
+                if frames == 0:
+                    sr, ch = h[0], h[1]
+                total += h[2]
+                blocks += h[3]
+                frames += 1
+                i += h[2]
+            if not frames:
                 return out
-            sr, ch, flen = first[0], first[1], first[2]
             out["acodec"] = "aac"
             out["sample_rate"], out["channels"] = sr, ch
-            if sr and flen >= 7 and size > start:
-                frame_samples = first[3] * 1024  # ADTS frames_in_buffer x 1024
-                frame_secs = frame_samples / float(sr)
-                out["duration"] = ((size - start) / float(flen)) * frame_secs
-                out["bitrate"] = (flen * 8.0 / frame_secs) / 1000.0
+            if sr and total and size > start:
+                avg_flen = total / float(frames)
+                frame_secs = (blocks / float(frames)) * 1024 / float(sr)
+                out["duration"] = ((size - start) / avg_flen) * frame_secs
+                out["bitrate"] = (avg_flen * 8.0 / frame_secs) / 1000.0
     except Exception:
         pass
     return {k: v for k, v in out.items() if v not in ("", None, 0)}

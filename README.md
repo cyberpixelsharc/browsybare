@@ -35,6 +35,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * State buttons: mute, 3-state repeat (off, all, one), shuffle, speed, info.
 * Volume with its own 0-100 curve mapped to the Kodi volume, footer and OSD sliders, external/CEC resync.
 * Info button opens the shared INFO modal with extracted tags and covers.
+* Continue from the last position: reopening a track that has a saved spot (within the last 7 weeks) opens a Playback prompt with Continue / Restart.
 * Bottom padding rows keep the last files above the footer. Focus returns to the list after stop.
 
 ## Video player
@@ -45,6 +46,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Optional start-up delay for HDMI resync.
 * Subtitle rows sorted alphabetically so Kodi 21 and 22 show the same order. Selection still uses the Kodi stream index.
 * Info button opens the shared INFO modal, including MKV/MP4 cover attachments.
+* Continue from the last position: reopening a video that has a saved spot (within the last 7 weeks) opens a Playback prompt with Continue / Restart.
 
 ## Photo viewer
 
@@ -101,7 +103,8 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Install as addon zip or copy the folder to `addons/<id>/`, then switch the skin to Browsybare.
 * First load syncs the Estuary base layer into the install folder when the marker is stale (Kodi/Estuary version plus content hashes). Only the base is copied, own windows, scripts, merged colors, merged languages, merged includes, fonts, power menu, and keymap stay protected or are regenerated.
 * Failures show an error dialog and an error label instead of the list. Corrupt addon data is healed by remove and recreate. Downgrade and reinstall show a one-time report modal together with any install errors.
-* Built-in update check: the About modal (hamburger menu, skin name) compares the installed version against the latest GitHub release and reports the result right on the button -- information only, nothing is downloaded or installed.
+* Built-in update check: the About modal (hamburger menu, skin name) compares the installed version against the latest GitHub release.
+* If a newer version exists, the button becomes a download action; a short confirmation prompt then saves the release zip into your Downloads folder (with fallbacks on systems that have none) for manual installation via *Add-ons -> Install from zip file* -- nothing is installed automatically.
 * User commands are gated during the sync. Fast quit waits for the daemons with a bounded handshake.
 
 ## Requirement

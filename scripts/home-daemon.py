@@ -14,11 +14,12 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-from common import log, padding_step
+from common import log, redact, padding_step
 
 import fileops
 import sources
 import remotes
+import resume
 import sync
 import volume
 
@@ -275,6 +276,10 @@ def main():
     pad_pushed = None
     stop_focus_at = 0.0
     slider_seen = {}
+    resume_path = None
+    resume_t = 0.0
+    resume_total = 0.0
+    resume_was_playing = False
     tick = 0
     play_state = _is_playing()
     settle_until = 0.0
@@ -329,6 +334,27 @@ def main():
         # Odd sub-ticks fed only the 20 Hz progress duty; skip the 10 Hz duties.
         if tick % 2 != 0:
             continue
+        # Resume: remember the playing position (video + audio). Saved on stop
+        # or track change, dropped when watched to the end. Uses Player.getTime/
+        # getPlayingFile (not getInfoLabel -- the transition crash trap).
+        try:
+            if playing_now and not in_transition:
+                p = xbmc.Player()
+                pth = p.getPlayingFile()
+                if pth:
+                    if resume_path and resume_path != pth:
+                        resume.store(resume_path, resume_t, resume_total)
+                    resume_path = pth
+                    resume_t = p.getTime()
+                    resume_total = p.getTotalTime()
+                    resume_was_playing = True
+            elif resume_was_playing and not playing_now:
+                if resume_path:
+                    resume.store(resume_path, resume_t, resume_total)
+                resume_path = None
+                resume_was_playing = False
+        except Exception as e:
+            log("home-daemon error (resume save): %s" % e)
         # Duty 5: padding-row skip, 10 Hz, only while the list (33) has focus.
         try:
             if not in_transition and not playing_now \
@@ -567,7 +593,7 @@ def main():
                         else:
                             win.clearProperty("bp.netplay")
                         _prefetch_metadata(current)
-                        log("home-daemon: OSD lines -> %s" % os.path.basename(current))
+                        log("home-daemon: OSD lines -> %s" % redact(current))
                         if advanced:
                             # Playlist auto-advance: surface the VideoOSD; the
                             # open timestamp suppresses the idle close below.

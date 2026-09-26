@@ -12,8 +12,9 @@ import xbmcgui
 import xbmcvfs
 
 import sources
+import resume
 
-from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label
+from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label, redact
 from urllib.parse import unquote_to_bytes
 from navigation import current_source_root, set_current, nav, up, root, goto, reset_top
 
@@ -42,6 +43,47 @@ def _kmaps():
 def _fopen(path):
     from fileops import open_file as _f
     return _f(path)
+
+
+def _resume_clear(win):
+    for p in ("bp.resume", "bp.resume.path", "bp.resume.t", "bp.resume.line"):
+        win.clearProperty(p)
+
+
+def resumeyes():
+    """Continue-watching prompt: resume at the saved position (Fortsetzen)."""
+    win = xbmcgui.Window(10000)
+    path = path_dec(win.getProperty("bp.resume.path"))
+    try:
+        pos = float(win.getProperty("bp.resume.t") or "0")
+    except (TypeError, ValueError):
+        pos = 0.0
+    _resume_clear(win)
+    if path and pos > 0:
+        from fileops import open_file
+        open_file(path, resume_pos=pos)
+        log("resume: play from %.0fs" % pos)
+
+
+def resumeno():
+    """Continue-watching prompt: play from the start, forget the position."""
+    win = xbmcgui.Window(10000)
+    path = path_dec(win.getProperty("bp.resume.path"))
+    _resume_clear(win)
+    if path:
+        try:
+            resume.clear(path)
+        except Exception:
+            pass
+        from fileops import open_file
+        open_file(path)
+        log("resume: play from start")
+
+
+def resumecancel():
+    """Continue-watching prompt dismissed without playing (backdrop / Back)."""
+    _resume_clear(xbmcgui.Window(10000))
+    log("resume: prompt cancelled")
 
 
 def _fphotoclose():
@@ -406,14 +448,14 @@ def drivelist():
         _set_default_source(visible)
     else:
         # browsed drive was hidden -> jump to the next active drive
-        cur = path_dec(win.getProperty("bp.path") or "").rstrip("/")
+        cur = sources.rstrip_slash(path_dec(win.getProperty("bp.path") or ""))
         cur_root = current_source_root(cur) if cur else ""
-        all_paths = [(d.get("path") or "").rstrip("/") for d in drives]
-        vis_paths = {(d.get("path") or "").rstrip("/") for d in visible}
+        all_paths = [sources.rstrip_slash(d.get("path") or "") for d in drives]
+        vis_paths = {sources.rstrip_slash(d.get("path") or "") for d in visible}
         if cur and cur_root in all_paths and cur_root not in vis_paths:
             nxt = sources.next_visible_after(cur_root, drives, visible)
             if nxt:
-                nxt_path = (nxt.get("path") or "").rstrip("/")
+                nxt_path = sources.rstrip_slash(nxt.get("path") or "")
                 win.setProperty("bp.src", path_enc(nxt_path))
                 win.setProperty("bp.title", sources.short_label(nxt_path))
                 win.setProperty("bp.current.icon", sources.icon_for(nxt_path))
@@ -445,7 +487,7 @@ def drive_toggle(idx):
     except Exception:
         return
     drivelist()
-    log("drive toggle slot %d (%s)" % (slot, safe_label(regular[slot - 1].get("label", ""))))
+    log("drive toggle slot %d (%s)" % (slot, redact(regular[slot - 1].get("label", ""))))
 
 
 def drive(idx):
@@ -566,7 +608,7 @@ def dropdown_open():
     win.setProperty("bp.drives", "open")
     time.sleep(0.25)
     xbmc.executebuiltin("SetFocus(%d)" % (59 + (slot or 1)))
-    log("dropdown open: focus slot %d (title %r)" % (slot or 1, title))
+    log("dropdown open: focus slot %d (title %r)" % (slot or 1, redact(title)))
 
 
 def accent_next():
@@ -869,11 +911,11 @@ def netcommit():
         if 1 <= slot <= sources.NETSRC_ROWS:
             time.sleep(0.25)
             xbmc.executebuiltin("SetFocus(%d)" % (320 + slot))
-        log("netsource: added '%s' (%s)" % (label, url))
+        log("netsource: added '%s' (%s)" % (label, redact(url)))
     else:
         time.sleep(0.25)
         xbmc.executebuiltin("SetFocus(273)")
-        log("netsource: rejected '%s'" % url)
+        log("netsource: rejected '%s'" % redact(url))
 
 
 NET_PROTOCOLS = ("ftp", "ftps", "smb", "nfs", "dav", "davs")
@@ -927,7 +969,7 @@ def _netsrc_url(scheme, server, port, path, user, passwd):
     path = (path or "").strip().strip("/") or s_path.strip("/")
     user = (user or "").strip()
     if not server:
-        return scheme
+        return ""  # no address: keep the entry path-less (label-only source)
     creds = (user + ((":" + passwd) if passwd else "") + "@") if user else ""
     srv = server[:-1] if (server.endswith("/")
                           and not server.endswith("://")) else server
@@ -1053,7 +1095,7 @@ def netsrcadd():
         xbmc.executebuiltin("SetFocus(%d)" % target)
         if xbmc.getCondVisibility("Control.HasFocus(%d)" % target):
             break
-    log("netsource: OK '%s' (%s)" % (label, url))
+    log("netsource: OK '%s' (%s)" % (label, redact(url)))
 
 
 def netsrctest():
@@ -1082,7 +1124,7 @@ def netsrctest():
             ok = False
     win.setProperty("bp.netsrc.test", "ok" if ok else "fail")
     _netsrc_notify(31463 if ok else 31464, error=not ok)
-    log("netsource: test %s -> %s" % (url or "(no address)", "ok" if ok else "fail"))
+    log("netsource: test %s -> %s" % (redact(url) if url else "(no address)", "ok" if ok else "fail"))
 
 
 def netsrcclose():
@@ -1743,14 +1785,14 @@ def picker_open():
     if xbmc.getCondVisibility("Player.HasAudio"):
         xbmc.Player().stop()
         log("picker: stopped playback (footer overlaps the picker bar)")
-    src = path_dec(win.getProperty("bp.src") or "").rstrip("/")
+    src = sources.rstrip_slash(path_dec(win.getProperty("bp.src") or ""))
     start = src if src and os.path.isdir(src) else cur
     try:
-        dir_roots = {(p or "").rstrip("/") for p in _dirsources().load()}
+        dir_roots = {sources.rstrip_slash(p or "") for p in _dirsources().load()}
     except Exception:
         dir_roots = set()
     if (not (start and os.path.isdir(start))
-            or sources.is_network_path(src) or src.rstrip("/") in dir_roots):
+            or sources.is_network_path(src) or src in dir_roots):
         # Directory/network context is not a valid pick target (hidden from the
         # picker dropdown) -> jump to the first local drive root.
         first = ""
@@ -1758,7 +1800,7 @@ def picker_open():
             for d in sources.visible(sources.all_drives()):
                 if (d.get("type") or "") in ("dirsource", "network"):
                     continue
-                p = (d.get("path") or "").rstrip("/")
+                p = sources.rstrip_slash(d.get("path") or "")
                 if p and os.path.isdir(p):
                     first = p
                     break
@@ -1885,21 +1927,21 @@ def _add_dirsource(cur):
     if added:
         dirsrc_open()
         drivelist()
-        log("dirsource added '%s'" % cur)
+        log("dirsource added '%s'" % redact(cur))
     # On success land in the new source; else fall back to the previous location.
     if added:
         win.setProperty("bp.src", path_enc(cur))
         win.setProperty("bp.title", sources.short_label(cur))
         win.setProperty("bp.current.icon", sources.icon_for(cur))
         set_current(cur)
-        log("dirsource -> entered new source %s" % cur)
+        log("dirsource -> entered new source %s" % redact(cur))
     elif ret and os.path.isdir(ret):
         if saved_src:
             win.setProperty("bp.src", path_enc(saved_src))
             win.setProperty("bp.title", sources.short_label(saved_src))
             win.setProperty("bp.current.icon", sources.icon_for(saved_src))
         set_current(ret)
-        log("dirsource restore %s" % ret)
+        log("dirsource restore %s" % redact(ret))
     else:
         log("dirsource done")
     # Force a reload (same no-navigation case as picker_cancel).
@@ -2106,7 +2148,7 @@ def info_scan():
     except Exception as e:
         # Log real failures: swallowing them made a whole file show only size.
         m = {}
-        log("info: metadata failed for %s: %s" % (safe_label(path), e))
+        log("info: metadata failed for %s: %s" % (redact(path), e))
     entries = []
 
     def add(sid, value):
@@ -2201,7 +2243,7 @@ def info_scan():
         for i, cp in enumerate(cps[:INFO_COVERS], start=1):
             win.setProperty("bp.info.cover.%d" % i, cp)
     except Exception as e:
-        log("info: covers failed for %s: %s" % (safe_label(path), e))
+        log("info: covers failed for %s: %s" % (redact(path), e))
     try:
         if sources.is_network_path(path):
             # VFS URL: size via xbmcvfs; mtime via sources.net_mtime (PROPFIND).
@@ -2330,7 +2372,7 @@ def _photo_info_fill(win, path):
         from fileops import _exif_data
         d = _exif_data(path)
     except Exception as e:
-        log("photo info: exif failed for %s: %s" % (safe_label(path), e))
+        log("photo info: exif failed for %s: %s" % (redact(path), e))
     try:
         add(31427, safe_label(os.path.basename(sources.url_unquote(path or ""))))
     except Exception:
@@ -2410,7 +2452,7 @@ def photoexif():
             except Exception:
                 break
             time.sleep(0.1)
-    log("photo exif modal open: %s" % safe_label(path))
+    log("photo exif modal open: %s" % redact(path))
 
 
 def infoclose():
@@ -2464,10 +2506,12 @@ def _version_tuple(text):
 
 
 def update_check():
-    """Info-only: ask GitHub for the newest release tag and compare it with the
-    installed version. The result replaces the button text for 3 s
-    (no download/install)."""
+    """Ask GitHub for the newest release tag. If it is newer, turn the button
+    into a Download action (into the user's Downloads folder); otherwise show a
+    3 s info. Nothing is installed automatically."""
     win = xbmcgui.Window(10000)
+    for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
+        win.clearProperty(p)
     current = win.getProperty("bp.version") or ""
     try:
         import urllib.request
@@ -2482,9 +2526,128 @@ def update_check():
         _update_result(win, 31526)
         return
     if latest and _version_tuple(latest) > _version_tuple(current):
-        _update_result(win, 31525, latest)
+        url = ""
+        for a in (data.get("assets") or []):
+            u = a.get("browser_download_url") or ""
+            if u.lower().endswith(".zip"):
+                url = u
+                break
+        if not url:
+            url = ("https://github.com/cyberpixelsharc/browsybare/releases/"
+                   "download/v%s/browsybare-%s.zip" % (latest, latest))
+        win.setProperty("bp.update.state", "avail")
+        win.setProperty("bp.update.ver", latest)
+        win.setProperty("bp.update.url", url)
+        _update_text(win, 31531, latest)  # "Download %s", stays until clicked
     else:
         _update_result(win, 31524)
+
+
+def updatebutton():
+    """About update button: confirm+download the staged release, else check."""
+    win = xbmcgui.Window(10000)
+    if win.getProperty("bp.update.state") == "avail":
+        update_confirm()
+    else:
+        update_check()
+
+
+def update_confirm():
+    """Ask before downloading the newer release (own confirm modal, focus on No).
+    Yes runs `updatedownload` via the generic confirm handler."""
+    win = xbmcgui.Window(10000)
+    ver = win.getProperty("bp.update.ver") or ""
+    win.clearProperty("bp.confirm.op")
+    win.setProperty("bp.confirm.title", xbmc.getLocalizedString(31535))
+    line = xbmc.getLocalizedString(31536)
+    try:
+        line = line % ver
+    except Exception:
+        line = "%s %s" % (line, ver)
+    win.setProperty("bp.confirm.line", line)
+    win.setProperty("bp.confirm.cmd.1",
+                    "RunScript(special://skin/scripts/main.py,updatedownload)")
+    win.setProperty("bp.confirm.cmds", "1")
+    win.setProperty("bp.confirm.from", xbmc.getInfoLabel("System.CurrentControlId"))
+    win.setProperty("bp.confirm", "open")
+    time.sleep(0.4)
+    xbmc.executebuiltin("SetFocus(956)")
+    log("update: download confirm")
+
+
+def _downloads_dir():
+    """Best-effort Downloads folder (all OSes): ~/Downloads, else the Kodi
+    profile's downloads, else Kodi's temp dir. Created when missing."""
+    cands = []
+    try:
+        home = os.path.expanduser("~")
+        if home and home != "~":
+            cands.append(os.path.join(home, "Downloads"))
+    except Exception:
+        pass
+    try:
+        cands.append(os.path.join(
+            xbmcvfs.translatePath("special://home"), "downloads"))
+    except Exception:
+        pass
+    try:
+        cands.append(xbmcvfs.translatePath("special://temp"))
+    except Exception:
+        pass
+    for d in cands:
+        try:
+            if d and os.path.isdir(d):
+                return d
+        except Exception:
+            pass
+    for d in cands:
+        try:
+            if d:
+                os.makedirs(d, exist_ok=True)
+                return d
+        except Exception:
+            pass
+    return ""
+
+
+def update_download():
+    """Download the newer release zip into the user's Downloads folder (the
+    user installs it themselves). No automatic install."""
+    win = xbmcgui.Window(10000)
+    url = win.getProperty("bp.update.url")
+    ver = win.getProperty("bp.update.ver") or "latest"
+    _update_text(win, 31532)  # "Downloading..."
+    dest = _downloads_dir()
+    name = "browsybare-%s.zip" % ver
+    target = ""
+    ok = False
+    if url and dest:
+        import urllib.request
+        target = os.path.join(dest, name)
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": "Browsybare"})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                with open(target, "wb") as f:
+                    while True:
+                        chunk = r.read(65536)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+            ok = os.path.getsize(target) > 0
+        except Exception as e:
+            log("update download failed: %s" % e)
+            try:
+                os.remove(target)
+            except OSError:
+                pass
+    for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
+        win.clearProperty(p)
+    if ok:
+        log("update download: saved %s" % redact(target))
+        _update_result(win, 31533)  # "Saved to Downloads"
+    else:
+        _update_result(win, 31534)  # "Download failed"
 
 
 def _update_text(win, sid, value=None):
@@ -2670,6 +2833,7 @@ def powerrun():
     """Yes-handler: run the specific op (handshake) or the row's raw builtins."""
     win = xbmcgui.Window(10000)
     op = win.getProperty("bp.confirm.op")
+    from_ctl = win.getProperty("bp.confirm.from")
     try:
         n = int(win.getProperty("bp.confirm.cmds") or "0")
     except (TypeError, ValueError):
@@ -2692,6 +2856,14 @@ def powerrun():
         win.clearProperty("bp.power")
         for c in cmds:
             xbmc.executebuiltin(c)
+        # Generic (non-quitting) confirm: return focus to the opener so it does
+        # not stay stuck on the now-hidden Yes button (e.g. the update download).
+        try:
+            if from_ctl.isdigit() and xbmc.getCondVisibility("Window.IsActive(10000)"):
+                time.sleep(0.15)
+                xbmc.executebuiltin("SetFocus(%s)" % from_ctl)
+        except Exception:
+            pass
 
 
 def powercancel():
@@ -2831,6 +3003,8 @@ if __name__ == "__main__":
                      "photoshow", "photomode", "photointerval",
                      "photorepeat", "photoshuffle",
                      "resetopen", "keysopen", "settings_tab", "updatecheck",
+                     "updatebutton", "updatedownload",
+                     "resumeyes", "resumeno", "resumecancel",
                    "remdeftoggle", "rowmenuopen", "rowmenutoggle",
                    "rowmenuremove", "rowmenuclose", "rowmenuedit", "intensity", "intensity_next",
                    "guisound", "guisound_next",
@@ -2859,7 +3033,7 @@ if __name__ == "__main__":
             # log() can mask inline credentials.
             raw = ",".join(sys.argv[2:])
             path = _decode(raw)
-            log("nav arrival: %s" % path)
+            log("nav arrival: %s" % redact(path))
             nav(path)
         elif cmd == "up":
             up()
@@ -2872,7 +3046,7 @@ if __name__ == "__main__":
         elif cmd == "open":
             raw = ",".join(sys.argv[2:])
             path = _decode(raw)
-            log("open arrival: %s" % path)
+            log("open arrival: %s" % redact(path))
             _fopen(path)
         elif cmd == "photoclose":
             _fphotoclose()
@@ -2952,6 +3126,16 @@ if __name__ == "__main__":
             openlink()
         elif cmd == "updatecheck":
             update_check()
+        elif cmd == "updatebutton":
+            updatebutton()
+        elif cmd == "updatedownload":
+            update_download()
+        elif cmd == "resumeyes":
+            resumeyes()
+        elif cmd == "resumeno":
+            resumeno()
+        elif cmd == "resumecancel":
+            resumecancel()
         elif cmd == "infoclose":
             infoclose()
         elif cmd == "trackselect":

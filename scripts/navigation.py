@@ -7,7 +7,7 @@ import xbmc
 import xbmcgui
 
 import sources
-from common import fs_path, log, safe_label, safe_key, path_enc, path_dec
+from common import fs_path, log, safe_label, redact, safe_key, path_enc, path_dec
 
 CRUMB_DEPTH = 7  # max visible breadcrumb segments (buttons 40-46)
 CRUMB_SEG_MAX = 17  # per-segment name cap (longer -> first 17 chars + "…")
@@ -45,15 +45,15 @@ def resolve_real(path):
         want = safe_key(base)
         for n in names:
             if safe_key(n) == want:
-                log("nav: repaired arrival %s" % safe_label(path))
+                log("nav: repaired arrival %s" % redact(path))
                 return os.path.join(parent, n)
         import unicodedata
         want_nfc = unicodedata.normalize("NFC", base)
         for n in names:
             if unicodedata.normalize("NFC", n) == want_nfc:
-                log("nav: repaired arrival (NFC) %s" % safe_label(path))
+                log("nav: repaired arrival (NFC) %s" % redact(path))
                 return os.path.join(parent, n)
-        log("nav: unrepairable arrival %s (%d siblings)" % (safe_label(path), len(names)))
+        log("nav: unrepairable arrival %s (%d siblings)" % (redact(path), len(names)))
     except Exception:
         pass
     return path
@@ -82,9 +82,9 @@ def dirsource_root_of(path):
 
 def current_source_root(path):
     """Source root the view is under: the entered source (bp.src) while the path stays inside it, else re-resolved from the path (drive root, then containing dirsource, else home). Browsing into a dirsource from its drive does NOT switch the source."""
-    path = (path or "").rstrip("/")
+    path = sources.rstrip_slash(path or "")
     win = xbmcgui.Window(10000)
-    src = path_dec(win.getProperty("bp.src") or "").rstrip("/")
+    src = sources.rstrip_slash(path_dec(win.getProperty("bp.src") or ""))
     if src and (path == src or path.startswith(src + "/")):
         return src
     if path.startswith("/Volumes/"):
@@ -180,7 +180,7 @@ def set_current(path):
     # the path LEAVES the entered source (the outer source then takes over).
     if path:
         src = current_source_root(path)
-        if src != path_dec(win.getProperty("bp.src") or "").rstrip("/"):
+        if src != sources.rstrip_slash(path_dec(win.getProperty("bp.src") or "")):
             win.setProperty("bp.src", path_enc(src))
             win.setProperty("bp.title", sources.short_label(src))
             # Chip icon follows the entered source (only on change: icon_for
@@ -223,7 +223,7 @@ def set_current(path):
         val = safe_label(anc[i]) if i < len(anc) else ""
         win.setProperty("bp.crumb.%d" % (i + 1), val)
     win.setProperty("bp.crumb.cur", safe_label(cur) if cur else "")
-    log("nav: %s" % safe_label(path))
+    log("nav: %s" % redact(path))
 
 
 def nav(path):

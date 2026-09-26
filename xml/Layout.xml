@@ -1813,6 +1813,9 @@
 					<onclick>ClearProperty(bp.menu)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetProperty(bp.about,open)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetProperty(bp.update.text,$LOCALIZE[31522])</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.state)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.ver)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.url)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetFocus(86)</onclick>
 					<onclick condition="String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.about)</onclick>
 					<onback>ClearProperty(bp.menu)</onback>
@@ -2684,37 +2687,37 @@
 					</control>
 				</control>
 			</control>
-			<!-- Power confirm before destructive OS actions; focus starts on No. -->
+			<!-- Continue-watching prompt (bp.resume): resume position / from the beginning; focus starts on Resume. -->
 			<control type="group">
-				<visible>String.IsEqual(Window(10000).Property(bp.confirm),open)</visible>
+				<visible>String.IsEqual(Window(10000).Property(bp.resume),open)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
-				<control type="button" id="954">
+				<control type="button" id="904">
 					<left>0</left><top>0</top><width>1920</width><height>1080</height>
 					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
-					<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
-					<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
-					<onleft>954</onleft>
-					<onright>954</onright>
-					<onup>954</onup>
-					<ondown>954</ondown>
+					<onclick>RunScript(special://skin/scripts/main.py,resumecancel)</onclick>
+					<onback>RunScript(special://skin/scripts/main.py,resumecancel)</onback>
+					<onleft>904</onleft>
+					<onright>904</onright>
+					<onup>904</onup>
+					<ondown>904</ondown>
 				</control>
 				<control type="group">
 					<left>680</left><top>400</top>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>280</height>
 						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
-						</control>
-					<control type="button" id="957">
+					</control>
+					<control type="button" id="905">
 						<left>0</left><top>0</top><width>560</width><height>280</height>
 						<texturefocus /><texturenofocus />
 						<onclick>noop</onclick>
-						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
-						<onleft>956</onleft>
-						<onright>955</onright>
-						<onup>956</onup>
-						<ondown>956</ondown>
+						<onback>RunScript(special://skin/scripts/main.py,resumecancel)</onback>
+						<onleft>906</onleft>
+						<onright>907</onright>
+						<onup>906</onup>
+						<ondown>907</ondown>
 					</control>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>60</height>
@@ -2724,40 +2727,44 @@
 						<left>0</left><top>0</top><width>560</width><height>60</height>
 						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
 						<align>center</align><aligny>center</aligny>
-						<label>$INFO[Window(10000).Property(bp.confirm.title)]</label>
+						<label>$LOCALIZE[31527]</label>
 					</control>
 					<control type="label">
 						<left>30</left><top>66</top><width>500</width><height>124</height>
 						<align>center</align><aligny>center</aligny>
 						<wrapmultiline>true</wrapmultiline>
 						<font>font13</font><textcolor>FF9A9AA2</textcolor>
-						<label>$INFO[Window(10000).Property(bp.confirm.line)]</label>
-						</control>
-					<control type="button" id="955">
-						<left>72</left><top>198</top><width>200</width><height>60</height>
-						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
-						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
-						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<label>$LOCALIZE[31340]</label>
-						<onclick>RunScript(special://skin/scripts/main.py,powerrun)</onclick>
-						<onleft>956</onleft>
-						<onright>956</onright>
-						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+						<label>$INFO[Window(10000).Property(bp.resume.line)]</label>
 					</control>
-					<control type="button" id="956">
-						<left>288</left><top>198</top><width>200</width><height>60</height>
+					<control type="button" id="906">
+						<left>42</left><top>198</top><width>230</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
 						<textcolor>FF9A9AA2</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<label>$LOCALIZE[31341]</label>
-						<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
-						<onleft>955</onleft>
-						<onright>955</onright>
-						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+						<label>$LOCALIZE[31529]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,resumeyes)</onclick>
+						<onleft>907</onleft>
+						<onright>907</onright>
+						<onup>906</onup>
+						<ondown>906</ondown>
+						<onback>RunScript(special://skin/scripts/main.py,resumecancel)</onback>
+					</control>
+					<control type="button" id="907">
+						<left>288</left><top>198</top><width>230</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31530]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,resumeno)</onclick>
+						<onleft>906</onleft>
+						<onright>906</onright>
+						<onup>907</onup>
+						<ondown>907</ondown>
+						<onback>RunScript(special://skin/scripts/main.py,resumecancel)</onback>
 					</control>
 				</control>
 			</control>
@@ -2988,7 +2995,7 @@
 						<textcolor>$INFO[Skin.String(accent)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$INFO[Window(10000).Property(bp.update.text)]</label>
-						<onclick>RunScript(special://skin/scripts/main.py,updatecheck)</onclick>
+						<onclick>RunScript(special://skin/scripts/main.py,updatebutton)</onclick>
 						<onup>84</onup>
 						<ondown>84</ondown>
 						<onleft>89</onleft>
@@ -3016,6 +3023,83 @@
 						<align>center</align>
 						<textcolor>FF9A9AA2</textcolor>
 						<label>$INFO[Window(10000).Property(bp.sys.os)] | Kodi $INFO[System.BuildVersionShort] | $INFO[System.ScreenWidth]x$INFO[System.ScreenHeight]$INFO[Window(10000).Property(bp.sys.hz),@]</label>
+					</control>
+				</control>
+			</control>
+			<!-- Power confirm before destructive OS actions; focus starts on No. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.confirm),open)</visible>
+				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
+				<control type="button" id="954">
+					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
+					<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+					<onleft>954</onleft>
+					<onright>954</onright>
+					<onup>954</onup>
+					<ondown>954</ondown>
+				</control>
+				<control type="group">
+					<left>680</left><top>400</top>
+					<control type="image">
+						<left>0</left><top>0</top><width>560</width><height>280</height>
+						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						</control>
+					<control type="button" id="957">
+						<left>0</left><top>0</top><width>560</width><height>280</height>
+						<texturefocus /><texturenofocus />
+						<onclick>noop</onclick>
+						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+						<onleft>956</onleft>
+						<onright>955</onright>
+						<onup>956</onup>
+						<ondown>956</ondown>
+					</control>
+					<control type="image">
+						<left>0</left><top>0</top><width>560</width><height>60</height>
+						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					</control>
+					<control type="label">
+						<left>0</left><top>0</top><width>560</width><height>60</height>
+						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<align>center</align><aligny>center</aligny>
+						<label>$INFO[Window(10000).Property(bp.confirm.title)]</label>
+					</control>
+					<control type="label">
+						<left>30</left><top>66</top><width>500</width><height>124</height>
+						<align>center</align><aligny>center</aligny>
+						<wrapmultiline>true</wrapmultiline>
+						<font>font13</font><textcolor>FF9A9AA2</textcolor>
+						<label>$INFO[Window(10000).Property(bp.confirm.line)]</label>
+						</control>
+					<control type="button" id="955">
+						<left>72</left><top>198</top><width>200</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31340]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,powerrun)</onclick>
+						<onleft>956</onleft>
+						<onright>956</onright>
+						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+					</control>
+					<control type="button" id="956">
+						<left>288</left><top>198</top><width>200</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<font>font13</font><align>center</align><aligny>center</aligny>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31341]</label>
+						<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
+						<onleft>955</onleft>
+						<onright>955</onright>
+						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
 					</control>
 				</control>
 			</control>

@@ -13,7 +13,7 @@ import xbmcgui
 import xbmcvfs
 
 from common import (log, state_dir, read_json, write_json, skin_root,
-                    record_issue, take_issues, kodi_screensaver_mode, L)
+                    record_issue, take_issues, kodi_screensaver_mode, L, redact)
 from sync import sync, accents, skin_version
 import main
 import sources
@@ -152,7 +152,7 @@ def ensure_addon_data():
 
     if write_ok():
         return
-    log("boot: addon_data not writable (%s), self-healing %s" % (write_ok.err, path))
+    log("boot: addon_data not writable (%s), self-healing %s" % (write_ok.err, redact(path)))
     # A corrupt directory cannot be repaired in place: empty + remove, then
     # recreate (listdir may itself fail -- still attempt the rmdir).
     try:
@@ -173,7 +173,7 @@ def ensure_addon_data():
         except OSError:
             pass
         if write_ok():
-            log("boot: addon_data self-healed (%s)" % path)
+            log("boot: addon_data self-healed (%s)" % redact(path))
             record_issue("addon_data_healed")
             return
     log("boot: addon_data self-heal FAILED (%s)" % write_ok.err)
