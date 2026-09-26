@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Bootstrap fonts (arial.ttf ships with Kodi), Estuary fallback sizes.
-     Sync replaces this with the Estuary original. -->
+<!-- Bootstrap fonts (arial.ttf ships with Kodi), Estuary fallback sizes. Sync replaces this with the Estuary original. -->
 <fonts>
 	<fontset id="Default" idloc="15109">
 		<font>

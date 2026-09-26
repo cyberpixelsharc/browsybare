@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Bootstrap stub: minimum Kodi parses before scripts run.
-     Sync overwrites it with the Estuary base layer. -->
+<!-- Bootstrap stub: minimum Kodi parses before scripts run. Sync overwrites it with the Estuary base layer. -->
 <includes>
 	<include file="Layout.xml" />
 	<include file="IncludesKeyboard.xml" />

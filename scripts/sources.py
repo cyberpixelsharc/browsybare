@@ -272,12 +272,14 @@ def network_sources():
         return out
     for idx, s in enumerate(data):
         if isinstance(s, dict) and s.get("label"):
-            entry = {"label": str(s["label"]), "path": str(s.get("path") or "")}
+            entry = {"label": str(s["label"]), "path": str(s.get("path") or ""),
+                     "readonly": bool(s.get("readonly", True))}
             # Drop non-network non-empty paths (they would list empty as local);
             # path-less entries stay (display/toggle only).
             if entry["path"] and not is_network_path(entry["path"]):
                 continue
             out.append({"label": entry["label"], "path": entry["path"],
+                        "readonly": entry["readonly"],
                         "type": "network", "slot": idx + 1,
                         "key": netsrc_key(entry, idx + 1)})
     return out
@@ -301,11 +303,25 @@ def is_network_path(path):
 
 
 def is_readonly(path):
-    """True for network schemes without write support (ftp/ftps)."""
+    """True for network schemes without write support (ftp/ftps) or for a
+    network source that is flagged read-only (the per-source default)."""
+    p = path or ""
     try:
-        return bool(path) and path.lower().startswith(RO_SCHEMES)
+        if p.lower().startswith(RO_SCHEMES):
+            return True
     except Exception:
         return False
+    try:
+        pl = p.lower()
+        for s in network_sources():
+            sp = (s.get("path") or "").lower()
+            if not sp:
+                continue
+            if pl == sp or pl.startswith(sp.rstrip("/") + "/"):
+                return bool(s.get("readonly", True))
+    except Exception:
+        pass
+    return False
 
 
 def url_display(path):
@@ -478,7 +494,8 @@ def netsrc_load():
     for s in data:
         if isinstance(s, dict) and s.get("label"):
             e = {"label": str(s["label"]),
-                 "path": str(s.get("path") or "")}
+                 "path": str(s.get("path") or ""),
+                 "readonly": bool(s.get("readonly", True))}
             f = s.get("fields")
             if isinstance(f, dict):
                 e["fields"] = {k: str(v or "") for k, v in f.items()
@@ -542,10 +559,11 @@ def rstrip_slash(path):
     return p
 
 
-def _netsrc_entry(label, path, fields):
+def _netsrc_entry(label, path, fields, readonly=True):
     """Entry dict. `fields` keeps the editor values verbatim (the stored path
-    cannot round-trip arbitrary input); path stays the assembled browsable URL."""
-    entry = {"label": label, "path": path}
+    cannot round-trip arbitrary input); path stays the assembled browsable URL.
+    `readonly` defaults to True (writes must be enabled per source)."""
+    entry = {"label": label, "path": path, "readonly": bool(readonly)}
     if fields:
         clean = {k: (v or "") for k, v in fields.items()
                  if k in ("scheme", "server", "port", "path", "user", "pass")}
@@ -554,9 +572,10 @@ def _netsrc_entry(label, path, fields):
     return entry
 
 
-def netsrc_add(label, path, fields=None):
+def netsrc_add(label, path, fields=None, readonly=True):
     """Append a network source. Label required; path optional (validated when
-    present). Duplicate non-empty paths rejected. Visible by default."""
+    present). Duplicate non-empty paths rejected. Visible by default.
+    Read-only by default (writes must be enabled)."""
     path = rstrip_slash((path or "").strip())
     label = (label or "").strip()
     if not label:
@@ -566,13 +585,13 @@ def netsrc_add(label, path, fields=None):
     cur = netsrc_load()
     if path and any((e.get("path") or "").lower() == path.lower() for e in cur):
         return False
-    cur.append(_netsrc_entry(label, path, fields))
+    cur.append(_netsrc_entry(label, path, fields, readonly))
     from common import write_json as _write_json
     _write_json(_netsrc_path(), cur)
     return True
 
 
-def netsrc_replace(idx, label, path, fields=None):
+def netsrc_replace(idx, label, path, fields=None, readonly=True):
     """Replace the 1-based entry. Same rules as netsrc_add (this entry excluded
     from the duplicate check)."""
     try:
@@ -591,7 +610,7 @@ def netsrc_replace(idx, label, path, fields=None):
     if path and any((e.get("path") or "").lower() == path.lower()
                     for j, e in enumerate(cur) if j != idx - 1):
         return False
-    cur[idx - 1] = _netsrc_entry(label, path, fields)
+    cur[idx - 1] = _netsrc_entry(label, path, fields, readonly)
     from common import write_json as _write_json
     _write_json(_netsrc_path(), cur)
     return True

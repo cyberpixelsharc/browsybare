@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Custom VideoOSD footer (replaces Estuary): audio-footer style. Control
-     ids match Estuary for core compatibility. No Estuary includes. -->
+<!-- Custom VideoOSD footer (replaces Estuary): audio-footer style. Control ids match Estuary for core compatibility. No Estuary includes. -->
 <window>
 	<onload condition="!Player.PauseEnabled">SetFocus(603)</onload>
 	<defaultcontrol always="true">602</defaultcontrol>

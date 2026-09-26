@@ -83,6 +83,12 @@ def resumeno():
 def resumecancel():
     """Continue-watching prompt dismissed without playing (backdrop / Back)."""
     _resume_clear(xbmcgui.Window(10000))
+    # Focus sat on the (now hidden) modal button; hand it back to the list.
+    try:
+        time.sleep(0.2)
+        xbmc.executebuiltin("SetFocus(33)")
+    except Exception:
+        pass
     log("resume: prompt cancelled")
 
 
@@ -924,8 +930,16 @@ NET_PROTOCOLS = ("ftp", "ftps", "smb", "nfs", "dav", "davs")
 def _netsrc_clear_editor():
     win = xbmcgui.Window(10000)
     win.clearProperty("bp.netsrc")
-    for p in ("name", "proto", "scheme", "server", "port", "path", "user", "pass", "pass.mask", "test", "edit"):
+    for p in ("name", "proto", "scheme", "server", "port", "path", "user", "pass", "pass.mask", "test", "edit", "write"):
         win.clearProperty("bp.netsrc." + p)
+
+
+def netro_toggle():
+    """Toggle the editor's write-access flag (off = read-only)."""
+    win = xbmcgui.Window(10000)
+    cur = "1" if win.getProperty("bp.netsrc.write") == "1" else ""
+    win.setProperty("bp.netsrc.write", "" if cur == "1" else "1")
+    log("netsource: write %s" % ("off" if cur == "1" else "on"))
 
 
 def _netsrc_notify(string_id, error=True):
@@ -1016,6 +1030,8 @@ def netsrcnew(idx=None):
     win.setProperty("bp.netsrc.user", user)
     win.setProperty("bp.netsrc.pass", passwd)
     win.setProperty("bp.netsrc.pass.mask", "••••••" if passwd else "")
+    win.setProperty("bp.netsrc.write",
+                    ("1" if not e.get("readonly", True) else "") if e else "")
     win.setProperty("bp.netsrc.test", "")
     win.setProperty("bp.netsrc", "open")
     time.sleep(0.3)
@@ -1078,12 +1094,13 @@ def netsrcadd():
         if not label:
             label = os.urandom(4).hex()[:7]
     edit = (win.getProperty("bp.netsrc.edit") or "").strip()
+    readonly = win.getProperty("bp.netsrc.write") != "1"
     slot = 0
     if edit.isdigit() and int(edit) >= 1:
-        added = sources.netsrc_replace(int(edit), label, url, fields)
+        added = sources.netsrc_replace(int(edit), label, url, fields, readonly)
         slot = int(edit) if added else 0
     else:
-        added = sources.netsrc_add(label, url, fields)
+        added = sources.netsrc_add(label, url, fields, readonly)
         slot = len(sources.netsrc_load()) if added else 0
     _netsrc_clear_editor()
     netsrc_open()
@@ -2570,8 +2587,15 @@ def update_confirm():
     win.setProperty("bp.confirm.cmds", "1")
     win.setProperty("bp.confirm.from", xbmc.getInfoLabel("System.CurrentControlId"))
     win.setProperty("bp.confirm", "open")
-    time.sleep(0.4)
-    xbmc.executebuiltin("SetFocus(956)")
+    # Bounded retry: the overlay's `<visible>` may not be re-evaluated yet.
+    for _ in range(10):
+        xbmc.executebuiltin("SetFocus(956)")
+        try:
+            if xbmc.getCondVisibility("Control.HasFocus(956)"):
+                break
+        except Exception:
+            break
+        time.sleep(0.05)
     log("update: download confirm")
 
 
@@ -3011,7 +3035,7 @@ if __name__ == "__main__":
                    "rename", "delete",
                     "mkdir", "mkdircreate", "delconfirm", "bl", "bladd",
                     "blremove", "bltoggle", "dirsrc", "netsrc", "netcommit",
-                    "netsrcnew", "netproto_next", "netsrcfield", "netsrcadd",
+                     "netsrcnew", "netproto_next", "netro_toggle", "netsrcfield", "netsrcadd",
                     "netsrcclose", "netsrctest",
                    "pickopen", "pickselect",
                    "sort", "foldersfirst", "grid", "accent_next",
@@ -3091,6 +3115,8 @@ if __name__ == "__main__":
             netsrcnew()
         elif cmd == "netproto_next":
             netproto_next()
+        elif cmd == "netro_toggle":
+            netro_toggle()
         elif cmd == "netsrcfield":
             netsrcfield(sys.argv[2] if len(sys.argv) > 2 else "")
         elif cmd == "netsrcadd":

@@ -542,6 +542,13 @@ def _close_top_overlay():
     except Exception:
         pass
     try:
+        if win.getProperty("bp.resume") == "open":
+            xbmc.executebuiltin("RunScript(special://skin/scripts/main.py,resumecancel)")
+            _log("keyboard: hardware close -> bp.resume")
+            return True
+    except Exception:
+        pass
+    try:
         if win.getProperty("bp.notice") == "open":
             win.clearProperty("bp.notice")
             time.sleep(0.2)

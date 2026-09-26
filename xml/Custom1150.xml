@@ -10397,11 +10397,11 @@
 					<left>521</left>
 					<top>212</top>
 					<control type="image">
-						<left>0</left><top>0</top><width>878</width><height>656</height>
+						<left>0</left><top>0</top><width>878</width><height>724</height>
 						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
 					</control>
 					<control type="button" id="791">
-						<left>0</left><top>0</top><width>878</width><height>656</height>
+						<left>0</left><top>0</top><width>878</width><height>724</height>
 						<texturefocus />
 						<texturenofocus />
 						<onclick>noop</onclick>
@@ -10561,7 +10561,8 @@
 						<label>$LOCALIZE[31457]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrcfield,pass)</onclick>
 						<onup>795</onup>
-						<ondown>797</ondown>
+						<ondown condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">797</ondown>
+						<ondown>802</ondown>
 						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
 					</control>
 					<control type="label">
@@ -10571,8 +10572,33 @@
 						<textcolor>FFF2F2F4</textcolor>
 						<label>$INFO[Window(10000).Property(bp.netsrc.pass.mask)]</label>
 					</control>
+					<control type="radiobutton" id="802">
+						<left>24</left><top>552</top><width>830</width><height>60</height>
+						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">buttons/radio-button-on.png</textureradioonfocus>
+						<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">buttons/radio-button-on.png</textureradioonnofocus>
+						<textureradioofffocus colordiffuse="FF9A9AA2">buttons/radio-button-off.png</textureradioofffocus>
+						<textureradiooffnofocus colordiffuse="FF9A9AA2">buttons/radio-button-off.png</textureradiooffnofocus>
+						<font>font13</font><align>left</align><aligny>center</aligny>
+						<textoffsetx>26</textoffsetx>
+						<textwidth>655</textwidth>
+						<radioposx>710</radioposx>
+						<radioposy>-6</radioposy>
+						<radiowidth>132</radiowidth>
+						<radioheight>76</radioheight>
+						<textcolor>FF9A9AA2</textcolor>
+						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+						<label>$LOCALIZE[31537]</label>
+						<enable>!String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) + !String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)</enable>
+						<selected>String.IsEqual(Window(10000).Property(bp.netsrc.write),1)</selected>
+						<onclick>RunScript(special://skin/scripts/main.py,netro_toggle)</onclick>
+						<onup>796</onup>
+						<ondown>797</ondown>
+						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
+					</control>
 					<control type="button" id="798">
-						<left>89</left><top>572</top><width>220</width><height>60</height>
+						<left>89</left><top>640</top><width>220</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
 						<font>font13</font>
@@ -10581,12 +10607,13 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31458]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrcadd)</onclick>
-						<onup>796</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">796</onup>
+						<onup>802</onup>
 						<onright>801</onright>
 						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
 					</control>
 					<control type="button" id="801">
-						<left>329</left><top>572</top><width>220</width><height>60</height>
+						<left>329</left><top>640</top><width>220</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
 						<font>font13</font>
@@ -10596,43 +10623,44 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31465]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrctest)</onclick>
-						<onup>796</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">796</onup>
+						<onup>802</onup>
 						<onleft>798</onleft>
 						<onright>797</onright>
 						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
 					</control>
 					<control type="image">
-						<left>460</left><top>590</top><width>24</width><height>24</height>
+						<left>460</left><top>658</top><width>24</width><height>24</height>
 						<texture colordiffuse="FF9A9AA2">tests/question-circle.png</texture>
 						<visible>String.IsEmpty(Window(10000).Property(bp.netsrc.test)) + !Control.HasFocus(801)</visible>
 					</control>
 					<control type="image">
-						<left>460</left><top>590</top><width>24</width><height>24</height>
+						<left>460</left><top>658</top><width>24</width><height>24</height>
 						<texture colordiffuse="$INFO[Skin.String(accent)]">tests/question-circle.png</texture>
 						<visible>String.IsEmpty(Window(10000).Property(bp.netsrc.test)) + Control.HasFocus(801)</visible>
 					</control>
 					<control type="image">
-						<left>460</left><top>590</top><width>24</width><height>24</height>
+						<left>460</left><top>658</top><width>24</width><height>24</height>
 						<texture colordiffuse="FF9A9AA2">tests/x-circle.png</texture>
 						<visible>String.IsEqual(Window(10000).Property(bp.netsrc.test),fail) + !Control.HasFocus(801)</visible>
 					</control>
 					<control type="image">
-						<left>460</left><top>590</top><width>24</width><height>24</height>
+						<left>460</left><top>658</top><width>24</width><height>24</height>
 						<texture colordiffuse="$INFO[Skin.String(accent)]">tests/x-circle.png</texture>
 						<visible>String.IsEqual(Window(10000).Property(bp.netsrc.test),fail) + Control.HasFocus(801)</visible>
 					</control>
 					<control type="image">
-						<left>460</left><top>590</top><width>24</width><height>24</height>
+						<left>460</left><top>658</top><width>24</width><height>24</height>
 						<texture colordiffuse="FF9A9AA2">tests/check-circle.png</texture>
 						<visible>String.IsEqual(Window(10000).Property(bp.netsrc.test),ok) + !Control.HasFocus(801)</visible>
 					</control>
 					<control type="image">
-						<left>460</left><top>590</top><width>24</width><height>24</height>
+						<left>460</left><top>658</top><width>24</width><height>24</height>
 						<texture colordiffuse="$INFO[Skin.String(accent)]">tests/check-circle.png</texture>
 						<visible>String.IsEqual(Window(10000).Property(bp.netsrc.test),ok) + Control.HasFocus(801)</visible>
 					</control>
 					<control type="button" id="797">
-						<left>569</left><top>572</top><width>220</width><height>60</height>
+						<left>569</left><top>640</top><width>220</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
 						<font>font13</font>
@@ -10641,7 +10669,8 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31344]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrcclose)</onclick>
-						<onup>796</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">796</onup>
+						<onup>802</onup>
 						<onleft>801</onleft>
 						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
 					</control>

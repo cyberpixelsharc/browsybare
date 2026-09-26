@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Disabled by design: audio plays in the footer only.
-     Stub for window 10120 bounces to Home via window onload. -->
+<!-- Disabled by design: audio plays in the footer only. Stub for window 10120 bounces to Home via window onload. -->
 <window>
 	<onload>ActivateWindow(Home)</onload>
 	<controls>

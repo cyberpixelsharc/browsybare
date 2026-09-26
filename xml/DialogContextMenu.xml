@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Invisible relay (the native menu closes C++ side on ANY click): focusing
-     the cloned entry selects it and opens our bp.ctx overlay. Home only. -->
+<!-- Invisible relay (the native menu closes C++ side on ANY click): focusing the cloned entry selects it and opens our bp.ctx overlay. Home only. -->
 <window>
 	<defaultcontrol>996</defaultcontrol>
 	<coordinates>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Shutdown menu (bp.power). Bootstrap stub: sync.py overwrites it with
-     rows from the installed Estuary. -->
+<!-- Shutdown menu (bp.power). Bootstrap stub: sync.py overwrites it with rows from the installed Estuary. -->
 <includes>
 	<include name="PowerMenu">
 		<control type="group">

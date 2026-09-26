@@ -2575,8 +2575,16 @@ def _resume_prompt(path, entry):
     win.setProperty("bp.resume.t", str(entry.get("t", 0)))
     win.setProperty("bp.resume.line", L(31528) % resume.fmt(entry.get("t", 0)))
     win.setProperty("bp.resume", "open")
-    time.sleep(0.4)
-    xbmc.executebuiltin("SetFocus(906)")
+    # Bounded retry: `<visible>` may not be re-evaluated yet, so a bare SetFocus
+    # can land behind the modal and leave the box unresponsive.
+    for _ in range(10):
+        xbmc.executebuiltin("SetFocus(906)")
+        try:
+            if xbmc.getCondVisibility("Control.HasFocus(906)"):
+                break
+        except Exception:
+            break
+        time.sleep(0.05)
     log("resume prompt: %s @%s" % (redact(path), resume.fmt(entry.get("t", 0))))
 
 

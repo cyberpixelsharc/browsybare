@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Bootstrap stub: bounces to Home so the first sync can run.
-     Sync replaces it with the Estuary original. -->
+<!-- Bootstrap stub: bounces to Home so the first sync can run. Sync replaces it with the Estuary original. -->
 <window>
 	<onload>ActivateWindow(Home)</onload>
 	<controls>

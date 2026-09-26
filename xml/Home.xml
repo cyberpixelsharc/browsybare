@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- File manager shell: onloads plus error path. Layout lives in Layout.xml. -->
 <window>
-	<!-- Transient overlay states are cleared on load (a persisted property would
-	     resurrect a ghost overlay without focus). -->
+	<!-- Transient overlay states are cleared on load (a persisted property would resurrect a ghost overlay without focus). -->
 	<onload>ClearProperty(bp.settings)</onload>
 	<onload>ClearProperty(bp.menu)</onload>
 	<onload>ClearProperty(bp.drives)</onload>
@@ -69,8 +68,7 @@
 	<onload>ClearProperty(bp.aload)</onload>
 	<onload>ClearProperty(bp.aload.t)</onload>
 	<onload>ClearProperty(bp.exit)</onload>
-	<!-- Single serial boot (sync, drives, rows, accents, daemons). Parallel
-	     RunScripts segfaulted Kodi at interpreter startup. -->
+	<!-- Single serial boot (sync, drives, rows, accents, daemons). Parallel RunScripts segfaulted Kodi at interpreter startup. -->
 	<onload condition="String.IsEmpty(Skin.String(accent))">Skin.SetString(accent,FF8EB7D7)</onload>
 	<onload>SetProperty(bp.accent.value,$INFO[Skin.String(accent)])</onload>
 	<onload condition="String.IsEmpty(Skin.String(accent.level))">Skin.SetString(accent.level,L3)</onload>
@@ -79,8 +77,7 @@
 	<onload>SetProperty(bp.guisound.level,$INFO[Skin.String(guisound.level)])</onload>
 	<onload condition="String.IsEmpty(Skin.String(sort))">Skin.SetString(sort,name)</onload>
 	<onload>RunScript(special://skin/scripts/boot.py)</onload>
-	<!-- No window-level onback (ignored); overlay close plus focus restore live
-	     on each control, file-manager Back is the keymap dispatcher. -->
+	<!-- No window-level onback (ignored); overlay close plus focus restore live on each control, file-manager Back is the keymap dispatcher. -->
 	<defaultcontrol always="true">30</defaultcontrol>
 	<backgroundcolor>bp_bg</backgroundcolor>
 	<controls>
@@ -96,10 +93,8 @@
 			<textcolor>bp_error</textcolor>
 			<label>$LOCALIZE[31303]: $INFO[Window(10000).Property(bp.error)]</label>
 		</control>
-	<!-- Fullscreen install veil (bp.sync.active): nothing reachable until the
-	     base layer lands; gone after the reload. -->
-	<!-- File manager hidden until boot sets bp.ready (Home paints before scripts
-	     run); the error label always shows. -->
+	<!-- Fullscreen install veil (bp.sync.active): nothing reachable until the base layer lands; gone after the reload. -->
+	<!-- File manager hidden until boot sets bp.ready (Home paints before scripts run); the error label always shows. -->
 		<control type="group">
 			<visible>String.IsEqual(Window(10000).Property(bp.ready),1)</visible>
 			<include content="Layout"/>

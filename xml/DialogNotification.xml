@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- KaiToast 10107: 400 icon, 401 caption, 402 description.
-     Bootstrap stub; sync replaces it. -->
+<!-- KaiToast 10107: 400 icon, 401 caption, 402 description. Bootstrap stub; sync replaces it. -->
 <window>
 	<controls>
 		<control type="group">

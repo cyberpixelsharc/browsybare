@@ -35,7 +35,7 @@
 				<width>1920</width>
 				<bottom>0</bottom>
 				<!-- List disabled while a modal is open (wheel would scroll it behind). -->
-				<enable>!String.IsEqual(Window(10000).Property(bp.notice),open) + !String.IsEqual(Window(10000).Property(bp.info),open) + !String.IsEqual(Window(10000).Property(bp.keys),open)</enable>
+				<enable>!String.IsEqual(Window(10000).Property(bp.notice),open) + !String.IsEqual(Window(10000).Property(bp.info),open) + !String.IsEqual(Window(10000).Property(bp.keys),open) + !String.IsEqual(Window(10000).Property(bp.resume),open) + !String.IsEqual(Window(10000).Property(bp.confirm),open)</enable>
 				<onup>30</onup>
 				<ondown condition="Player.HasAudio + !Player.HasVideo">338</ondown>
 				<!-- Control-level onback (window onback is dead for NAV_BACK). Picker cancels, else one folder up (audio lock). -->
@@ -3086,6 +3086,8 @@
 						<onclick>RunScript(special://skin/scripts/main.py,powerrun)</onclick>
 						<onleft>956</onleft>
 						<onright>956</onright>
+						<onup>955</onup>
+						<ondown>955</ondown>
 						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
 					</control>
 					<control type="button" id="956">
@@ -3099,6 +3101,8 @@
 						<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
 						<onleft>955</onleft>
 						<onright>955</onright>
+						<onup>956</onup>
+						<ondown>956</ondown>
 						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
 					</control>
 				</control>

@@ -844,3 +844,7 @@ msgstr "Mise à jour"
 msgid "Download version %s into your Downloads folder?"
 msgctxt "#31536"
 msgstr "Télécharger la version %s dans le dossier Téléchargements ?"
+
+msgid "Write access"
+msgctxt "#31537"
+msgstr "Accès en écriture"

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Estuary original with accent-tinted spinner. Tint only;
-     drift guard 5 watches upstream. -->
+<!-- Estuary original with accent-tinted spinner. Tint only; drift guard 5 watches upstream. -->
 <window>
 	<animation effect="fade" end="100" time="560">WindowOpen</animation>
 	<animation effect="fade" start="100" end="0" time="240">WindowClose</animation>
