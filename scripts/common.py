@@ -5,6 +5,7 @@ import hashlib
 import os
 import re
 import tempfile
+import time
 from urllib.parse import quote, unquote_to_bytes
 
 import xbmc
@@ -111,6 +112,29 @@ def log(msg):
             print(msg)
         except Exception:
             pass
+
+
+def focus_control(control_id, tries=12, interval=0.05):
+    """Focus a control as soon as its overlay becomes visible.
+
+    Right after an overlay's `<visible>` property is set, a single SetFocus can
+    land BEHIND it (visibility is evaluated a frame later), which used to force
+    a fixed `time.sleep(0.3)` before every open -- a visible delay. Retry fast
+    instead and stop as soon as Control.HasFocus confirms the focus landed.
+    Returns True when the control holds focus."""
+    try:
+        cid = int(control_id)
+    except (TypeError, ValueError):
+        return False
+    for _ in range(max(1, tries)):
+        try:
+            xbmc.executebuiltin("SetFocus(%d)" % cid)
+            if xbmc.getCondVisibility("Control.HasFocus(%d)" % cid):
+                return True
+        except Exception:
+            return False
+        time.sleep(interval)
+    return False
 
 
 def skin_name():

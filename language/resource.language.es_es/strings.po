@@ -829,9 +829,9 @@ msgid "Downloading..."
 msgctxt "#31532"
 msgstr "Descargando..."
 
-msgid "Saved to Downloads"
+msgid "Saved: %s"
 msgctxt "#31533"
-msgstr "Guardado en Descargas"
+msgstr "Guardado: %s"
 
 msgid "Download failed"
 msgctxt "#31534"
@@ -841,9 +841,9 @@ msgid "Update"
 msgctxt "#31535"
 msgstr "Actualización"
 
-msgid "Download version %s into your Downloads folder?"
+msgid "Download version %s to %s?"
 msgctxt "#31536"
-msgstr "¿Descargar la versión %s en la carpeta Descargas?"
+msgstr "¿Descargar la versión %s en %s?"
 
 msgid "Write access"
 msgctxt "#31537"

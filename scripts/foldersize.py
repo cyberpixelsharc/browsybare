@@ -79,6 +79,23 @@ def cur_path(win):
         return ""
 
 
+def _player_active(win):
+    """True while audio/video plays OR a network track is still opening
+    (bp.aload, set before the core even starts). Network scans are skipped
+    then: a flaky DAV server (CloudMe) answers 502 under concurrent requests,
+    which breaks the stream open -- and Player.HasAudio is still false during
+    exactly that buffering window."""
+    try:
+        if win is not None and win.getProperty("bp.aload") == "1":
+            return True
+    except Exception:
+        pass
+    try:
+        return bool(xbmc.getCondVisibility("Player.HasAudio | Player.HasVideo"))
+    except Exception:
+        return False
+
+
 def idle_gate(monitor, win, secs=1, cur=None):
     """Wait until the UI has been idle for `secs`; False on abort/exit/path-change. Keeps background scans from competing with navigation on slow I/O; an open photo viewer also counts as busy (a scan would jitter the animation)."""
     while not monitor.abortRequested():
@@ -379,7 +396,8 @@ def main():
                 _PATTERNS_AT = time.time()
             patterns = _PATTERNS_CACHE
 
-            if netsize_on and cur and sources.is_network_path(cur):
+            if (netsize_on and cur and sources.is_network_path(cur)
+                    and not _player_active(win)):
                 _scan_network_files(cur, cache, win, monitor, show_hidden,
                                     patterns, case_sensitive)
             if cur and os.path.isdir(cur) and cur != last_path:

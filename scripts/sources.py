@@ -5,7 +5,7 @@ import hashlib
 import os
 import time
 import sys
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 
 import xbmc
 import xbmcvfs
@@ -272,14 +272,16 @@ def network_sources():
         return out
     for idx, s in enumerate(data):
         if isinstance(s, dict) and s.get("label"):
-            entry = {"label": str(s["label"]), "path": str(s.get("path") or ""),
-                     "readonly": bool(s.get("readonly", True))}
+            f = s.get("fields") if isinstance(s.get("fields"), dict) else None
+            path = netsrc_path_from_fields(f) if f else str(s.get("path") or "")
+            wa = _netsrc_writeaccess(s)
+            entry = {"label": str(s["label"]), "path": path, "writeaccess": wa}
             # Drop non-network non-empty paths (they would list empty as local);
             # path-less entries stay (display/toggle only).
             if entry["path"] and not is_network_path(entry["path"]):
                 continue
             out.append({"label": entry["label"], "path": entry["path"],
-                        "readonly": entry["readonly"],
+                        "writeaccess": wa,
                         "type": "network", "slot": idx + 1,
                         "key": netsrc_key(entry, idx + 1)})
     return out
@@ -318,7 +320,7 @@ def is_readonly(path):
             if not sp:
                 continue
             if pl == sp or pl.startswith(sp.rstrip("/") + "/"):
-                return bool(s.get("readonly", True))
+                return not bool(s.get("writeaccess", False))
     except Exception:
         pass
     return False
@@ -333,12 +335,207 @@ def url_display(path):
         return path
 
 
+def _auth_params(challenge):
+    """Parse a WWW-Authenticate parameter list (key=value / key="value") into a
+    lower-cased dict."""
+    out = {}
+    i = 0
+    n = len(challenge or "")
+    while i < n:
+        while i < n and challenge[i] in " ,":
+            i += 1
+        j = challenge.find("=", i)
+        if j < 0:
+            break
+        key = challenge[i:j].strip().lower()
+        k = j + 1
+        if k < n and challenge[k] == '"':
+            m = challenge.find('"', k + 1)
+            if m < 0:
+                break
+            out[key] = challenge[k + 1:m]
+            i = m + 1
+        else:
+            m = k
+            while m < n and challenge[m] != ",":
+                m += 1
+            out[key] = challenge[k:m].strip()
+            i = m
+    return out
+
+
+def _auth_quote(value):
+    return (value or "").replace("\\", "\\\\").replace('"', '\\"')
+
+
+def _dav_origin(url):
+    """Normalized DAV HTTP origin, URL path, and decoded credentials."""
+    try:
+        from urllib.parse import unquote, urlsplit
+    except Exception:
+        return None
+    try:
+        parsed = urlsplit(url)
+        scheme = parsed.scheme.lower()
+        if scheme == "dav":
+            scheme = "http"
+        elif scheme == "davs":
+            scheme = "https"
+        elif scheme not in ("http", "https"):
+            return None
+        host = (parsed.hostname or "").lower()
+        if not host or not parsed.path.startswith("/"):
+            return None
+        port = parsed.port or (443 if scheme == "https" else 80)
+        bracketed = "[%s]" % host if ":" in host else host
+        netloc = bracketed + (":%d" % parsed.port if parsed.port else "")
+        path = parsed.path + ("?" + parsed.query if parsed.query else "")
+        username = unquote(parsed.username) if parsed.username is not None else None
+        password = unquote(parsed.password or "")
+        return (scheme, host, port, netloc, path, username, password)
+    except (TypeError, ValueError):
+        return None
+
+
+def dav_copy_file(src_url, dst_url, timeout=60):
+    """Server-side copy for one file whose URLs share a DAV origin.
+
+    Returns (True, "") when accepted, otherwise (False, reason). CloudMe only
+    accepts the COPY Destination as a path, so try the standard absolute URI
+    before the path form."""
+    try:
+        import ssl
+        import urllib.error
+        import urllib.request
+        import xml.etree.ElementTree as ET
+    except Exception:
+        return False, "unsupported"
+    try:
+        src = _dav_origin(src_url)
+        dst = _dav_origin(dst_url)
+    except Exception:
+        return False, "unsupported"
+    if src is None or dst is None:
+        return False, "unsupported"
+    if src[:3] != dst[:3] or src[5:] != dst[5:]:
+        return False, "unsupported"
+    if src_url.endswith("/"):
+        return False, "unsupported"
+    scheme, _host, _port, netloc, src_path, username, password = src
+    dst_path = dst[4]
+    absolute_destination = "%s://%s%s" % (scheme, netloc, dst_path)
+    for destination in (absolute_destination, dst_path):
+        auth_header = ""
+        challenges = 0
+        last = ""
+        while True:
+            try:
+                req = urllib.request.Request(
+                    "%s://%s%s" % (scheme, netloc, src_path), method="COPY")
+                req.add_header("Destination", destination)
+                req.add_header("Overwrite", "F")
+                if auth_header:
+                    req.add_header("Authorization", auth_header)
+                with urllib.request.urlopen(req, timeout=timeout,
+                                            context=ssl.create_default_context()) as resp:
+                    try:
+                        status = resp.getcode()
+                    except Exception:
+                        status = getattr(resp, "status", 0) or 0
+                    if status in (200, 201, 204):
+                        return True, ""
+                    if status == 207:
+                        try:
+                            body = resp.read(65536)
+                            root = ET.fromstring(body)
+                            statuses = [el.text or "" for el in root.iter()
+                                        if el.tag.rsplit("}", 1)[-1].lower() == "status"]
+                        except Exception:
+                            return False, "unexpected"
+                        if statuses and all(s.split(" ", 2)[1].startswith("2")
+                                            for s in statuses):
+                            return True, ""
+                        return False, "unexpected"
+                    if status == 412:
+                        return False, "exists"
+                    last = "status-%s" % status
+            except urllib.error.HTTPError as err:
+                if err.code == 401 and username is not None and challenges < 1:
+                    challenge = (err.headers.get("WWW-Authenticate", "")
+                                 if err.headers else "") or ""
+                    new_auth = _dav_auth_header("COPY", src_path, username,
+                                                password, challenge)
+                    if new_auth and new_auth != auth_header:
+                        auth_header = new_auth
+                        challenges += 1
+                        continue
+                    return False, "auth"
+                if err.code == 412:
+                    return False, "exists"
+                last = "status-%s" % err.code
+            except Exception as err:
+                last = "%s: %s" % (type(err).__name__, err)
+            break
+    return False, last
+
+
+def _dav_auth_header(method, uri, username, password, challenge):
+    """Authorization header answering a WWW-Authenticate challenge: Digest (MD5
+    or MD5-sess, qop=auth) or Basic. Empty when neither is offered."""
+    import base64
+    import hashlib
+    import os as _os
+    challenge = (challenge or "").strip()
+    if not challenge:
+        return ""
+    scheme = challenge.split(" ", 1)[0].lower()
+    if scheme == "basic":
+        token = base64.b64encode(
+            ("%s:%s" % (username or "", password or "")).encode("utf-8")).decode("ascii")
+        return "Basic " + token
+    if scheme != "digest":
+        return ""
+    params = _auth_params(challenge.split(" ", 1)[1])
+    realm = params.get("realm", "")
+    nonce = params.get("nonce", "")
+    if not nonce:
+        return ""
+    qop = params.get("qop", "")
+    opaque = params.get("opaque", "")
+    algorithm = params.get("algorithm", "MD5")
+    cnonce = _os.urandom(8).hex()
+    nc = "00000001"
+    ha1 = hashlib.md5(("%s:%s:%s" % (
+        username or "", realm, password or "")).encode("utf-8")).hexdigest()
+    if algorithm.upper() == "MD5-SESS":
+        ha1 = hashlib.md5(("%s:%s:%s" % (ha1, nonce, cnonce)).encode("utf-8")).hexdigest()
+    ha2 = hashlib.md5(("%s:%s" % (method, uri)).encode("utf-8")).hexdigest()
+    qop_sel = ""
+    if qop:
+        offered = [q.strip().lower() for q in qop.split(",") if q.strip()]
+        qop_sel = "auth" if "auth" in offered else (offered[0] if offered else "")
+    if qop_sel:
+        digest = hashlib.md5(("%s:%s:%s:%s:%s:%s" % (
+            ha1, nonce, nc, cnonce, qop_sel, ha2)).encode("utf-8")).hexdigest()
+    else:
+        digest = hashlib.md5(("%s:%s:%s" % (ha1, nonce, ha2)).encode("utf-8")).hexdigest()
+    parts = ['username="%s"' % _auth_quote(username), 'realm="%s"' % _auth_quote(realm),
+             'nonce="%s"' % nonce, 'uri="%s"' % uri, 'response="%s"' % digest]
+    if qop_sel:
+        parts += ['qop=%s' % qop_sel, 'nc=%s' % nc, 'cnonce="%s"' % cnonce]
+    if opaque:
+        parts.append('opaque="%s"' % opaque)
+    if algorithm:
+        parts.append('algorithm=%s' % algorithm)
+    return "Digest " + ", ".join(parts)
+
+
 def dav_details(url, timeout=8, attempts=2):
     """{key: (size, mtime, is_dir)} for a WebDAV collection via ONE PROPFIND
     (Depth 1). Keys are the full child URL and the decoded name; {} on failure."""
     try:
-        import base64
         import ssl
+        import urllib.error
         import urllib.request
         import xml.etree.ElementTree as ET
         from email.utils import parsedate_to_datetime
@@ -360,23 +557,42 @@ def dav_details(url, timeout=8, attempts=2):
         if not path.endswith("/"):
             path += "/"
         request_url = "%s://%s%s" % (u.scheme, netloc, path)
-        auth = ""
-        if u.username is not None:
-            userinfo = "%s:%s" % (unquote(u.username), unquote(u.password or ""))
-            auth = "Basic " + base64.b64encode(
-                userinfo.encode("utf-8")).decode("ascii")
-        req = urllib.request.Request(request_url, method="PROPFIND")
-        req.add_header("Depth", "1")
-        req.add_header("Content-Type", "text/xml; charset=utf-8")
-        if auth:
-            req.add_header("Authorization", auth)
+        username = unquote(u.username) if u.username is not None else None
+        password = unquote(u.password or "")
         body = None
         last = ""
-        for _attempt in range(max(1, attempts)):
+        auth_header = ""
+        handshake = 0
+        tries = max(1, attempts)
+        attempt = 0
+        while attempt < tries:
+            attempt += 1
             try:
+                req = urllib.request.Request(request_url, method="PROPFIND")
+                req.add_header("Depth", "1")
+                req.add_header("Content-Type", "text/xml; charset=utf-8")
+                if auth_header:
+                    req.add_header("Authorization", auth_header)
                 with urllib.request.urlopen(req, timeout=timeout,
                                             context=ssl.create_default_context()) as r:
                     body = r.read()
+                break
+            except urllib.error.HTTPError as e:
+                if e.code == 401 and handshake < 2 and username is not None:
+                    # Answer the WWW-Authenticate challenge (Digest or Basic);
+                    # the auth handshake itself is not a network retry.
+                    handshake += 1
+                    challenge = (e.headers.get("WWW-Authenticate", "")
+                                 if e.headers else "") or ""
+                    new_auth = _dav_auth_header("PROPFIND", path, username,
+                                                password, challenge)
+                    if new_auth and new_auth != auth_header:
+                        auth_header = new_auth
+                        attempt -= 1
+                        continue
+                    last = "401 (%s)" % (challenge.split(" ", 1)[0] or "no auth")
+                else:
+                    last = "HTTP %s" % e.code
             except ssl.SSLError as e:
                 # NO silent TLS downgrade: the request carries credentials, so a
                 # verification bypass would defeat MITM protection. Treat as failure.
@@ -384,9 +600,7 @@ def dav_details(url, timeout=8, attempts=2):
             except Exception as e:
                 # a 503 from an overloaded server is transient: retry
                 last = "%s: %s" % (type(e).__name__, e)
-            if body is not None:
-                break
-            if _attempt + 1 < max(1, attempts):
+            if attempt < tries:
                 time.sleep(0.4)
         if not body:
             _log("sources: dav details failed for %s (%s)" % (redact(url), last))
@@ -485,19 +699,20 @@ def _netsrc_path():
 
 
 def netsrc_load():
-    """Stored network sources ([{label, path, fields?}], order preserved) or [].
-    Path may be empty; `fields` holds the editor values verbatim."""
+    """Stored network sources ([{label, path, writeaccess, fields?}], order
+    preserved) or []. The browsable `path` is derived live from `fields` when
+    present; a legacy entry without fields keeps its stored path."""
     data = _read_json(_netsrc_path(), [])
     if not isinstance(data, list):
         return []
     out = []
     for s in data:
         if isinstance(s, dict) and s.get("label"):
+            f = s.get("fields") if isinstance(s.get("fields"), dict) else None
             e = {"label": str(s["label"]),
-                 "path": str(s.get("path") or ""),
-                 "readonly": bool(s.get("readonly", True))}
-            f = s.get("fields")
-            if isinstance(f, dict):
+                 "path": netsrc_path_from_fields(f) if f else str(s.get("path") or ""),
+                 "writeaccess": _netsrc_writeaccess(s)}
+            if f:
                 e["fields"] = {k: str(v or "") for k, v in f.items()
                                if k in ("scheme", "server", "port",
                                         "path", "user", "pass")}
@@ -559,20 +774,68 @@ def rstrip_slash(path):
     return p
 
 
-def _netsrc_entry(label, path, fields, readonly=True):
-    """Entry dict. `fields` keeps the editor values verbatim (the stored path
-    cannot round-trip arbitrary input); path stays the assembled browsable URL.
-    `readonly` defaults to True (writes must be enabled per source)."""
-    entry = {"label": label, "path": path, "readonly": bool(readonly)}
+def netsrc_url(scheme, server, port, path, user, passwd):
+    """Assemble the browsable VFS URL from the editor fields. Empty when there
+    is no server. The userinfo is percent-encoded: Kodi parses davs as https,
+    so a "?;#|" in a password would be the option separator and an "@" would end
+    the userinfo early; Kodi decodes %XX in user/password (CURL::Parse)."""
+    scheme = (scheme or "ftp").split("://", 1)[0].lower() or "ftp"
+    server, s_port, s_path = netsrc_split(server)
+    port = netsrc_sanitize("port", port).strip() or s_port
+    path = (path or "").strip().strip("/") or s_path.strip("/")
+    user = (user or "").strip()
+    if not server:
+        return ""
+    user_enc = quote(user, safe="")
+    pass_enc = quote(passwd or "", safe="")
+    creds = (user_enc + ((":" + pass_enc) if pass_enc else "") + "@") if user_enc else ""
+    srv = server[:-1] if (server.endswith("/")
+                          and not server.endswith("://")) else server
+    url = scheme + "://" + creds + srv
+    if port.isdigit():
+        url += ":" + port
+    if path:
+        url += "/" + path
+    return url if netsrc_valid(url) else ""
+
+
+def netsrc_path_from_fields(fields):
+    """Browsable path derived live from the editor fields ('' when no address).
+    The stored 'path' is optional -- the fields are the source of truth."""
+    f = fields or {}
+    return netsrc_url(f.get("scheme", "ftp"), f.get("server", ""),
+                      f.get("port", ""), f.get("path", ""),
+                      f.get("user", ""), f.get("pass", ""))
+
+
+def _netsrc_writeaccess(s):
+    """Write-access flag of a stored entry. Migrates the legacy inverted
+    'readonly' key; default False (read-only)."""
+    if not isinstance(s, dict):
+        return False
+    if "writeaccess" in s:
+        return bool(s.get("writeaccess"))
+    if "readonly" in s:
+        return not bool(s.get("readonly"))
+    return False
+
+
+def _netsrc_entry(label, path, fields, writeaccess=False):
+    """Entry dict. The editor `fields` are the source of truth; the browsable
+    `path` is derived from them on load and stored only for legacy/path-only
+    entries. `writeaccess` defaults to False (read-only)."""
+    entry = {"label": label, "writeaccess": bool(writeaccess)}
     if fields:
         clean = {k: (v or "") for k, v in fields.items()
                  if k in ("scheme", "server", "port", "path", "user", "pass")}
         if clean:
             entry["fields"] = clean
+    if "fields" not in entry and path:
+        entry["path"] = path
     return entry
 
 
-def netsrc_add(label, path, fields=None, readonly=True):
+def netsrc_add(label, path, fields=None, writeaccess=False):
     """Append a network source. Label required; path optional (validated when
     present). Duplicate non-empty paths rejected. Visible by default.
     Read-only by default (writes must be enabled)."""
@@ -585,13 +848,13 @@ def netsrc_add(label, path, fields=None, readonly=True):
     cur = netsrc_load()
     if path and any((e.get("path") or "").lower() == path.lower() for e in cur):
         return False
-    cur.append(_netsrc_entry(label, path, fields, readonly))
+    cur.append(_netsrc_entry(label, path, fields, writeaccess))
     from common import write_json as _write_json
     _write_json(_netsrc_path(), cur)
     return True
 
 
-def netsrc_replace(idx, label, path, fields=None, readonly=True):
+def netsrc_replace(idx, label, path, fields=None, writeaccess=False):
     """Replace the 1-based entry. Same rules as netsrc_add (this entry excluded
     from the duplicate check)."""
     try:
@@ -610,7 +873,7 @@ def netsrc_replace(idx, label, path, fields=None, readonly=True):
     if path and any((e.get("path") or "").lower() == path.lower()
                     for j, e in enumerate(cur) if j != idx - 1):
         return False
-    cur[idx - 1] = _netsrc_entry(label, path, fields, readonly)
+    cur[idx - 1] = _netsrc_entry(label, path, fields, writeaccess)
     from common import write_json as _write_json
     _write_json(_netsrc_path(), cur)
     return True

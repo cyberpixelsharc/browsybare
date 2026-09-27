@@ -13,7 +13,7 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable
+from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable, focus_control
 from urllib.parse import quote
 import keyboard
 import blacklist
@@ -72,9 +72,63 @@ def _net(path):
     return sources.is_network_path(path)
 
 
+def _is_dav(path):
+    """True for WebDAV-style URLs (dav/davs only), not general HTTP URLs."""
+    try:
+        return (path or "").lower().split("://", 1)[0] in ("dav", "davs")
+    except Exception:
+        return False
+
+
+def _vfs_list(path):
+    """xbmcvfs.listdir with retries: a DAV server (CloudMe) answers a listing
+    with a transient 502. For a path KNOWN to be a folder it returns
+    (dirs, files), or None when it keeps failing. A DAV answer that lacks the
+    collection's own self-reference is a partial (502) response -- retried,
+    never mistaken for an empty folder."""
+    is_dav = path.lower().startswith(("dav://", "davs://"))
+    tail = path.rstrip("/").rsplit("/", 1)[-1] if is_dav else ""
+    deadline = time.time() + 3.0
+    while True:
+        try:
+            res = xbmcvfs.listdir(path)
+        except Exception:
+            res = None
+        if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
+            dirs = list(res[0] or [])
+            files = list(res[1] or [])
+            if not (is_dav and tail and tail not in dirs and tail not in files):
+                return dirs, files
+        if time.time() >= deadline:
+            return None
+        time.sleep(0.4)
+
+
+def _strip_self(path, dirs):
+    """Drop the WebDAV self-reference: Kodi lists the collection itself as a
+    child named like the folder. Remove ONE occurrence only -- a real child may
+    legitimately share the folder's name (e.g. Movies3/Movies3)."""
+    dirs = list(dirs)
+    tail = path.rstrip("/").rsplit("/", 1)[-1]
+    if tail and tail in dirs:
+        dirs.remove(tail)
+    return dirs
+
+
 def _exists(path):
-    """Existence check that also works for VFS network URLs."""
+    """Existence check for local paths and VFS network URLs. Kodi's
+    xbmcvfs.exists() answers False for DAV collections (it probes the collection
+    URL), so a network path is matched against its PARENT listing (like
+    _is_dir); a root-ish URL falls back to xbmcvfs.exists()."""
     if _net(path):
+        base = path.rstrip("/")
+        parent, _sep, name = base.rpartition("/")
+        if parent and name:
+            got = _vfs_list(parent)
+            if got is not None:
+                # The parent's own self-reference shares its name; strip it so a
+                # same-named child is not reported as already existing.
+                return name in _strip_self(parent, got[0]) or name in got[1]
         try:
             return bool(xbmcvfs.exists(path))
         except Exception:
@@ -92,12 +146,11 @@ def _is_dir(path):
         parent, _sep, name = base.rpartition("/")
         if not parent or not name:
             return False
-        try:
-            res = xbmcvfs.listdir(parent)
-            if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
-                return name in list(res[0] or [])
-        except Exception:
-            pass
+        got = _vfs_list(parent)
+        if got is not None:
+            # Strip the parent's self-reference: it shares the parent's name and
+            # would otherwise make a same-named child look like a directory.
+            return name in _strip_self(parent, got[0])
         return False
     return os.path.isdir(path)
 
@@ -109,21 +162,13 @@ def _vfs_rmtree(path):
     it to avoid infinite recursion. A falsey delete/rmdir is only a failure when
     the target still exists (a vanished entry / no-op backend must not error)."""
     base = path.rstrip("/")
-    tail = base.rsplit("/", 1)[-1]
     dirs, files = [], []
-    try:
-        res = xbmcvfs.listdir(base)
-        if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
-            dirs = list(res[0] or [])
-            files = list(res[1] or [])
-    except Exception:
-        # A transient listing failure must not abort: still try the children
-        # that are known and the (possibly empty) rmdir pass below.
-        dirs, files = [], []
+    got = _vfs_list(base)
+    if got is not None:
+        dirs, files = _strip_self(base, got[0]), got[1]
+    # else: a transient listing failure must not abort -- still run the rmdir pass.
     ok = True
     for f in files:
-        if f.rstrip("/") == tail:
-            continue
         child = base + "/" + f
         try:
             done = bool(xbmcvfs.delete(child))
@@ -132,8 +177,6 @@ def _vfs_rmtree(path):
         if not done and _vfs_exists(child):
             ok = False
     for d in dirs:
-        if d.rstrip("/") == tail:
-            continue
         if not _vfs_rmtree(base + "/" + d):
             ok = False
     try:
@@ -163,11 +206,146 @@ def _vfs_delete(path):
     return not _vfs_exists(path)
 
 
+def _vfs_count(src):
+    """FILES under a VFS source (1 for a file); drives the paste progress bar.
+    Only used for the copy fallback -- a plain move uses the server MOVE and
+    never counts."""
+    if not _is_dir(src):
+        return 1
+    got = _vfs_list(src)
+    if got is None:
+        return 1
+    return _vfs_count_children(src, got)
+
+
+def _vfs_count_children(path, got):
+    dirs = _strip_self(path, got[0])
+    files = got[1]
+    n = len(files)
+    for d in dirs:
+        child = path.rstrip("/") + "/" + d
+        cgot = _vfs_list(child)
+        n += _vfs_count_children(child, cgot) if cgot is not None else 1
+    return n
+
+
+def _vfs_size(path):
+    """Exact size for a file URL/path, or None when the stat is unavailable."""
+    for attempt in range(3):
+        try:
+            stat = xbmcvfs.Stat(path)
+            size = stat.st_size() if callable(getattr(stat, "st_size", None)) else stat.st_size
+            value = int(size)
+            if value >= 0:
+                return value
+        except Exception:
+            pass
+        if attempt < 2:
+            time.sleep(0.4)
+    return None
+
+
+def _verify_vfs_copy(src, dst, trusted):
+    """True when a copied file is verifiably complete.
+
+    Exact matching sizes are decisive. When a stat is unavailable during a
+    flaky transfer, fall back to accepting an accepted COPY/stream result only
+    if the destination appears in its parent listing."""
+    src_size = _vfs_size(src)
+    dst_size = _vfs_size(dst)
+    if src_size is not None and dst_size is not None:
+        return src_size == dst_size
+    return trusted and _exists(dst)
+
+
+def _copy_leaf(src, dst, state):
+    """Copy one file and advance the progress bar.
+
+    Between WebDAV locations, prefer a server-side file COPY, which avoids
+    re-downloading a large file through Kodi. Do not report failure merely
+    because a transient request makes one size check unavailable after the
+    server has accepted the copy and the destination is listed."""
+    webdav = _is_dav(src) and _is_dav(dst)
+    if webdav:
+        try:
+            copied, reason = sources.dav_copy_file(src, dst)
+        except Exception as err:
+            log("server copy failed: %s" % err)
+            copied, reason = False, "error"
+        if copied:
+            if _verify_vfs_copy(src, dst, True):
+                state["done"] = state.get("done", 0) + 1
+                total = state.get("total") or 0
+                _prog_set(state["done"] * 100 // total if total else 100)
+                return True
+            log("server copy unverified: %s" % redact(dst))
+            return False
+        if reason == "exists":
+            log("server copy refused: %s" % redact(dst))
+            return False
+    try:
+        ok = bool(xbmcvfs.copy(src, dst))
+    except Exception:
+        ok = False
+    if ok and webdav and not _verify_vfs_copy(src, dst, True):
+        log("streamed copy unverified: %s" % redact(dst))
+        ok = False
+    state["done"] = state.get("done", 0) + 1
+    total = state.get("total") or 0
+    _prog_set(state["done"] * 100 // total if total else 0)
+    return ok
+
+
+def _copy_dir(src, dst, got, state):
+    """Copy a directory whose listing is `got` (child kinds already known)."""
+    dirs = _strip_self(src, got[0])
+    files = got[1]
+    try:
+        xbmcvfs.mkdir(dst)
+    except Exception:
+        pass
+    ok = True
+    for n in files:
+        if _prog_cancelled():
+            raise _ProgCancelled()
+        if not _copy_leaf(src.rstrip("/") + "/" + n, dst.rstrip("/") + "/" + n, state):
+            ok = False
+    for n in dirs:
+        csrc = src.rstrip("/") + "/" + n
+        cgot = _vfs_list(csrc)
+        if cgot is None or not _copy_dir(csrc, dst.rstrip("/") + "/" + n, cgot, state):
+            ok = False
+    return ok
+
+
+def _vfs_copy(src, dst, state=None):
+    """Recursive copy over Kodi's VFS (files via xbmcvfs.copy, folders via
+    mkdir + listdir). Skips the WebDAV phantom self-child, like _vfs_rmtree."""
+    if state is None:
+        state = {"done": 0, "total": 0}
+    if not _is_dir(src):
+        return _copy_leaf(src, dst, state)
+    got = _vfs_list(src)
+    if got is None:
+        return False
+    return _copy_dir(src, dst, got, state)
+
+
 def _display_name(path):
     """Item name for a modal header. Decode the FULL path first: the basename
     alone has no scheme, so `url_display` would leave `%20` in place."""
     disp = sources.url_display(path).rstrip("/")
     return safe_label(os.path.basename(disp) or disp)
+
+
+def _reload_list():
+    """Reliable list reload after a filesystem change: bump the r URL param
+    BEFORE Container.Refresh, so the refresh fetches a NEW content URL and
+    misses Kodi's directory cache. The reverse order re-serves the stale
+    listing (the renamed/created/deleted entry then appears to vanish)."""
+    win = xbmcgui.Window(10000)
+    win.setProperty("bp.refresh", str(time.time()))
+    xbmc.executebuiltin("Container.Refresh")
 
 
 def rename(path=None):
@@ -207,8 +385,7 @@ def rename(path=None):
         else:
             os.rename(p, new_path)
         log("rename: %s -> %s" % (redact(p), redact(new_path)))
-        xbmc.executebuiltin("Container.Refresh")
-        win.setProperty("bp.refresh", str(time.time()))
+        _reload_list()
     except Exception as e:
         log("rename failed: %s" % e)
         xbmcgui.Dialog().notification(skin_name(), safe_label(L(31336) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -232,22 +409,20 @@ def ctx(path):
     win.setProperty("bp.ctx.path", quote(quote(p, safe="", errors="surrogateescape"), safe=""))
     win.setProperty("bp.ctx.title", name)
     win.clearProperty("bp.ctx.reduced")
-    # Copy/cut/paste are local-only: no reliable recursive VFS copy yet.
-    if _net(p):
-        win.setProperty("bp.ctx.net", "1")
-    else:
-        win.clearProperty("bp.ctx.net")
+    # Copy/cut/paste need a writable target: hide them for read-only sources
+    # (ftp/ftps). WebDAV/smb/nfs writes go through the VFS.
     # ftp/ftps is read-only: grey those rows and focus Cancel (450).
     ro = sources.is_readonly(p)
     if ro:
         win.setProperty("bp.ctx.readonly", "1")
+        win.setProperty("bp.ctx.noclip", "1")
     else:
         win.clearProperty("bp.ctx.readonly")
+        win.clearProperty("bp.ctx.noclip")
     win.setProperty("bp.ctx", "open")
     # Close the native relay dialog so keys reach the overlay, then focus it.
     xbmc.executebuiltin("Dialog.Close(10106)")
-    time.sleep(0.3)
-    xbmc.executebuiltin("SetFocus(%d)" % (450 if ro else 121))
+    focus_control(450 if ro else 121)
     log("ctx: %s" % redact(p))
 
 
@@ -258,22 +433,19 @@ def ctx_current():
         # Never open the context menu behind the photo viewer.
         return
     cur = path_dec(win.getProperty("bp.path") or "").rstrip("/")
-    if _net(cur):
-        win.setProperty("bp.ctx.net", "1")
-    else:
-        win.clearProperty("bp.ctx.net")
-    # ftp/ftps: "New folder" is unsupported -> greyed, focus Cancel (452).
+    # ftp/ftps: "New folder"/paste are unsupported -> greyed, focus Cancel (452).
     ro = sources.is_readonly(cur)
     if ro:
         win.setProperty("bp.ctx.readonly", "1")
+        win.setProperty("bp.ctx.noclip", "1")
     else:
         win.clearProperty("bp.ctx.readonly")
+        win.clearProperty("bp.ctx.noclip")
     win.clearProperty("bp.ctx.path")
     win.setProperty("bp.ctx.reduced", "1")
     win.setProperty("bp.ctx", "open")
     xbmc.executebuiltin("Dialog.Close(10106)")
-    time.sleep(0.3)
-    xbmc.executebuiltin("SetFocus(%d)" % (452 if ro else 451))
+    focus_control(452 if ro else 451)
     log("ctx: current folder (reduced menu)")
 
 
@@ -302,8 +474,7 @@ def mkdircreate():
             if not xbmcvfs.mkdir(new_path):
                 raise OSError("VFS mkdir failed")
             log("mkdir: %s" % redact(new_path))
-            xbmc.executebuiltin("Container.Refresh")
-            win.setProperty("bp.refresh", str(time.time()))
+            _reload_list()
         except Exception as e:
             log("mkdir failed: %s" % e)
             xbmcgui.Dialog().notification(skin_name(), safe_label(L(31338) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -316,8 +487,7 @@ def mkdircreate():
     try:
         os.makedirs(new_path)
         log("mkdir: %s" % redact(new_path))
-        xbmc.executebuiltin("Container.Refresh")
-        win.setProperty("bp.refresh", str(time.time()))
+        _reload_list()
     except Exception as e:
         log("mkdir failed: %s" % e)
         xbmcgui.Dialog().notification(skin_name(), safe_label(L(31338) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -362,10 +532,9 @@ def delete(path):
     win.setProperty("bp.del.title.rep", safe_label(_ticker(name, 11, 560)))
     win.setProperty("bp.del.line", L(31332) if _is_dir(p) else L(31333))
     win.setProperty("bp.del", "open")
-    # Focus the safe default (No), delayed so a hiding trigger overlay cannot
-    # refocus away. The legacy SDK ControlButton has no setFocus().
-    time.sleep(0.4)
-    xbmc.executebuiltin("SetFocus(124)")
+    # Focus the safe default (No) once the overlay is visible: the legacy SDK
+    # ControlButton has no setFocus(), and the quick retry beats a fixed delay.
+    focus_control(124)
     log("delete armed: %s" % redact(p))
 
 
@@ -385,8 +554,7 @@ def delconfirm():
         else:
             os.remove(p)
         log("delete: %s" % redact(p))
-        xbmc.executebuiltin("Container.Refresh")
-        win.setProperty("bp.refresh", str(time.time()))
+        _reload_list()
     except Exception as e:
         log("delete failed: %s" % e)
         xbmcgui.Dialog().notification(skin_name(), safe_label(L(31337) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -415,11 +583,11 @@ def _focus_list(delay=0.25):
 def _clip_set(path, mode):
     """Store `path` on the clipboard (mode 'copy'|'move') in window props."""
     p = (path or "").strip()
-    if not p or not os.path.exists(p):
+    if not p or not _exists(p):
         xbmcgui.Dialog().notification(skin_name(), L(31330), xbmcgui.NOTIFICATION_ERROR, 3000)
         _focus_list()
         return
-    name = safe_label(os.path.basename(p.rstrip("/")) or p)
+    name = _display_name(p)
     win = xbmcgui.Window(10000)
     win.setProperty("bp.clip.path", path_enc(p))
     win.setProperty("bp.clip.mode", mode)
@@ -582,6 +750,61 @@ def _copy_tree(src, dst, state):
         _copy_file(src, dst, state)
 
 
+def _paste_net(src, dest, mode):
+    """Paste between VFS locations: a move uses the server MOVE (xbmcvfs.rename)
+    when possible, else a recursive xbmcvfs copy (+ delete for a move)."""
+    win = xbmcgui.Window(10000)
+    name = os.path.basename(src.rstrip("/")) or "?"
+    target = dest + "/" + name
+    title = L(31417)
+    src_b = src.rstrip("/")
+    tgt_b = target.rstrip("/")
+    if _exists(target) or tgt_b == src_b or tgt_b.startswith(src_b + "/"):
+        _prog_open(title)
+        _prog_error(L(31419))
+        return
+    _prog_open(title)
+    try:
+        moved = False
+        if mode == "move":
+            try:
+                moved = bool(xbmcvfs.rename(src, target))  # server-side MOVE
+            except Exception:
+                moved = False
+        if not moved:
+            state = {"total": _vfs_count(src), "done": 0}
+            if not _vfs_copy(src, target, state):
+                raise OSError("copy failed")
+            if mode == "move":
+                _vfs_delete(src)
+        _prog_set(100)
+        log("clipboard paste (%s): %s -> %s" % (mode, redact(src), redact(target)))
+        win.clearProperty("bp.clip.path")
+        win.clearProperty("bp.clip.mode")
+        win.clearProperty("bp.clip.name")
+        time.sleep(0.35)
+        _prog_close()
+        _reload_list()
+        time.sleep(0.2)
+        xbmc.executebuiltin("SetFocus(33)")
+    except _ProgCancelled:
+        log("net paste cancelled: %s -> %s" % (redact(src), redact(target)))
+        try:
+            _vfs_delete(target)
+        except Exception:
+            pass
+        _prog_close()
+    except Exception as e:
+        log("net paste failed: %s" % e)
+        # Remove the partial copy: it would make the next paste fail on the
+        # exists-check. The source is untouched.
+        try:
+            _vfs_delete(target)
+        except Exception:
+            pass
+        _prog_error(safe_label(L(31422) % e))
+
+
 def clip_paste():
     """Paste the clipboard into the current folder, showing bp.prog.
 
@@ -591,11 +814,28 @@ def clip_paste():
     src = path_dec(win.getProperty("bp.clip.path") or "").strip()
     mode = win.getProperty("bp.clip.mode") or ""
     if not src or mode not in ("copy", "move"):
+        log("clipboard paste: nothing to paste")
         xbmcgui.Dialog().notification(skin_name(), L(31418), xbmcgui.NOTIFICATION_ERROR, 3000)
         _focus_list()
         return
-    if not os.path.exists(src):
+    log("clipboard paste (%s): %s" % (mode, redact(src)))
+    if not _exists(src):
+        log("clipboard paste: source gone")
         xbmcgui.Dialog().notification(skin_name(), L(31330), xbmcgui.NOTIFICATION_ERROR, 3000)
+        _focus_list()
+        return
+    cur = path_dec(win.getProperty("bp.path") or "").rstrip("/")
+    net_src = _net(src)
+    net_dest = _net(cur)
+    if net_src and net_dest:
+        _paste_net(src, cur, mode)
+        return
+    if net_src != net_dest:
+        # Cross-transport copy (local <-> network) is not wired yet.
+        log("clipboard paste: cross-transport unsupported")
+        xbmcgui.Dialog().notification(
+            skin_name(), L(31422) % "local <-> network",
+            xbmcgui.NOTIFICATION_ERROR, 3000)
         _focus_list()
         return
     dest = _current_dir()
@@ -638,10 +878,9 @@ def clip_paste():
         win.clearProperty("bp.clip.name")
         time.sleep(0.35)  # let the full bar show before closing
         _prog_close()
-        # Refresh AFTER the modal closes: Container.Refresh while it was up
-        # was ignored, so the copied item stayed invisible.
-        win.setProperty("bp.refresh", str(time.time()))
-        xbmc.executebuiltin("Container.Refresh")
+        # Refresh AFTER the modal closes (Container.Refresh while a focused
+        # overlay is up is ignored); _reload_list bumps r first (dir cache).
+        _reload_list()
         time.sleep(0.2)
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:

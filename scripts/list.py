@@ -6,6 +6,7 @@ import datetime
 import json
 import os
 import sys
+import time
 from urllib.parse import quote, unquote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +29,21 @@ FOLDER_CACHE = "folder-sizes.json"
 def log(msg):
     # Sanitized sink: raw paths may carry surrogates the logging binding rejects.
     _common_log("list: " + msg)
+
+
+def _player_on():
+    """True while audio/video plays OR a network track is still opening
+    (bp.aload). WebDAV enrichment is skipped then: a flaky DAV server (CloudMe)
+    answers 502 under concurrent requests, which breaks the stream open."""
+    try:
+        if xbmcgui.Window(10000).getProperty("bp.aload") == "1":
+            return True
+    except Exception:
+        pass
+    try:
+        return bool(xbmc.getCondVisibility("Player.HasAudio | Player.HasVideo"))
+    except Exception:
+        return False
 
 # Blacklist (data/blacklist.json) applies even when hidden-files is on.
 
@@ -258,6 +274,36 @@ def _localized(i):
         return ""
 
 
+def _dav_entries_from_details(path, details):
+    """Ordered DAV children [(vfs, disp, is_dir, size, mtime)] from a
+    dav_details() answer, or None when the answer is missing/partial.
+
+    Kodi's VFS lists a WebDAV child whose name holds a raw `;` only up to the
+    `;` (it parses the rest as URL options), so such files showed truncated.
+    The PROPFIND carries the true names; the child URL keeps the server href
+    form verbatim (percent-encoded for non-ASCII like `%C3%84`, the raw `;`
+    intact) -- a live check proved Kodi's PLAYER opens the raw form while `%3B`
+    makes playback fail -- and only the DISPLAY name is decoded."""
+    if not details:
+        return None
+    folder = unquote(sources.rstrip_slash(path))
+    out = []
+    self_seen = False
+    for key, (size, mtime, is_dir) in details.items():
+        if not key.startswith(("dav://", "davs://")):
+            continue
+        if unquote(sources.rstrip_slash(key)) == folder:
+            self_seen = True
+            continue
+        raw = key.rstrip("/").rsplit("/", 1)[-1]
+        if not raw:
+            continue
+        out.append((raw, unquote(raw), bool(is_dir), size, mtime))
+    # A real DAV listing always echoes the collection itself; its absence means a
+    # partial (transient 502) answer, so fall back to the VFS listing instead.
+    return out if self_seen else None
+
+
 def list_network(handle, path, picker_active=False):
     """List a network source over Kodi's VFS (ftp/ftps/smb/nfs/http/https/dav).
     Subfolders browse via the same bp.url channel; ".." stops at the host boundary."""
@@ -267,6 +313,9 @@ def list_network(handle, path, picker_active=False):
     except Exception:
         src = ""
     dirs, files, err = [], [], ""
+    is_dav = False
+    dav_entries = None
+    details = {}
     path = (path or "").strip()
     # "no path" and "scheme only" ("ftp://") are half-filled entries: report
     # unreachable immediately instead of probing the VFS (long connect timeout).
@@ -274,29 +323,70 @@ def list_network(handle, path, picker_active=False):
         err = "unreachable"
     else:
         path = sources.rstrip_slash(path)
-        try:
-            res = xbmcvfs.listdir(path)
-            if (isinstance(res, tuple) and len(res) == 2
-                    and res[0] is not False and res[1] is not False):
-                dirs = list(res[0] or [])
-                files = list(res[1] or [])
-                # WebDAV: Kodi's listing includes the folder itself (PROPFIND
-                # self-reference); drop that phantom child. Names stay URL-form.
-                if path.lower().startswith(("dav://", "davs://")):
-                    tail = path.rstrip("/").rsplit("/", 1)[-1]
-                    if tail:
-                        dirs = [n for n in dirs if n != tail]
-            else:
-                err = "unreachable"
-        except Exception as e:
-            err = str(e) or "error"
-    if not err and not dirs and not files:
-        # an empty result is a real folder only when it exists
-        try:
-            if not xbmcvfs.exists(path):
-                err = "unreachable"
-        except Exception as e:
-            err = str(e) or "error"
+        is_dav = path.lower().startswith(("dav://", "davs://"))
+        tail = path.rstrip("/").rsplit("/", 1)[-1] if is_dav else ""
+        # WebDAV: ONE Depth-1 PROPFIND gives the TRUE child names (Kodi's VFS
+        # truncates a name at a raw ";" -- its URL options separator) plus
+        # sizes/dates. Use it as the listing source; the VFS listing is the
+        # fallback when the PROPFIND is unavailable or partial.
+        if is_dav and not _player_on():
+            try:
+                details = sources.dav_details(path, timeout=2, attempts=1)
+            except Exception as e:
+                details = {}
+                log("dav details crashed: %s" % e)
+            dav_entries = _dav_entries_from_details(path, details)
+        if dav_entries is not None:
+            err = ""
+        else:
+            # A DAV server (CloudMe) can answer a PROPFIND with a transient 502;
+            # retry instead of showing an error -- or, worse, a fake EMPTY folder.
+            # Time-bounded: one stalled request can already burn Kodi's timeout, so
+            # a budget (not an attempt count) caps how long we keep trying.
+            deadline = time.time() + 6.0
+            attempt = 0
+            while True:
+                attempt += 1
+                try:
+                    res = xbmcvfs.listdir(path)
+                except Exception as e:
+                    res = None
+                    err = str(e) or "error"
+                if (isinstance(res, tuple) and len(res) == 2
+                        and res[0] is not False and res[1] is not False):
+                    dirs = list(res[0] or [])
+                    files = list(res[1] or [])
+                    # A real DAV listing echoes the collection itself (PROPFIND
+                    # self-reference). Missing -> partial answer (transient 502):
+                    # treat it as a failure and retry, never as an empty folder.
+                    if is_dav and tail and tail not in dirs and tail not in files:
+                        err = "unreachable"
+                    else:
+                        if is_dav and tail in dirs:
+                            # Drop ONE self-reference: a real child may share the
+                            # folder's name (Movies3/Movies3) and must survive.
+                            dirs.remove(tail)
+                        err = ""
+                        if attempt > 1:
+                            log("network: listdir ok on attempt %d (%s)"
+                                % (attempt, redact(path)))
+                        break
+                else:
+                    err = "unreachable"
+                if time.time() >= deadline:
+                    break
+                time.sleep(0.4)
+    if not err and not dirs and not files and dav_entries is None:
+        # An empty result is a real folder only when it exists -- but a DAV
+        # listing already carried the collection itself (PROPFIND self-ref, just
+        # stripped), so an empty DAV result IS an existing empty folder; its
+        # exists() probe is unreliable (CloudMe empty folders read unreachable).
+        if not is_dav:
+            try:
+                if not xbmcvfs.exists(path):
+                    err = "unreachable"
+            except Exception as e:
+                err = str(e) or "error"
 
     query = sys.argv[0] + (sys.argv[2] if len(sys.argv) > 2 else "")
     show_hidden = search.hidden_from_url(query)
@@ -309,33 +399,24 @@ def list_network(handle, path, picker_active=False):
     sizes_flag = sizes_on()
     netsize_flag = netsize_on()
     folder_cache = load_folder_cache() if (sizes_flag or netsize_flag) else {}
-    # WebDAV: ONE PROPFIND gives sizes + dates (folders too) for the whole
-    # folder; fast path here (2 s timeout, no retry), daemon covers failures.
-    details = {}
-    if netsize_flag and path.lower().startswith(("dav://", "davs://")):
-        # never let the enrichment kill the listing
+    # WebDAV: the PROPFIND above already carries sizes + dates for the whole
+    # folder (folders too); persist them so they survive a later failed
+    # PROPFIND (server 503s when busy).
+    if details and netsize_flag:
         try:
-            details = sources.dav_details(path, timeout=2, attempts=1)
-        except Exception as e:
-            details = {}
-            log("dav details crashed: %s" % e)
-        if details:
-            # Persist server answers (folder dates included) across a later
-            # failed PROPFIND (server 503s when busy).
-            try:
-                merged = dict(folder_cache)
-                for key, (dsize, dmtime, ddir) in details.items():
-                    if not key.startswith(("dav://", "davs://")):
-                        continue        # name keys only serve the lookup
-                    entry = {"size": 0 if ddir else dsize, "mtime": dmtime}
-                    if ddir:
-                        entry["dir"] = True
-                        entry["tried"] = True
-                    merged[cache_key(key.rstrip("/"))] = entry
-                write_json(folder_cache_path(), merged)
-                folder_cache = merged
-            except Exception:
-                pass
+            merged = dict(folder_cache)
+            for key, (dsize, dmtime, ddir) in details.items():
+                if not key.startswith(("dav://", "davs://")):
+                    continue        # name keys only serve the lookup
+                entry = {"size": 0 if ddir else dsize, "mtime": dmtime}
+                if ddir:
+                    entry["dir"] = True
+                    entry["tried"] = True
+                merged[cache_key(key.rstrip("/"))] = entry
+            write_json(folder_cache_path(), merged)
+            folder_cache = merged
+        except Exception:
+            pass
 
     items = []
     skipped_hidden = skipped_blocked = 0
@@ -356,30 +437,40 @@ def list_network(handle, path, picker_active=False):
             except Exception:
                 pass
             items.append((item, core_url(parent), True, ""))
-        entries = [(n, True) for n in dirs] + [(n, False) for n in files]
+        if dav_entries is not None:
+            entries = [(vfs, is_dir, size, mtime)
+                       for (vfs, _disp, is_dir, size, mtime) in dav_entries]
+            disp_map = {vfs: disp
+                        for (vfs, disp, _d, _s, _m) in dav_entries}
+        else:
+            entries = ([(n, True, None, None) for n in dirs]
+                       + [(n, False, None, None) for n in files])
+            disp_map = {}
         kept = []
-        for name, is_dir in entries:
+        for name, is_dir, size0, mtime0 in entries:
             if name.startswith(".") and not show_hidden:
                 skipped_hidden += 1
                 continue
             if blocked(name, patterns, case_sensitive):
                 skipped_blocked += 1
                 continue
-            kept.append((name, is_dir))
+            kept.append((name, is_dir, size0, mtime0))
         # No VFS size/date (extra round trip per entry), so those sorts fall back to name.
         if sort in ("size", "date"):
             log("network sort '%s' falls back to name (no VFS size/date)" % sort)
         folders_first = bool(folders_first_flag)
+        # Use the decoded display form for sorting; child URLs stay href-encoded.
         kept.sort(key=lambda e: ((not e[1],) if folders_first else ())
-                  + (natkey(safe_label(e[0])),))
-        for name, is_dir in kept:
+                  + (natkey(safe_label(unquote(e[0]) if is_dav else e[0])),))
+        for name, is_dir, size0, mtime0 in kept:
             try:
                 if picker_active and not is_dir:
                     continue
-                # WebDAV: VFS returns href-ENCODED names; the PATH must stay
-                # URL-form (decoding broke playback) -- only the display name is decoded.
-                is_dav = path.lower().startswith(("dav://", "davs://"))
-                disp = unquote(name) if is_dav else name
+                # WebDAV: the VFS segment is URL-form (a raw `;` in it would be
+                # parsed as options); only the display name is decoded.
+                disp = disp_map.get(name)
+                if disp is None:
+                    disp = unquote(name) if is_dav else name
                 item = xbmcgui.ListItem(safe_label(disp))
                 item.setIsFolder(is_dir)
                 # Explicit local artwork: without art Kodi probes "<itemurl>.tbn"
@@ -412,9 +503,12 @@ def list_network(handle, path, picker_active=False):
                     item.setProperty("bp.kind", kind_of(disp))
                 child = path + "/" + name
                 try:
-                    # Sizes/dates: fresh PROPFIND answer first, else the background cache.
+                    # Sizes/dates: the PROPFIND answer (dav_entries) first, else a
+                    # fresh lookup, else the background cache.
                     size = mtime = None
-                    if details:
+                    if netsize_flag and size0 is not None:
+                        size, mtime = size0, mtime0
+                    if size is None and netsize_flag and details:
                         # the server lists a collection with a trailing slash
                         d = (details.get(child) or details.get(child + "/")
                              or details.get(disp))
@@ -443,7 +537,7 @@ def list_network(handle, path, picker_active=False):
                         item.setProperty("hide_add_remove_favourite", "true")
                     except Exception:
                         pass
-                items.append((item, core_url(child), is_dir, natkey(safe_label(name))))
+                items.append((item, core_url(child), is_dir, natkey(safe_label(disp))))
             except Exception as e:
                 log("skip network entry %r: %s" % (redact(name), e))
                 continue
@@ -455,9 +549,12 @@ def list_network(handle, path, picker_active=False):
         pad.setProperty("bp.padding", "1")
         items.insert(0, (pad, "dummy://padding/top%d" % i, False, ""))
     try:
-        if (xbmc.getCondVisibility("Player.HasAudio")
-                and not xbmc.getCondVisibility("Player.HasVideo")
-                and not picker_active):
+        # Audio footer padding: also while a network track still loads
+        # (bp.aload) -- the footer shows from the start there.
+        audio_bar = ((xbmc.getCondVisibility("Player.HasAudio")
+                      and not xbmc.getCondVisibility("Player.HasVideo"))
+                     or win.getProperty("bp.aload") == "1")
+        if audio_bar and not picker_active:
             for i in range(3):
                 pad = xbmcgui.ListItem("")
                 pad.setIsFolder(False)

@@ -7,7 +7,7 @@
 	<onload>ClearProperty(bp.drives)</onload>
 	<onload>ClearProperty(bp.ctx)</onload>
 	<onload>ClearProperty(bp.ctx.reduced)</onload>
-	<onload>ClearProperty(bp.ctx.net)</onload>
+	<onload>ClearProperty(bp.ctx.noclip)</onload>
 	<onload>ClearProperty(bp.ctx.readonly)</onload>
 	<onload>ClearProperty(bp.rowmenu)</onload>
 	<onload>ClearProperty(bp.rowmenu.title)</onload>
@@ -33,6 +33,8 @@
 	<onload>ClearProperty(bp.update.state)</onload>
 	<onload>ClearProperty(bp.update.ver)</onload>
 	<onload>ClearProperty(bp.update.url)</onload>
+	<onload>ClearProperty(bp.update.dest)</onload>
+	<onload>ClearProperty(bp.update.dl)</onload>
 	<onload>ClearProperty(bp.info)</onload>
 	<onload>ClearProperty(bp.info.done)</onload>
 	<onload>ClearProperty(bp.photo)</onload>

@@ -277,6 +277,23 @@ def acquire_boot_lock():
                 age = time.time() - os.path.getmtime(p)
             except OSError:
                 return True
+            # A DEAD owner must not block the base sync for up to LOCK_STALE: a
+            # boot killed while Kodi rewrites the addon dir (zip install) would
+            # otherwise leave the next boot (the post-install reload) without a
+            # base layer -- a black Home until the lock ages out.
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    owner = int((f.read().strip() or "0"))
+            except Exception:
+                owner = 0
+            if owner > 0:
+                try:
+                    os.kill(owner, 0)
+                except ProcessLookupError:
+                    log("boot: lock owner %d is gone, stealing" % owner)
+                    age = LOCK_STALE + 1.0
+                except Exception:
+                    pass
             if age <= LOCK_STALE:
                 return False
             # Steal ATOMICALLY via rename: only one of two racing boots wins

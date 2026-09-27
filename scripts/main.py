@@ -14,7 +14,7 @@ import xbmcvfs
 import sources
 import resume
 
-from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label, redact
+from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label, redact, focus_control
 from urllib.parse import unquote_to_bytes
 from navigation import current_source_root, set_current, nav, up, root, goto, reset_top
 
@@ -612,8 +612,7 @@ def dropdown_open():
             slot = n
             break
     win.setProperty("bp.drives", "open")
-    time.sleep(0.25)
-    xbmc.executebuiltin("SetFocus(%d)" % (59 + (slot or 1)))
+    focus_control(59 + (slot or 1))
     log("dropdown open: focus slot %d (title %r)" % (slot or 1, redact(title)))
 
 
@@ -975,26 +974,6 @@ def _parse_neturl(path):
     return scheme, user, passwd, hostport, port, sub
 
 
-def _netsrc_url(scheme, server, port, path, user, passwd):
-    """Assemble the browsable URL from the editor fields (shared by OK and Test);
-    the server is kept verbatim, only one redundant trailing "/" is dropped."""
-    server, s_port, s_path = sources.netsrc_split(server)
-    port = sources.netsrc_sanitize("port", port).strip() or s_port
-    path = (path or "").strip().strip("/") or s_path.strip("/")
-    user = (user or "").strip()
-    if not server:
-        return ""  # no address: keep the entry path-less (label-only source)
-    creds = (user + ((":" + passwd) if passwd else "") + "@") if user else ""
-    srv = server[:-1] if (server.endswith("/")
-                          and not server.endswith("://")) else server
-    url = scheme + creds + srv
-    if port.isdigit():
-        url += ":" + port
-    if path:
-        url += "/" + path
-    return url if sources.netsrc_valid(url) else ""
-
-
 def netsrcnew(idx=None):
     """Open the network-source editor modal; with `idx` (1-based) it is
     pre-filled and OK replaces that entry."""
@@ -1031,11 +1010,10 @@ def netsrcnew(idx=None):
     win.setProperty("bp.netsrc.pass", passwd)
     win.setProperty("bp.netsrc.pass.mask", "••••••" if passwd else "")
     win.setProperty("bp.netsrc.write",
-                    ("1" if not e.get("readonly", True) else "") if e else "")
+                    ("1" if e.get("writeaccess") else "") if e else "")
     win.setProperty("bp.netsrc.test", "")
     win.setProperty("bp.netsrc", "open")
-    time.sleep(0.3)
-    xbmc.executebuiltin("SetFocus(792)")
+    focus_control(792)
     log("netsource: editor open%s" % (" (edit %d)" % edit if edit else ""))
 
 
@@ -1079,7 +1057,7 @@ def netsrcadd():
     fields = {"scheme": scheme.split("://", 1)[0].lower() or "ftp",
               "server": server, "port": port, "path": raw_path,
               "user": user, "pass": passwd}
-    url = _netsrc_url(scheme, server, port, raw_path, user, passwd)
+    url = sources.netsrc_url(scheme, server, port, raw_path, user, passwd)
     if name:
         label = name
     else:
@@ -1094,13 +1072,13 @@ def netsrcadd():
         if not label:
             label = os.urandom(4).hex()[:7]
     edit = (win.getProperty("bp.netsrc.edit") or "").strip()
-    readonly = win.getProperty("bp.netsrc.write") != "1"
+    writeaccess = win.getProperty("bp.netsrc.write") == "1"
     slot = 0
     if edit.isdigit() and int(edit) >= 1:
-        added = sources.netsrc_replace(int(edit), label, url, fields, readonly)
+        added = sources.netsrc_replace(int(edit), label, url, fields, writeaccess)
         slot = int(edit) if added else 0
     else:
-        added = sources.netsrc_add(label, url, fields, readonly)
+        added = sources.netsrc_add(label, url, fields, writeaccess)
         slot = len(sources.netsrc_load()) if added else 0
     _netsrc_clear_editor()
     netsrc_open()
@@ -1124,9 +1102,9 @@ def netsrctest():
     raw_path = (win.getProperty("bp.netsrc.path") or "").strip()
     user = (win.getProperty("bp.netsrc.user") or "").strip()
     passwd = win.getProperty("bp.netsrc.pass") or ""
-    # Never move focus; same assembly as OK (_netsrc_url) so Test probes what
+    # Never move focus; same assembly as OK (sources.netsrc_url) so Test probes what
     # OK saves. Empty/malformed target simply fails.
-    url = _netsrc_url(scheme, server, port, raw_path, user, passwd) if server else ""
+    url = sources.netsrc_url(scheme, server, port, raw_path, user, passwd) if server else ""
     ok = False
     if url:
         try:
@@ -1327,8 +1305,7 @@ def blockscanopen():
     win.clearProperty("bp.rscan.scanning")
     win.clearProperty("bp.scan.armed")
     win.setProperty("bp.rscan", "open")
-    time.sleep(0.2)
-    xbmc.executebuiltin("SetFocus(460)")
+    focus_control(460)
     log("blockscan: open")
 
 
@@ -1379,8 +1356,7 @@ def remscan_open(idx):
     win.clearProperty("bp.rscan.scanning")
     win.clearProperty("bp.scan.armed")
     win.setProperty("bp.rscan", "open")
-    time.sleep(0.2)
-    xbmc.executebuiltin("SetFocus(460)")
+    focus_control(460)
     log("remscan: open for %s" % fn)
 
 
@@ -1627,8 +1603,7 @@ def rowmenu_open(kind, a, focus, c=""):
     win.setProperty("bp.rowmenu.title.rep", safe_label(_fticker(title, 11, 380)))
     win.setProperty("bp.rowmenu.focus", focus_id)
     win.setProperty("bp.rowmenu", "open")
-    time.sleep(0.3)
-    xbmc.executebuiltin("SetFocus(447)")
+    focus_control(447)
     log("rowmenu: open %s %d" % (kind, idx))
 
 
@@ -1992,8 +1967,7 @@ def srcask(path):
     win.setProperty("bp.srcq.line", xbmc.getLocalizedString(31425))
     win.setProperty("bp.srcq.path", path_enc(p))
     win.setProperty("bp.srcq", "open")
-    time.sleep(0.3)
-    xbmc.executebuiltin("SetFocus(921)")  # No (safe default)
+    focus_control(921)  # No (safe default)
     log("srcask: %s" % p)
 
 
@@ -2034,17 +2008,9 @@ def poweropen():
     win = xbmcgui.Window(10000)
     win.clearProperty("bp.menu")
     win.setProperty("bp.power", "open")
-    time.sleep(0.3)
     # Re-assert focus until it sticks: on a slow box a single SetFocus does
     # nothing and arrows move the file list behind the menu.
-    for _ in range(8):
-        xbmc.executebuiltin("SetFocus(960)")
-        try:
-            if xbmc.getCondVisibility("Control.HasFocus(960)"):
-                break
-        except Exception:
-            break
-        time.sleep(0.15)
+    focus_control(960, tries=8, interval=0.15)
     log("power menu open")
 
 
@@ -2527,7 +2493,8 @@ def update_check():
     into a Download action (into the user's Downloads folder); otherwise show a
     3 s info. Nothing is installed automatically."""
     win = xbmcgui.Window(10000)
-    for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
+    for p in ("bp.update.state", "bp.update.ver", "bp.update.url",
+              "bp.update.dest"):
         win.clearProperty(p)
     current = win.getProperty("bp.version") or ""
     try:
@@ -2574,13 +2541,17 @@ def update_confirm():
     Yes runs `updatedownload` via the generic confirm handler."""
     win = xbmcgui.Window(10000)
     ver = win.getProperty("bp.update.ver") or ""
+    # Resolve the destination now so the prompt names the real folder; the
+    # download reuses it (single _downloads_dir call, no folder drift).
+    dest = _downloads_dir()
+    win.setProperty("bp.update.dest", dest)
     win.clearProperty("bp.confirm.op")
     win.setProperty("bp.confirm.title", xbmc.getLocalizedString(31535))
     line = xbmc.getLocalizedString(31536)
     try:
-        line = line % ver
+        line = line % (ver, dest)
     except Exception:
-        line = "%s %s" % (line, ver)
+        line = "%s %s %s" % (line, ver, dest)
     win.setProperty("bp.confirm.line", line)
     win.setProperty("bp.confirm.cmd.1",
                     "RunScript(special://skin/scripts/main.py,updatedownload)")
@@ -2599,38 +2570,84 @@ def update_confirm():
     log("update: download confirm")
 
 
+def _existing_dir(path):
+    """An existing directory at `path`, else a case-variant sibling when one
+    exists. Boxes ship a lowercase `downloads` while `~` points at `Downloads`;
+    on the case-sensitive Linux FS the sibling lookup finds the real folder."""
+    try:
+        if path and os.path.isdir(path):
+            return path
+    except Exception:
+        pass
+    try:
+        parent, _sep, name = (path or "").rpartition("/")
+        if parent and name:
+            want = name.lower()
+            for entry in os.listdir(parent):
+                if entry.lower() == want:
+                    cand = os.path.join(parent, entry)
+                    if os.path.isdir(cand):
+                        return cand
+    except Exception:
+        pass
+    return ""
+
+
 def _downloads_dir():
-    """Best-effort Downloads folder (all OSes): ~/Downloads, else the Kodi
-    profile's downloads, else Kodi's temp dir. Created when missing."""
-    cands = []
+    """Preferred Downloads folder (all OSes).
+
+    An EXISTING folder always wins: a box ships a lowercase `downloads` while
+    `~` resolves to `Downloads`, and creating the uppercase variant before ever
+    looking for the real folder left that folder unused -- the old
+    first-existing order fell through to temp instead."""
+    box = []
     try:
-        home = os.path.expanduser("~")
-        if home and home != "~":
-            cands.append(os.path.join(home, "Downloads"))
+        if os.path.isdir("/storage"):
+            box = [("/storage/downloads", "storage-downloads"),
+                   ("/storage/Downloads", "storage-Downloads")]
     except Exception:
         pass
+    profile = None
     try:
-        cands.append(os.path.join(
-            xbmcvfs.translatePath("special://home"), "downloads"))
+        profile = (os.path.join(
+            xbmcvfs.translatePath("special://home"), "downloads"),
+            "profile-downloads")
     except Exception:
         pass
+    home = []
     try:
-        cands.append(xbmcvfs.translatePath("special://temp"))
+        h = os.path.expanduser("~")
+        if h and h != "~":
+            home = [(os.path.join(h, "Downloads"), "home-Downloads")]
     except Exception:
         pass
-    for d in cands:
+    # Existing-folder order: Kodi's own dirs win over an invented ~/Downloads.
+    existing = box + ([profile] if profile else []) + home
+    # Creation order: a real Downloads wins over Kodi's profile dir.
+    create = box + home + ([profile] if profile else [])
+    for d, label in existing:
+        found = _existing_dir(d)
+        if found:
+            if found != d or label != "home-Downloads":
+                log("update: using %s folder" % label)
+            return found
+    for d, label in create:
         try:
-            if d and os.path.isdir(d):
+            if not d:
+                continue
+            os.makedirs(d, exist_ok=True)
+            if os.path.isdir(d):
+                log("update: using %s folder" % label)
                 return d
         except Exception:
             pass
-    for d in cands:
-        try:
-            if d:
-                os.makedirs(d, exist_ok=True)
-                return d
-        except Exception:
-            pass
+    try:
+        tmp = xbmcvfs.translatePath("special://temp")
+        if tmp:
+            os.makedirs(tmp, exist_ok=True)
+            return tmp
+    except Exception:
+        pass
     return ""
 
 
@@ -2641,7 +2658,7 @@ def update_download():
     url = win.getProperty("bp.update.url")
     ver = win.getProperty("bp.update.ver") or "latest"
     _update_text(win, 31532)  # "Downloading..."
-    dest = _downloads_dir()
+    dest = win.getProperty("bp.update.dest") or _downloads_dir()
     name = "browsybare-%s.zip" % ver
     target = ""
     ok = False
@@ -2658,18 +2675,31 @@ def update_download():
                         if not chunk:
                             break
                         f.write(chunk)
-            ok = os.path.getsize(target) > 0
+            ok = False
+            size = 0
+            try:
+                size = os.path.getsize(target)
+                ok = size > 0
+            except OSError:
+                pass
         except Exception as e:
             log("update download failed: %s" % e)
             try:
                 os.remove(target)
             except OSError:
                 pass
-    for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
+    for p in ("bp.update.state", "bp.update.ver", "bp.update.url",
+              "bp.update.dest"):
         win.clearProperty(p)
     if ok:
-        log("update download: saved %s" % redact(target))
-        _update_result(win, 31533)  # "Saved to Downloads"
+        log("update download: saved %d bytes" % size)
+        # The list container caches the plugin directory listing (the r URL
+        # param): bump r now so any later navigation is fresh, and let the home
+        # daemon refresh the CURRENT view once the About overlay closes
+        # (Container.Refresh is ignored while a focused overlay is up).
+        win.setProperty("bp.refresh", str(time.time()))
+        win.setProperty("bp.update.dl", "1")
+        _update_result(win, 31533, ver)  # "Saved: %s" (version, not the long path)
     else:
         _update_result(win, 31534)  # "Download failed"
 

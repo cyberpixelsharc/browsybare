@@ -754,7 +754,8 @@
 			
 				<!-- Audio footer: single full-width surface (background playback, no fullscreen). Shared text via AudioFooterContent; click eater 336 keeps clicks off the list. -->
 			<control type="group">
-				<visible>Player.HasAudio + !Player.HasVideo</visible>
+				<!-- Also shown while a network track loads (bp.aload), so the bar appears at once. -->
+				<visible>[Player.HasAudio + !Player.HasVideo] | String.IsEqual(Window(10000).Property(bp.aload),1)</visible>
 				<left>0</left>
 				<top>880</top>
 				<width>1920</width>
@@ -1816,6 +1817,7 @@
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.state)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.ver)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.url)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.dest)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetFocus(86)</onclick>
 					<onclick condition="String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.about)</onclick>
 					<onback>ClearProperty(bp.menu)</onback>
@@ -2058,13 +2060,13 @@
 						<onclick>RunScript(special://skin/scripts/main.py,rename,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
 						<onclick>ClearProperty(bp.ctx)</onclick>
 						<onup>450</onup>
-						<ondown condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">122</ondown>
+						<ondown condition="String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">122</ondown>
 						<ondown>454</ondown>
 						<onback>ClearProperty(bp.ctx)</onback>
 						<onback>SetFocus(33)</onback>
 					</control>
 					<control type="group">
-						<visible>String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<visible>String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 						<left>20</left>
 						<top>96</top>
 						<control type="image">
@@ -2079,7 +2081,7 @@
 						</control>
 					</control>
 					<control type="button" id="454">
-						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 						<left>20</left>
 						<top>96</top>
 						<width>340</width>
@@ -2101,7 +2103,7 @@
 						<onback>SetFocus(33)</onback>
 					</control>
 					<control type="group">
-						<visible>String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<visible>String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 						<left>20</left>
 						<top>172</top>
 						<control type="image">
@@ -2116,7 +2118,7 @@
 						</control>
 					</control>
 					<control type="button" id="455">
-						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 						<left>20</left>
 						<top>172</top>
 						<width>340</width>
@@ -2138,7 +2140,7 @@
 						<onback>SetFocus(33)</onback>
 					</control>
 					<control type="group">
-						<visible>String.IsEmpty(Window(10000).Property(bp.clip.path)) | String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<visible>String.IsEmpty(Window(10000).Property(bp.clip.path)) | String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 						<left>20</left>
 						<top>248</top>
 						<control type="image">
@@ -2198,7 +2200,7 @@
 						</control>
 					</control>
 					<control type="button" id="456">
-						<visible>!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+						<visible>!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 						<left>20</left>
 						<top>248</top>
 						<width>340</width>
@@ -2234,7 +2236,7 @@
 						<label>$LOCALIZE[31328]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,delete,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
 						<onclick>ClearProperty(bp.ctx)</onclick>
-						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">121</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">121</onup>
 						<onup condition="String.IsEmpty(Window(10000).Property(bp.clip.path))">455</onup>
 						<onup>456</onup>
 						<ondown>123</ondown>
@@ -2277,13 +2279,13 @@
 						<label>$LOCALIZE[31344]</label>
 						<onclick>ClearProperty(bp.ctx)</onclick>
 						<onclick>SetFocus(33)</onclick>
-						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">456</onup>
-						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">455</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">456</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">455</onup>
 						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">450</onup>
 						<onup>123</onup>
 						
 						<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">121</ondown>
-						<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.net),1)">454</ondown>
+						<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">454</ondown>
 						<ondown>450</ondown>
 						<onback>ClearProperty(bp.ctx)</onback>
 						<onback>SetFocus(33)</onback>
@@ -2329,7 +2331,7 @@
 					<onclick>ClearProperty(bp.ctx)</onclick>
 					<onclick>ClearProperty(bp.ctx.reduced)</onclick>
 					<onup>452</onup>
-					<ondown condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">452</ondown>
+					<ondown condition="String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">452</ondown>
 					<ondown condition="String.IsEmpty(Window(10000).Property(bp.clip.path))">452</ondown>
 					<ondown>453</ondown>
 					<onback>ClearProperty(bp.ctx)</onback>
@@ -2337,7 +2339,7 @@
 					<onback>SetFocus(33)</onback>
 				</control>
 				<control type="group">
-					<visible>String.IsEmpty(Window(10000).Property(bp.clip.path)) | String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+					<visible>String.IsEmpty(Window(10000).Property(bp.clip.path)) | String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 					<left>20</left>
 					<top>96</top>
 					<control type="image">
@@ -2367,7 +2369,7 @@
 					</control>
 				</control>
 				<control type="button" id="453">
-					<visible>!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)</visible>
+					<visible>!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 					<left>20</left>
 					<top>96</top>
 					<width>340</width>
@@ -2406,14 +2408,14 @@
 					<onclick>ClearProperty(bp.ctx)</onclick>
 					<onclick>ClearProperty(bp.ctx.reduced)</onclick>
 					<onclick>SetFocus(33)</onclick>
-					<onup condition="!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">453</onup>
+					<onup condition="!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">453</onup>
 					<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">452</onup>
-					<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.net),1)">451</onup>
+					<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">451</onup>
 					<onup condition="String.IsEmpty(Window(10000).Property(bp.clip.path))">451</onup>
 					<onup>453</onup>
 					
 					<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">451</ondown>
-					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.net),1)">453</ondown>
+					<ondown condition="!String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">453</ondown>
 					<ondown>452</ondown>
 					<onback>ClearProperty(bp.ctx)</onback>
 					<onback>ClearProperty(bp.ctx.reduced)</onback>
@@ -3457,11 +3459,11 @@
 				<visible>String.IsEqual(Window(10000).Property(bp.aload),1)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<control type="image">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>880</height>
 					<texture colordiffuse="80101014">drawn/fill.png</texture>
 				</control>
 				<control type="image">
-					<left>924</left><top>504</top><width>72</width><height>72</height>
+					<left>924</left><top>404</top><width>72</width><height>72</height>
 					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
 					<texture colordiffuse="$INFO[Skin.String(accent)]">osd/arrow-clockwise.png</texture>
 				</control>

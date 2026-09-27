@@ -389,8 +389,26 @@ def main():
                     stop_focus_at = 0.0
         except Exception as e:
             log("home-daemon error (stop focus): %s" % e)
+        # Duty: refresh the file list after an update download, once the About
+        # overlay is closed. Container.Refresh only reloads the FOCUSED
+        # container, and closing About leaves focus on the menu button (32), so
+        # focus the list first -- otherwise the current view keeps its cached
+        # listing. bp.update.dl is set by main.update_download on success.
+        try:
+            if win.getProperty("bp.update.dl") == "1" and not overlay_open(win):
+                win.clearProperty("bp.update.dl")
+                win.setProperty("bp.refresh", str(time.time()))
+                xbmc.executebuiltin("SetFocus(33)")
+                time.sleep(0.15)
+                xbmc.executebuiltin("Container.Refresh")
+                log("home-daemon: list refreshed after update download")
+        except Exception as e:
+            log("home-daemon error (update refresh): %s" % e)
         # Fast duty: hide the audio loading overlay (bp.aload, set by fileops
-        # before play): once playing, or on timeout when the start failed.
+        # before play). A large network file buffers for ~15 s before
+        # Player.HasAudio flips, so keep the spinner until playback really
+        # starts; clear early only when the attempt ended (no media), with a
+        # hard cap as the last resort.
         try:
             if win.getProperty("bp.aload") == "1":
                 try:
@@ -398,7 +416,10 @@ def main():
                 except ValueError:
                     aload_t = 0.0
                 aload_el = time.time() - aload_t
-                if (_is_playing() and aload_el > 2.0) or aload_el > 8.0:
+                has_media = xbmc.getCondVisibility("Player.HasMedia")
+                if ((_is_playing() and aload_el > 2.0)
+                        or (aload_el > 6.0 and not has_media)
+                        or aload_el > 60.0):
                     win.clearProperty("bp.aload")
                     win.clearProperty("bp.aload.t")
         except Exception as e:

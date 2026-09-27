@@ -13,7 +13,7 @@ import xbmc
 import xbmcgui
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import safe_label, redact, path_enc, state_dir, log as _clog
+from common import safe_label, redact, path_enc, state_dir, log as _clog, focus_control
 
 LOG = "[skin] "
 
@@ -231,10 +231,9 @@ def open_kb(mode, path=""):
     win.setProperty("bp.kb.case", "0")
     _refresh_labels(False)
     win.setProperty("bp.kb", "open")
-    # Focus the first key once visible (delayed python focus; an AlarmClock
-    # would flash a notification).
-    time.sleep(0.3)
-    xbmc.executebuiltin("SetFocus(130)")
+    # Focus the first key as soon as the overlay is visible (quick retry; an
+    # AlarmClock would flash a notification).
+    focus_control(130)
     _log("keyboard open: %s" % mode)
 
 
