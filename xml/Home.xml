@@ -109,7 +109,7 @@
 				<width>1920</width>
 				<height>1080</height>
 				<texture>drawn/fill.png</texture>
-				<colordiffuse>FF101014</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.bg)]</colordiffuse>
 			</control>
 			<control type="button" id="29">
 				<left>0</left>
@@ -129,14 +129,14 @@
 				<centertop>50%</centertop>
 				<width>560</width>
 				<height>200</height>
-				<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+				<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 			</control>
 			<control type="image">
 				<centerleft>50%</centerleft>
 				<top>440</top>
 				<width>560</width>
 				<height>60</height>
-				<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+				<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 			</control>
 			<control type="label">
 				<centerleft>50%</centerleft>
@@ -146,7 +146,7 @@
 				<align>center</align>
 				<aligny>center</aligny>
 				<font>font_veil</font>
-				<textcolor>FFF2F2F4</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 				<label>$LOCALIZE[31365]</label>
 			</control>
 			<control type="image">
@@ -154,7 +154,7 @@
 				<top>551</top>
 				<width>480</width>
 				<height>11</height>
-				<texture colordiffuse="FF18181E">drawn/fill.png</texture>
+				<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/fill.png</texture>
 			</control>
 			<!-- Determinate 20-segment copy bar (bp.sync.f1..f20). -->
 			<control type="image">
@@ -323,7 +323,7 @@
 				<top>578</top>
 				<width>480</width>
 				<height>11</height>
-				<texture colordiffuse="FF18181E">drawn/fill.png</texture>
+				<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/fill.png</texture>
 			</control>
 			<control type="image">
 				<left>720</left>

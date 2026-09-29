@@ -72,7 +72,7 @@
 				<width>1920</width>
 				<height>200</height>
 				<texture>drawn/fill.png</texture>
-				<colordiffuse>F21E1E26</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.panel_solid)]</colordiffuse>
 			</control>
 			<control type="image">
 				<left>0</left>
@@ -80,7 +80,7 @@
 				<width>1920</width>
 				<height>2</height>
 				<texture>drawn/fill.png</texture>
-				<colordiffuse>FF32323C</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.header)]</colordiffuse>
 			</control>
 			
 			<control type="label">
@@ -89,7 +89,7 @@
 				<width>1100</width>
 				<height>50</height>
 				<font>font36_title</font>
-				<textcolor>FFF2F2F4</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 				<visible>!Skin.HasSetting(photo.noscroll)</visible>
 				<scroll>true</scroll>
 				<scrollsuffix>   |   </scrollsuffix>
@@ -101,7 +101,7 @@
 				<width>1100</width>
 				<height>50</height>
 				<font>font36_title</font>
-				<textcolor>FFF2F2F4</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 				<visible>Skin.HasSetting(photo.noscroll)</visible>
 				<label>$INFO[Window(10000).Property(bp.photo.title)]</label>
 				<scroll>false</scroll>
@@ -113,7 +113,7 @@
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
-				<textcolor>FF9A9AA2</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 				<visible>!Skin.HasSetting(photo.noscroll) + Skin.HasSetting(show.photopath)</visible>
 				<scroll>true</scroll>
 				<scrollspeed>30</scrollspeed>
@@ -126,7 +126,7 @@
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
-				<textcolor>FF9A9AA2</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 				<visible>Skin.HasSetting(photo.noscroll) + Skin.HasSetting(show.photopath)</visible>
 				<label>$INFO[Window(10000).Property(bp.photo.pathdisp)]</label>
 				<scroll>false</scroll>
@@ -137,7 +137,7 @@
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
-				<textcolor>FF9A9AA2</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 				<visible>!Skin.HasSetting(photo.noscroll) + !Skin.HasSetting(show.photopath)</visible>
 				<scroll>true</scroll>
 				<scrollspeed>30</scrollspeed>
@@ -150,7 +150,7 @@
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
-				<textcolor>FF9A9AA2</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 				<visible>Skin.HasSetting(photo.noscroll) + !Skin.HasSetting(show.photopath)</visible>
 				<label>$INFO[Window(10000).Property(bp.photo.folder)]</label>
 				<scroll>false</scroll>
@@ -162,9 +162,9 @@
 				<width>1100</width>
 				<height>26</height>
 				<enable>false</enable>
-				<texturesliderbardisabled colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbardisabled>
+				<texturesliderbardisabled colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/bar-dark.png</texturesliderbardisabled>
 				<textureslidernibdisabled colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibdisabled>
-				<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbar>
+				<texturesliderbar colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/bar-dark.png</texturesliderbar>
 				<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
 				<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
 				<info>Skin.Numeric(photo.progress)</info>
@@ -176,7 +176,7 @@
 				<width>64</width>
 				<height>64</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonfocus>
 				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonnofocus>
 				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioofffocus>
@@ -204,7 +204,7 @@
 					<top>0</top>
 					<width>96</width>
 					<height>96</height>
-					<texture colordiffuse="FF18181E">drawn/circle.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texture>
 				</control>
 				<control type="image">
 					<left>0</left>
@@ -253,7 +253,7 @@
 				<width>64</width>
 				<height>64</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonfocus>
 				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonnofocus>
 				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioofffocus>
@@ -277,7 +277,7 @@
 				<width>64</width>
 				<height>64</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 				<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonfocus>
 				<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonnofocus>
 				<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioofffocus>
@@ -301,7 +301,7 @@
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-			<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+			<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 			<font></font>
 			<onclick>RunScript(special://skin/scripts/main.py,photoexif)</onclick>
 			<onleft>444</onleft>
@@ -316,7 +316,7 @@
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
-			<texture colordiffuse="FF9A9AA2">osd/info-circle.png</texture>
+			<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/info-circle.png</texture>
 		</control>
 		
 		<control type="button" id="443">
@@ -325,7 +325,7 @@
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-			<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+			<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 			<font></font>
 			<onclick>RunScript(special://skin/scripts/main.py,photorepeat)</onclick>
 			<onleft>446</onleft>
@@ -341,7 +341,7 @@
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
-			<texture colordiffuse="FF9A9AA2">osd/repeat.png</texture>
+			<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/repeat.png</texture>
 		</control>
 		<control type="image">
 			<visible>String.IsEqual(Window(10000).Property(bp.photo.repeat),1)</visible>
@@ -358,7 +358,7 @@
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-			<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+			<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 			<font></font>
 			<onclick>RunScript(special://skin/scripts/main.py,photoshuffle)</onclick>
 			<onleft>443</onleft>
@@ -374,7 +374,7 @@
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
-			<texture colordiffuse="FF9A9AA2">osd/shuffle.png</texture>
+			<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/shuffle.png</texture>
 		</control>
 		<control type="image">
 			<visible>String.IsEqual(Window(10000).Property(bp.photo.shuffle),1)</visible>
@@ -392,7 +392,7 @@
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-			<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+			<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 			<font></font>
 			<onclick>RunScript(special://skin/scripts/main.py,photomode)</onclick>
 			<onleft>445</onleft>
@@ -408,7 +408,7 @@
 				<width>22</width>
 				<height>22</height>
 				<aspectratio>keep</aspectratio>
-				<texture colordiffuse="FF9A9AA2">photo/arrows-fullscreen.png</texture>
+				<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">photo/arrows-fullscreen.png</texture>
 			</control>
 			<control type="image">
 				<visible>String.IsEqual(Window(10000).Property(bp.photo.mode),1)</visible>
@@ -435,7 +435,7 @@
 				<width>48</width>
 				<height>48</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-				<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 				<font></font>
 			<onclick>RunScript(special://skin/scripts/main.py,photointerval)</onclick>
 			<onleft>447</onleft>
@@ -450,7 +450,7 @@
 				<width>28</width>
 				<height>28</height>
 				<aspectratio>keep</aspectratio>
-				<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.photo.interval.icon)]</texture>
+				<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.photo.interval.icon)]</texture>
 				<visible>String.IsEqual(Window(10000).Property(bp.photo.interval),5)</visible>
 			</control>
 			<control type="image">

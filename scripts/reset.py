@@ -113,6 +113,8 @@ def _reset_appearance():
     win.setProperty("bp.accent.level", LEVEL_DEFAULT)
     import sync
     sync.accents()
+    _set_str("theme", sync.THEME_DEFAULT)
+    sync.themes(sync.THEME_DEFAULT)
     _set_bool("zebra.hidden", False)
 
 

@@ -14,7 +14,7 @@ import xbmcgui
 import xbmcvfs
 
 from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable, focus_control
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 import keyboard
 import blacklist
 import resume
@@ -245,61 +245,189 @@ def _vfs_size(path):
     return None
 
 
+# Single-file copy: per-request timeout for a server COPY, and the whole-leaf
+# retry budget (COPY attempts + streamed fallback + verifications). A stalled
+# server answers slowly, not never -- retrying within a budget converges where
+# a single attempt fails, and the bar keeps moving between attempts.
+_COPY_TIMEOUT = 30
+_COPY_BUDGET = 120.0
+
+
+def _copy_transient(reason):
+    """True for copy failure reasons worth retrying (an overloaded server or a
+    dropped connection). Permanent answers (auth, exists, unsupported) fail
+    fast instead of burning the retry budget."""
+    marks = ("status-5", "500", "502", "503", "504", "timeout", "timed out",
+             "urlerror", "connection", "remotedisconnected", "reset by peer",
+             "temporarily", "try again", "unverified", "stream failed",
+             "download failed")
+    r = (reason or "").lower()
+    return any(m in r for m in marks)
+
+
+def _same_size(src, dst):
+    """True when both endpoints stat to the same size (False when unknown)."""
+    src_size = _vfs_size(src)
+    if src_size is None:
+        return False
+    return _vfs_size(dst) == src_size
+
+
+def _leaf_done(state):
+    """Count one finished file and advance the progress bar."""
+    state["done"] = state.get("done", 0) + 1
+    total = state.get("total") or 0
+    _prog_set(state["done"] * 100 // total if total else 100)
+    return True
+
+
+def _leaf_failed(state, reason):
+    """Count a failed file and keep the reason for the caller's report."""
+    state["reason"] = reason
+    state["done"] = state.get("done", 0) + 1
+    total = state.get("total") or 0
+    _prog_set(state["done"] * 100 // total if total else 100)
+    return False
+
+
 def _verify_vfs_copy(src, dst, trusted):
     """True when a copied file is verifiably complete.
 
-    Exact matching sizes are decisive. When a stat is unavailable during a
-    flaky transfer, fall back to accepting an accepted COPY/stream result only
-    if the destination appears in its parent listing."""
-    src_size = _vfs_size(src)
-    dst_size = _vfs_size(dst)
-    if src_size is not None and dst_size is not None:
-        return src_size == dst_size
-    return trusted and _exists(dst)
+    Exact matching sizes are decisive. Stats on a flaky server can flap (a 503
+    turns a size into None, or a just-written file still reports a settling
+    size), so a mismatch gets one re-stat round after a short settle wait
+    before deciding; only then fall back to accepting an accepted COPY/stream
+    result whose destination is listed."""
+    for attempt in range(2):
+        src_size = _vfs_size(src)
+        dst_size = _vfs_size(dst)
+        if src_size is None or dst_size is None:
+            return trusted and _exists(dst)
+        if src_size == dst_size:
+            return True
+        if attempt == 0:
+            time.sleep(1.0)
+    return False
+
+
+def _leaf_progress(state):
+    """Progress callback for a streamed upload: interpolates within the current
+    file across the whole leaf count (file-based otherwise)."""
+    total = max(1, state.get("total") or 1)
+
+    def cb(sent, size):
+        frac = (sent * 100 // size) if size else 0
+        _prog_set((state.get("done", 0) * 100 + frac) // total)
+    return cb
 
 
 def _copy_leaf(src, dst, state):
     """Copy one file and advance the progress bar.
 
     Between WebDAV locations, prefer a server-side file COPY, which avoids
-    re-downloading a large file through Kodi. Do not report failure merely
-    because a transient request makes one size check unavailable after the
-    server has accepted the copy and the destination is listed."""
+    re-downloading a large file through Kodi. A DAV destination is written with
+    our own streaming PUT (Kodi's VFS write to DAV fails: curl cannot rewind the
+    upload body after the 401 challenge). A destination that already has the
+    source's exact size counts as done -- repeating a failed paste converges
+    instead of failing on 'exists'. The last failure reason lands in
+    state['reason'] for the caller's error report."""
     webdav = _is_dav(src) and _is_dav(dst)
+    deadline = time.time() + _COPY_BUDGET
+    reason = "not attempted"
     if webdav:
+        # Phase 1: server-side COPY (cheap, no download). At most three
+        # attempts -- then the streamed fallback below gets its chance.
+        for attempt in range(3):
+            if _prog_cancelled():
+                raise _ProgCancelled()
+            try:
+                copied, reason = sources.dav_copy_file(src, dst, timeout=_COPY_TIMEOUT)
+            except Exception as err:
+                copied, reason = False, "%s: %s" % (type(err).__name__, err)
+            if copied:
+                if _verify_vfs_copy(src, dst, True):
+                    return _leaf_done(state)
+                reason = "server copy unverified"
+                break
+            if reason == "exists":
+                if _same_size(src, dst):
+                    return _leaf_done(state)
+                try:
+                    cleared = bool(xbmcvfs.delete(dst))
+                except Exception:
+                    cleared = False
+                if cleared and time.time() < deadline:
+                    reason = "destination replaced"
+                    continue
+                reason = "destination exists"
+                break
+            if (not _copy_transient(reason) or time.time() >= deadline
+                    or attempt >= 2):
+                break
+            log("server copy %s, retrying: %s" % (reason, redact(dst)))
+            time.sleep(1.0)
+        if reason == "destination exists":
+            return _leaf_failed(state, reason)
+        log("server copy %s, uploading: %s" % (reason, redact(src)))
+    if _is_dav(dst):
+        # Phase 2a: DAV target -> our own streaming PUT (Kodi's VFS write to
+        # DAV fails). At most two attempts.
+        for attempt in range(2):
+            if _prog_cancelled():
+                raise _ProgCancelled()
+            ok, reason = sources.dav_upload_file(
+                src, dst, timeout=_COPY_TIMEOUT,
+                on_progress=_leaf_progress(state), cancelled=_prog_cancelled)
+            if reason == "cancelled":
+                raise _ProgCancelled()
+            if ok and _verify_vfs_copy(src, dst, True):
+                return _leaf_done(state)
+            if ok:
+                reason = "upload unverified"
+            if (not _copy_transient(reason) or time.time() >= deadline
+                    or attempt >= 1):
+                break
+            log("upload %s, retrying: %s" % (reason, redact(dst)))
+            time.sleep(1.0)
+        return _leaf_failed(state, reason)
+    # Phase 2b: streamed copy through Kodi (non-DAV target). At most two attempts.
+    for attempt in range(2):
+        if _prog_cancelled():
+            raise _ProgCancelled()
         try:
-            copied, reason = sources.dav_copy_file(src, dst)
+            ok = bool(xbmcvfs.copy(src, dst))
+            if not ok:
+                reason = "stream failed"
         except Exception as err:
-            log("server copy failed: %s" % err)
-            copied, reason = False, "error"
-        if copied:
-            if _verify_vfs_copy(src, dst, True):
-                state["done"] = state.get("done", 0) + 1
-                total = state.get("total") or 0
-                _prog_set(state["done"] * 100 // total if total else 100)
-                return True
-            log("server copy unverified: %s" % redact(dst))
-            return False
-        if reason == "exists":
-            log("server copy refused: %s" % redact(dst))
-            return False
-    try:
-        ok = bool(xbmcvfs.copy(src, dst))
-    except Exception:
-        ok = False
-    if ok and webdav and not _verify_vfs_copy(src, dst, True):
-        log("streamed copy unverified: %s" % redact(dst))
-        ok = False
-    state["done"] = state.get("done", 0) + 1
-    total = state.get("total") or 0
-    _prog_set(state["done"] * 100 // total if total else 0)
-    return ok
+            ok, reason = False, "%s: %s" % (type(err).__name__, err)
+        if ok and _verify_vfs_copy(src, dst, True):
+            return _leaf_done(state)
+        if ok:
+            reason = "streamed copy unverified"
+        if (not _copy_transient(reason) or time.time() >= deadline
+                or attempt >= 1):
+            break
+        log("copy %s, retrying: %s" % (reason, redact(dst)))
+        time.sleep(1.0)
+    return _leaf_failed(state, reason)
+
+
+def _xport_name(name, src_net, dst_net):
+    """Child name for the target of a cross-transport copy. A raw local name is
+    percent-encoded for a network target; an href-encoded network name is
+    decoded for a local target. Same transport keeps the name unchanged."""
+    if src_net == dst_net:
+        return name
+    return quote(name, safe="") if dst_net else unquote(name)
 
 
 def _copy_dir(src, dst, got, state):
-    """Copy a directory whose listing is `got` (child kinds already known)."""
+    """Copy a directory whose listing is `got` (child kinds already known).
+    Child names are transformed when the source and target transports differ."""
     dirs = _strip_self(src, got[0])
     files = got[1]
+    src_net = _net(src)
+    dst_net = _net(dst)
     try:
         xbmcvfs.mkdir(dst)
     except Exception:
@@ -308,12 +436,14 @@ def _copy_dir(src, dst, got, state):
     for n in files:
         if _prog_cancelled():
             raise _ProgCancelled()
-        if not _copy_leaf(src.rstrip("/") + "/" + n, dst.rstrip("/") + "/" + n, state):
+        dn = _xport_name(n, src_net, dst_net)
+        if not _copy_leaf(src.rstrip("/") + "/" + n, dst.rstrip("/") + "/" + dn, state):
             ok = False
     for n in dirs:
         csrc = src.rstrip("/") + "/" + n
         cgot = _vfs_list(csrc)
-        if cgot is None or not _copy_dir(csrc, dst.rstrip("/") + "/" + n, cgot, state):
+        dn = _xport_name(n, src_net, dst_net)
+        if cgot is None or not _copy_dir(csrc, dst.rstrip("/") + "/" + dn, cgot, state):
             ok = False
     return ok
 
@@ -750,11 +880,14 @@ def _copy_tree(src, dst, state):
         _copy_file(src, dst, state)
 
 
-def _paste_net(src, dest, mode):
-    """Paste between VFS locations: a move uses the server MOVE (xbmcvfs.rename)
-    when possible, else a recursive xbmcvfs copy (+ delete for a move)."""
+def _paste_vfs(src, dest, mode):
+    """Paste between VFS locations -- network<->network and local<->network. A
+    move uses the server MOVE (xbmcvfs.rename) when possible, else a recursive
+    VFS copy (+ delete for a move); child names are transformed per target
+    transport (see _xport_name)."""
     win = xbmcgui.Window(10000)
-    name = os.path.basename(src.rstrip("/")) or "?"
+    name = _xport_name(os.path.basename(src.rstrip("/")) or "?",
+                       _net(src), _net(dest))
     target = dest + "/" + name
     title = L(31417)
     src_b = src.rstrip("/")
@@ -772,9 +905,9 @@ def _paste_net(src, dest, mode):
             except Exception:
                 moved = False
         if not moved:
-            state = {"total": _vfs_count(src), "done": 0}
+            state = {"total": _vfs_count(src), "done": 0, "reason": ""}
             if not _vfs_copy(src, target, state):
-                raise OSError("copy failed")
+                raise OSError(state.get("reason") or "copy failed")
             if mode == "move":
                 _vfs_delete(src)
         _prog_set(100)
@@ -788,18 +921,19 @@ def _paste_net(src, dest, mode):
         time.sleep(0.2)
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:
-        log("net paste cancelled: %s -> %s" % (redact(src), redact(target)))
+        log("vfs paste cancelled: %s -> %s" % (redact(src), redact(target)))
         try:
             _vfs_delete(target)
         except Exception:
             pass
         _prog_close()
     except Exception as e:
-        log("net paste failed: %s" % e)
+        log("vfs paste failed: %s" % e)
         # Remove the partial copy: it would make the next paste fail on the
         # exists-check. The source is untouched.
         try:
-            _vfs_delete(target)
+            if not _vfs_delete(target):
+                log("vfs paste cleanup failed: %s" % redact(target))
         except Exception:
             pass
         _prog_error(safe_label(L(31422) % e))
@@ -825,18 +959,10 @@ def clip_paste():
         _focus_list()
         return
     cur = path_dec(win.getProperty("bp.path") or "").rstrip("/")
-    net_src = _net(src)
-    net_dest = _net(cur)
-    if net_src and net_dest:
-        _paste_net(src, cur, mode)
-        return
-    if net_src != net_dest:
-        # Cross-transport copy (local <-> network) is not wired yet.
-        log("clipboard paste: cross-transport unsupported")
-        xbmcgui.Dialog().notification(
-            skin_name(), L(31422) % "local <-> network",
-            xbmcgui.NOTIFICATION_ERROR, 3000)
-        _focus_list()
+    if _net(src) or _net(cur):
+        # network<->network and local<->network all go through the VFS paste;
+        # child names are encoded/decoded per target transport.
+        _paste_vfs(src, cur, mode)
         return
     dest = _current_dir()
     if not dest or not os.path.isdir(dest):

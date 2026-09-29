@@ -3,6 +3,7 @@
 
 The only place that touches Estuary base-layer files."""
 import hashlib
+import json
 import os
 import platform
 import re
@@ -364,9 +365,9 @@ TIMER_LABEL = "$LOCALIZE[31405]"
 _POWER_ROW = """\t\t\t\t<control type="button" id="{cid}">
 \t\t\t\t\t<left>20</left><top>{top}</top><width>{lw}</width><height>{rh}</height>
 \t\t\t\t\t<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-\t\t\t\t\t<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+\t\t\t\t\t<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 \t\t\t\t\t<font>font13</font><align>center</align><aligny>center</aligny>
-\t\t\t\t\t<textcolor>FF9A9AA2</textcolor>
+\t\t\t\t\t<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 \t\t\t\t\t<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 \t\t\t\t\t<label>{label}</label>
 {actions}\t\t\t\t\t<onup>{up}</onup>
@@ -391,8 +392,8 @@ _POWER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 \t\t\t<animation effect="slide" start="0,24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 \t\t\t<control type="button" id="952">
 \t\t\t\t<left>0</left><top>0</top><width>1920</width><height>1080</height>
-\t\t\t\t<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-\t\t\t\t<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+\t\t\t\t<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+\t\t\t\t<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 \t\t\t\t<onclick>ClearProperty(bp.power)</onclick>
 \t\t\t\t<onclick>SetFocus(33)</onclick>
 \t\t\t\t<onback>ClearProperty(bp.power)</onback>
@@ -406,7 +407,7 @@ _POWER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 \t\t\t\t<left>{left}</left><top>{top}</top>
 \t\t\t\t<control type="image">
 \t\t\t\t\t<left>0</left><top>0</top><width>{pw}</width><height>{total_h}</height>
-\t\t\t\t\t<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+\t\t\t\t\t<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 \t\t\t\t</control>
 \t\t\t\t<control type="button" id="953">
 \t\t\t\t\t<left>0</left><top>0</top><width>{pw}</width><height>{total_h}</height>
@@ -421,20 +422,20 @@ _POWER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 \t\t\t\t</control>
 \t\t\t\t<control type="image">
 \t\t\t\t\t<left>0</left><top>0</top><width>{pw}</width><height>60</height>
-\t\t\t\t\t<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+\t\t\t\t\t<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 \t\t\t\t</control>
 \t\t\t\t<control type="label">
 \t\t\t\t\t<left>0</left><top>0</top><width>{pw}</width><height>60</height>
-\t\t\t\t\t<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+\t\t\t\t\t<font>font25_modal</font><textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 \t\t\t\t\t<align>center</align><aligny>center</aligny>
 \t\t\t\t\t<label>$LOCALIZE[31310]</label>
 \t\t\t\t</control>
 {rows}\t\t\t\t<control type="button" id="951">
 \t\t\t\t\t<left>20</left><top>{cancel_top}</top><width>{lw}</width><height>{rh}</height>
 \t\t\t\t\t<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-\t\t\t\t\t<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+\t\t\t\t\t<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 \t\t\t\t\t<font>font13</font><align>center</align><aligny>center</aligny>
-\t\t\t\t\t<textcolor>FF9A9AA2</textcolor>
+\t\t\t\t\t<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 \t\t\t\t\t<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 \t\t\t\t\t<label>$LOCALIZE[31344]</label>
 \t\t\t\t\t<onclick>ClearProperty(bp.power)</onclick>
@@ -1010,6 +1011,13 @@ def accents():
     level = accent_level_name(win)
     colors = levels[int(level[1]) - 1] if levels else []
     accent = win.getProperty("bp.accent.value").upper()
+    if not re.fullmatch(r"[0-9a-fA-F]{8}", accent):
+        # bp.accent.value is cleared after every run; fall back to the stored
+        # accent so a re-run (theme switch) does not wipe the accent props.
+        try:
+            accent = (xbmc.getInfoLabel("Skin.String(accent)") or "").upper()
+        except Exception:
+            accent = ""
     slot = ""
     tint = ""
     if re.fullmatch(r"[0-9a-fA-F]{8}", accent):
@@ -1042,9 +1050,16 @@ def accents():
         win.setProperty("bp.accent.tint", tint)
     else:
         win.clearProperty("bp.accent.tint")
-    # Opaque hover blend: 10% accent baked over the panel tone FF1E1E26 (a
-    # transparent tint over dark pills rendered darker).
+    # Opaque hover blend: 10% accent baked over the theme's panel tone (a
+    # transparent tint over the pills rendered wrong). Falls back to the dark
+    # panel when the theme is not applied yet; themes() runs before accents().
     base = (0x1E, 0x1E, 0x26)
+    try:
+        _p = (win.getProperty("bp.theme.panel") or "").strip()
+        if re.fullmatch(r"[0-9a-fA-F]{8}", _p):
+            base = (int(_p[2:4], 16), int(_p[4:6], 16), int(_p[6:8], 16))
+    except Exception:
+        pass
     blend = "FF%02X%02X%02X" % tuple(
         round(0.1 * int(accent[k:k+2], 16) + 0.9 * b) for k, b in zip((2, 4, 6), base)) \
         if re.fullmatch(r"[0-9a-fA-F]{8}", accent) else ""
@@ -1083,3 +1098,159 @@ def accents():
         win.clearProperty("bp.accent.focus")
     win.clearProperty("bp.accent.value")
     log("accents: %d colors, level %s, slot=%r" % (len(colors), level, slot))
+
+
+# ---------------------------------------------------------------- themes
+
+# One JSON per theme in themes/ (add files to add themes). A theme defines
+# colour ROLES; the XML reads bp.theme.<role>. The file name (minus an optional
+# NN- sort prefix) IS the theme id AND the menu display name; DarkNightfall =
+# today's colours. MediumOvercast is the default (first run / reset).
+THEME_DIR = "themes"
+THEME_DEFAULT = "MediumOvercast"
+THEME_ROLES = ("bg", "panel", "panel_solid", "panel_solid2", "row", "zebra",
+               "header", "raised", "raised2", "raised3", "surface", "divider",
+               "divider2", "veil", "text", "text2", "muted", "control")
+
+
+def _theme_files():
+    """[(id, path)] for the themes/*.json files, sorted by file name. The id
+    strips an optional NN- sort prefix, which stays hidden in the UI: the
+    prefix orders the list and later themes are appended with a higher number."""
+    out = []
+    try:
+        base = os.path.join(skin_root(), THEME_DIR)
+        for f in sorted(os.listdir(base)):
+            if not f.endswith(".json"):
+                continue
+            stem = f[:-5]
+            tid = re.sub(r"^\d+[-_ ]*", "", stem) or stem
+            out.append((tid, os.path.join(base, f)))
+    except Exception:
+        return []
+    return out
+
+
+def theme_ids():
+    """Available theme ids in file-name (prefix) order."""
+    return [tid for tid, _path in _theme_files()]
+
+
+def _strip_comments(text):
+    """Strip // line and /* */ block comments. The theme files are hand-edited
+    (JSON + comments), so the loader tolerates them; markers inside strings stay."""
+    out = []
+    i, n = 0, len(text)
+    in_str = False
+    while i < n:
+        c = text[i]
+        if in_str:
+            out.append(c)
+            if c == "\\" and i + 1 < n:
+                out.append(text[i + 1]); i += 2; continue
+            if c == '"':
+                in_str = False
+        elif c == '"':
+            in_str = True
+            out.append(c)
+        elif c == "/" and i + 1 < n and text[i + 1] == "/":
+            j = text.find("\n", i)
+            i = n if j < 0 else j
+            continue
+        elif c == "/" and i + 1 < n and text[i + 1] == "*":
+            j = text.find("*/", i + 2)
+            i = n if j < 0 else j + 2
+            continue
+        else:
+            out.append(c)
+        i += 1
+    return "".join(out)
+
+
+def _theme_raw(tid):
+    path = ""
+    for tid2, p in _theme_files():
+        if tid2 == tid:
+            path = p
+            break
+    if not path:
+        path = os.path.join(skin_root(), THEME_DIR, "%s.json" % tid)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.loads(_strip_comments(f.read()))
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def theme_load(tid):
+    """Color roles of theme `tid` ({role: AARRGGBB}); only valid roles/values."""
+    colors = _theme_raw(tid).get("colors")
+    if not isinstance(colors, dict):
+        return {}
+    out = {}
+    for role in THEME_ROLES:
+        v = colors.get(role)
+        if isinstance(v, str) and re.fullmatch(r"[0-9a-fA-F]{8}", v):
+            out[role] = v.upper()
+    return out
+
+
+def theme_active():
+    """The persisted theme id (default when unset/unknown)."""
+    try:
+        tid = (xbmc.getInfoLabel("Skin.String(theme)") or "").strip()
+    except Exception:
+        tid = ""
+    ids = theme_ids()
+    if tid and (not ids or tid in ids):
+        return tid
+    if THEME_DEFAULT in ids:
+        return THEME_DEFAULT
+    return ids[0] if ids else THEME_DEFAULT
+
+
+def themes(tid=None):
+    """Load a theme -> bp.theme.<role> window properties (mirrors bp.accent.*);
+    the XML reads them. Called at boot and on switch. `tid` applies that theme
+    directly -- a fresh `Skin.SetString` is not yet visible to
+    `Skin.String(theme)`, so re-reading it right after a switch would apply the
+    OLD theme (the switch would lag one step)."""
+    win = xbmcgui.Window(10000)
+    ids = theme_ids()
+    if not tid:
+        tid = theme_active()
+    colors = theme_load(tid)
+    if not colors and ids:
+        tid = ids[0]
+        colors = theme_load(tid)
+    for role in THEME_ROLES:
+        v = colors.get(role)
+        if v:
+            win.setProperty("bp.theme.%s" % role, v)
+        else:
+            win.clearProperty("bp.theme.%s" % role)
+    win.setProperty("bp.theme.id", tid)
+    # The file name IS the display name (creative/international, not translated).
+    win.setProperty("bp.theme.name", tid)
+    log("theme: %s (%d roles)" % (tid, len(colors)))
+
+
+def theme_next():
+    """Cycle to the next theme and apply it (the settings row's OK)."""
+    ids = theme_ids()
+    if not ids:
+        return False
+    cur = theme_active()
+    try:
+        nxt = ids[(ids.index(cur) + 1) % len(ids)]
+    except ValueError:
+        nxt = ids[0]
+    try:
+        xbmc.executebuiltin("Skin.SetString(theme,%s)" % nxt)
+    except Exception:
+        return False
+    themes(nxt)
+    accents()   # the hover blend is mixed over the new theme's panel tone
+    log("theme switched: %s" % nxt)
+    return True

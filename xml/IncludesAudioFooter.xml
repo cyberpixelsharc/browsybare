@@ -9,7 +9,7 @@
 		<width>944</width>
 		<height>50</height>
 		<font>font36_title</font>
-		<textcolor>FFF2F2F4</textcolor>
+		<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 		<visible>!Skin.HasSetting(audio.noscroll)</visible>
 		<scroll>true</scroll>
 		<scrollsuffix>   |   </scrollsuffix>
@@ -21,7 +21,7 @@
 		<width>944</width>
 		<height>50</height>
 		<font>font36_title</font>
-		<textcolor>FFF2F2F4</textcolor>
+		<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 		<visible>Skin.HasSetting(audio.noscroll)</visible>
 		<label>$INFO[Window(10000).Property(bp.audio.title)]</label>
 		<scroll>false</scroll>
@@ -32,7 +32,7 @@
 		<width>944</width>
 		<height>30</height>
 		<font>font20_title</font>
-		<textcolor>FF9A9AA2</textcolor>
+		<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 		<visible>!Skin.HasSetting(audio.noscroll) + Skin.HasSetting(show.audiopath)</visible>
 		<scroll>true</scroll>
 		<scrollspeed>30</scrollspeed>
@@ -45,7 +45,7 @@
 		<width>944</width>
 		<height>30</height>
 		<font>font20_title</font>
-		<textcolor>FF9A9AA2</textcolor>
+		<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 		<visible>Skin.HasSetting(audio.noscroll) + Skin.HasSetting(show.audiopath)</visible>
 		<label>$INFO[Window(10000).Property(bp.audio.path)]</label>
 		<scroll>false</scroll>
@@ -56,7 +56,7 @@
 		<width>944</width>
 		<height>30</height>
 		<font>font20_title</font>
-		<textcolor>FF9A9AA2</textcolor>
+		<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 		<visible>!Skin.HasSetting(audio.noscroll) + !Skin.HasSetting(show.audiopath)</visible>
 		<scroll>true</scroll>
 		<scrollspeed>30</scrollspeed>
@@ -69,7 +69,7 @@
 		<width>944</width>
 		<height>30</height>
 		<font>font20_title</font>
-		<textcolor>FF9A9AA2</textcolor>
+		<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 		<visible>Skin.HasSetting(audio.noscroll) + !Skin.HasSetting(show.audiopath)</visible>
 		<label>$INFO[Window(10000).Property(bp.audio.folder)]</label>
 		<scroll>false</scroll>
@@ -80,7 +80,7 @@
 		<width>240</width>
 		<height>24</height>
 		<font>font10</font>
-		<textcolor>FF9A9AA2</textcolor>
+		<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 		<label>$INFO[Player.Time]$INFO[Player.Duration, / ]</label>
 		</control>
 	</include>

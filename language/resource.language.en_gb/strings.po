@@ -848,3 +848,7 @@ msgstr "Download version %s to %s?"
 msgid "Write access"
 msgctxt "#31537"
 msgstr "Write access"
+
+msgid "Theme"
+msgctxt "#31538"
+msgstr "Theme"

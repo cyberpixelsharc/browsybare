@@ -27,7 +27,7 @@
 					<width>250</width>
 					<height>36</height>
 					<font>font13</font>
-					<textcolor>FFF2F2F4</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 					<align>left</align>
 					<aligny>center</aligny>
 					<label>$INFO[Window(10000).Property(bp.info.$PARAM[idx].key)]</label>
@@ -39,7 +39,7 @@
 					<width>208</width>
 					<height>36</height>
 					<font>font13</font>
-					<textcolor>FFF2F2F4</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 					<align>left</align>
 					<aligny>center</aligny>
 					<label>$INFO[Window(10000).Property(bp.info.$PARAM[idx].key)]</label>
@@ -55,7 +55,7 @@
 						<top>5</top>
 						<width>24</width>
 						<height>24</height>
-						<texture colordiffuse="FF9A9AA2">osd/circle.png</texture>
+						<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/circle.png</texture>
 						<visible>!String.IsEqual(Window(10000).Property(bp.info.$PARAM[idx].current),1)</visible>
 					</control>
 					<control type="image">
@@ -112,7 +112,7 @@
 					<width>512</width>
 					<height>36</height>
 					<font>font13</font>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<scroll>true</scroll>
 					<scrollspeed>30</scrollspeed>
 					<scrollsuffix>   |   </scrollsuffix>
@@ -126,7 +126,7 @@
 					<width>792</width>
 					<height>1</height>
 					<texture>drawn/fill.png</texture>
-					<colordiffuse>26FFFFFF</colordiffuse>
+					<colordiffuse>$INFO[Window(10000).Property(bp.theme.divider)]</colordiffuse>
 				</control>
 			</control>
 		</definition>
@@ -141,8 +141,8 @@
 				<top>0</top>
 				<width>1920</width>
 				<height>1080</height>
-				<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-				<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 				<onclick>RunScript(special://skin/scripts/main.py,infoclose)</onclick>
 				<onback>RunScript(special://skin/scripts/main.py,infoclose)</onback>
 				<ondown condition="!String.IsEmpty(Window(10000).Property(bp.info.1.key))">710</ondown>
@@ -174,7 +174,7 @@
 					<top>0</top>
 					<width>880</width>
 					<height>680</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="521">
@@ -191,7 +191,7 @@
 					<top>0</top>
 					<width>880</width>
 					<height>60</height>
-					<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 				</control>
 			<control type="label">
 				<left>0</left>
@@ -199,7 +199,7 @@
 				<width>880</width>
 				<height>60</height>
 				<font>font25_modal</font>
-				<textcolor>FFF2F2F4</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 				<align>center</align>
 				<aligny>center</aligny>
 				<label>$LOCALIZE[31426]</label>
@@ -211,7 +211,7 @@
 					<width>832</width>
 					<height>582</height>
 					<font>font13</font>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<align>center</align>
 					<aligny>center</aligny>
 					<label>$LOCALIZE[31470]</label>
@@ -263,7 +263,7 @@
 						<width>792</width>
 						<height>1</height>
 						<texture>drawn/fill.png</texture>
-						<colordiffuse>26FFFFFF</colordiffuse>
+						<colordiffuse>$INFO[Window(10000).Property(bp.theme.divider)]</colordiffuse>
 					</control>
 				</control>
 				<include content="InfoRow">
@@ -433,8 +433,8 @@
 					<width>6</width>
 					<height>582</height>
 					<texturesliderbackground>drawn/blank.png</texturesliderbackground>
-					<texturesliderbar border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbar>
-					<texturesliderbarfocus border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbarfocus>
+					<texturesliderbar border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbar>
+					<texturesliderbarfocus border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbarfocus>
 					<orientation>vertical</orientation>
 					<showonepage>false</showonepage>
 				</control>

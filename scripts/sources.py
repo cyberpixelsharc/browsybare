@@ -530,6 +530,173 @@ def _dav_auth_header(method, uri, username, password, challenge):
     return "Digest " + ", ".join(parts)
 
 
+def _src_size(path):
+    """Byte size of a local file / VFS URL, or None when unavailable."""
+    try:
+        if is_network_path(path):
+            st = xbmcvfs.Stat(path)
+            size = (st.st_size() if callable(getattr(st, "st_size", None))
+                    else st.st_size)
+            return int(size)
+        return os.path.getsize(path)
+    except Exception:
+        return None
+
+
+def _local_source(src_path):
+    """A local readable copy of `src_path`: the path itself when local, else a
+    downloaded temp file (Kodi's `xbmcvfs.File.read` decodes as text and raises
+    on binary content, so a network source is pulled to disk first). Returns
+    (local_path, temp_path_or_"") or (None, reason)."""
+    if not is_network_path(src_path):
+        return src_path, ""
+    try:
+        import tempfile
+        tmp = os.path.join(tempfile.gettempdir(),
+                           "bp-upload-%s" % os.urandom(6).hex())
+    except Exception:
+        return None, "temp unavailable"
+    # The source download hits the same transient 5xx as everything else (a
+    # flaky CloudMe 502s); retry a few times before giving up.
+    for attempt in range(3):
+        try:
+            if xbmcvfs.copy(src_path, tmp):
+                return tmp, tmp
+        except Exception:
+            pass
+        if attempt < 2:
+            time.sleep(1.0)
+    try:
+        os.remove(tmp)
+    except OSError:
+        pass
+    return None, "source download failed"
+
+
+def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=None):
+    """Upload one file to a WebDAV URL with our own streaming PUT.
+
+    Kodi's VFS write to DAV fails (curl cannot rewind the upload body after the
+    401 challenge), so a local->network upload is impossible through
+    `xbmcvfs.copy`. We fetch the challenge first, then PUT with the body in
+    chunks -- no memory copy, no rewind needed. A network `src_path` is pulled
+    to a temp file first (Kodi's `xbmcvfs.File.read` decodes as text and raises
+    on binary content). `on_progress(sent, total)` runs while streaming,
+    `cancelled()` (optional) aborts. Returns (True, "") or (False, reason)."""
+    try:
+        import http.client
+        import ssl
+        import urllib.error
+        import urllib.request
+    except Exception:
+        return False, "unsupported"
+    dst = _dav_origin(dst_url)
+    if dst is None:
+        return False, "unsupported"
+    src_local, tmp = _local_source(src_path)
+    if src_local is None:
+        return False, tmp or "source unreadable"
+    try:
+        scheme, host, port, netloc, path, username, password = dst
+        total = _src_size(src_local) or 0
+        # Auth: prefer the server's challenge (unauthenticated Depth-0
+        # PROPFIND, a few tries -- a flaky server answers 5xx); fall back to
+        # PREEMPTIVE Basic so a failed probe never sends us in unauthenticated.
+        # A 401 on the PUT itself is answered once more below.
+        challenge = ""
+        for _ in range(3):
+            try:
+                req = urllib.request.Request(
+                    "%s://%s%s" % (scheme, netloc, path), method="PROPFIND")
+                req.add_header("Depth", "0")
+                urllib.request.urlopen(req, timeout=min(timeout, 20),
+                                       context=ssl.create_default_context())
+                break
+            except urllib.error.HTTPError as e:
+                if e.code == 401 and e.headers:
+                    challenge = e.headers.get("WWW-Authenticate", "") or ""
+                    break
+            except Exception:
+                pass
+        auth = _dav_auth_header("PUT", path, username, password,
+                                challenge or "Basic")
+
+        def new_conn():
+            if scheme == "https":
+                return http.client.HTTPSConnection(
+                    host, port, timeout=timeout,
+                    context=ssl.create_default_context())
+            return http.client.HTTPConnection(host, port, timeout=timeout)
+
+        try:
+            conn = new_conn()
+        except Exception as e:
+            return False, "%s: %s" % (type(e).__name__, e)
+        try:
+            for attempt in range(2):
+                sent = 0
+                conn.putrequest("PUT", path)
+                conn.putheader("Content-Length", str(total))
+                conn.putheader("Content-Type", "application/octet-stream")
+                if auth:
+                    conn.putheader("Authorization", auth)
+                conn.endheaders()
+                with open(src_local, "rb") as f:
+                    while True:
+                        if cancelled is not None and cancelled():
+                            return False, "cancelled"
+                        chunk = f.read(262144)
+                        if not chunk:
+                            break
+                        conn.send(chunk)
+                        sent += len(chunk)
+                        if on_progress is not None:
+                            try:
+                                on_progress(sent, total)
+                            except Exception:
+                                pass
+                resp = conn.getresponse()
+                status = int(getattr(resp, "status", 0) or 0)
+                ch = (resp.headers.get("WWW-Authenticate", "")
+                      if resp.headers else "") or ""
+                try:
+                    resp.read(1024)
+                except Exception:
+                    pass
+                if status in (200, 201, 204):
+                    return True, ""
+                if status == 401 and attempt == 0:
+                    new_auth = _dav_auth_header("PUT", path, username,
+                                                password, ch)
+                    if new_auth and new_auth != auth:
+                        auth = new_auth
+                        try:
+                            conn.close()
+                        except Exception:
+                            pass
+                        try:
+                            conn = new_conn()
+                        except Exception:
+                            return False, "auth"
+                        continue
+                if status == 401:
+                    return False, "auth"
+                return False, "status-%d" % status
+        except Exception as e:
+            return False, "%s: %s" % (type(e).__name__, e)
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+    finally:
+        if tmp:
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+
+
 def dav_details(url, timeout=8, attempts=2):
     """{key: (size, mtime, is_dir)} for a WebDAV collection via ONE PROPFIND
     (Depth 1). Keys are the full child URL and the decoded name; {} on failure."""

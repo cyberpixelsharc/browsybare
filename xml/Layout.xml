@@ -26,7 +26,7 @@
 				<width>1920</width>
 				<height>1080</height>
 				<texture>drawn/fill.png</texture>
-				<colordiffuse>FF101014</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.bg)]</colordiffuse>
 			</control>
 <!-- Single list (plugin source): 2 invisible top-padding rows keep zebra parity; the dotdot row scrolls along. -->
 			<control type="list" id="33">
@@ -57,7 +57,7 @@
 						<width>1920</width>
 						<height>$PARAM[row_h]</height>
 						<texture>drawn/fill.png</texture>
-						<colordiffuse>FF1E1E26</colordiffuse>
+						<colordiffuse>$INFO[Window(10000).Property(bp.theme.zebra)]</colordiffuse>
 					</control>
 					<control type="image">
 						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
@@ -137,9 +137,9 @@
 						<align>left</align>
 						<aligny>center</aligny>
 						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<selectedcolor>FF9A9AA2</selectedcolor>
+						<selectedcolor>$INFO[Window(10000).Property(bp.theme.text2)]</selectedcolor>
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
@@ -151,9 +151,9 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<selectedcolor>FF9A9AA2</selectedcolor>
+						<selectedcolor>$INFO[Window(10000).Property(bp.theme.text2)]</selectedcolor>
 						<label>$INFO[ListItem.Label2]</label>
 					</control>
 					<control type="label">
@@ -165,9 +165,9 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<selectedcolor>FF9A9AA2</selectedcolor>
+						<selectedcolor>$INFO[Window(10000).Property(bp.theme.text2)]</selectedcolor>
 						<label>$INFO[ListItem.Date]</label>
 					</control>
 				</focusedlayout>
@@ -179,7 +179,7 @@
 						<width>1920</width>
 						<height>$PARAM[row_h]</height>
 						<texture>drawn/fill.png</texture>
-				<colordiffuse>FF1E1E26</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.zebra)]</colordiffuse>
 					</control>
 					<control type="image">
 						<visible>ListItem.IsFolder + String.IsEmpty(ListItem.Property(bp.dotdot)) + !String.IsEqual(ListItem.Property(bp.padding),1) + !String.IsEqual(ListItem.Property(bp.kind),archive)</visible>
@@ -250,9 +250,9 @@
 						<align>left</align>
 						<aligny>center</aligny>
 						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<selectedcolor>FF9A9AA2</selectedcolor>
+						<selectedcolor>$INFO[Window(10000).Property(bp.theme.text2)]</selectedcolor>
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
@@ -264,9 +264,9 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<selectedcolor>FF9A9AA2</selectedcolor>
+						<selectedcolor>$INFO[Window(10000).Property(bp.theme.text2)]</selectedcolor>
 						<label>$INFO[ListItem.Label2]</label>
 					</control>
 					<control type="label">
@@ -278,9 +278,9 @@
 						<align>right</align>
 						<aligny>center</aligny>
 						<visible>!String.IsEqual(ListItem.Property(bp.padding),1)</visible>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-						<selectedcolor>FF9A9AA2</selectedcolor>
+						<selectedcolor>$INFO[Window(10000).Property(bp.theme.text2)]</selectedcolor>
 						<label>$INFO[ListItem.Date]</label>
 					</control>
 				</itemlayout>
@@ -292,8 +292,8 @@
 				<width>6</width>
 				<bottom>0</bottom>
 				<texturesliderbackground>drawn/blank.png</texturesliderbackground>
-				<texturesliderbar border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbar>
-				<texturesliderbarfocus border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbarfocus>
+				<texturesliderbar border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbar>
+				<texturesliderbarfocus border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbarfocus>
 				<scrolltime>400</scrolltime>
 				<orientation>vertical</orientation>
 			</control>
@@ -305,7 +305,7 @@
 				<width>1920</width>
 				<height>952</height>
 				<texture>drawn/fill.png</texture>
-				<colordiffuse>FF101014</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.bg)]</colordiffuse>
 			</control>
 			
 			<control type="image">
@@ -314,7 +314,7 @@
 				<width>1920</width>
 				<height>128</height>
 				<texture>drawn/fill.png</texture>
-				<colordiffuse>F21E1E26</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.panel_solid)]</colordiffuse>
 			</control>
 			<control type="image">
 				<left>0</left>
@@ -322,7 +322,7 @@
 				<width>1920</width>
 				<height>2</height>
 				<texture>drawn/fill.png</texture>
-				<colordiffuse>FF32323C</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.header)]</colordiffuse>
 			</control>
 									<!-- Search: Skin.SetString without a value opens the keyboard. -->
 			
@@ -343,7 +343,7 @@
 				<width>64</width>
 				<height>$PARAM[ctrl_h]</height>
 				<texture>drawn/circle.png</texture>
-				<colordiffuse>FF101014</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.bg)]</colordiffuse>
 			</control>
 			<control type="image">
 				<visible>Control.HasFocus(32) + !String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
@@ -373,12 +373,12 @@
 					<width min="64" max="560">auto</width>
 					<height>$PARAM[ctrl_h]</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/chip.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF101014">drawn/chip.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.bg)]">drawn/chip.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>24</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<!-- Icon spacer: Kodi centers only the label, so the spacer centers icon+text in the auto-width pill. -->
 					<label>     $INFO[Window(10000).Property(bp.title)]</label>
@@ -405,7 +405,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.1))</visible>
 				</control>
@@ -418,7 +418,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.1)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.1))</visible>
@@ -431,7 +431,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ … </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.ellipsis))</visible>
 				</control>
@@ -441,7 +441,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.2))</visible>
 				</control>
@@ -454,7 +454,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.2)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.2))</visible>
@@ -467,7 +467,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.3))</visible>
 				</control>
@@ -480,7 +480,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.3)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.3))</visible>
@@ -493,7 +493,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.4))</visible>
 				</control>
@@ -506,7 +506,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.4)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.4))</visible>
@@ -519,7 +519,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.5))</visible>
 				</control>
@@ -532,7 +532,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.5)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.5))</visible>
@@ -545,7 +545,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.6))</visible>
 				</control>
@@ -558,7 +558,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.6)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.6))</visible>
@@ -571,7 +571,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.7))</visible>
 				</control>
@@ -584,7 +584,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.7)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.7))</visible>
@@ -597,7 +597,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>/ </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.cur))</visible>
 				</control>
@@ -607,7 +607,7 @@
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<label>$INFO[Window(10000).Property(bp.crumb.cur)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.cur))</visible>
 				</control>
@@ -618,7 +618,7 @@
 				<top>50</top>
 				<width>28</width>
 				<height>28</height>
-				<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.current.icon)]</texture>
+				<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.current.icon)]</texture>
 				<visible>!String.IsEmpty(Window(10000).Property(bp.current.icon)) + !Control.HasFocus(30)</visible>
 			</control>
 			<control type="image">
@@ -636,11 +636,11 @@
 				<width>274</width>
 				<height>$PARAM[ctrl_h]</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/pill.png</texturefocus>
-				<texturenofocus colordiffuse="FF101014">drawn/pill.png</texturenofocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.bg)]">drawn/pill.png</texturenofocus>
 				<font>font13</font>
 				<align>center</align>
 				<aligny>center</aligny>
-				<textcolor>FF9A9AA2</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 				<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 				<label>$INFO[Window(10000).Property(search.query)]</label>
 				<onleft>36</onleft>
@@ -657,7 +657,7 @@
 				<top>$PARAM[top_y]</top>
 				<width>64</width>
 				<height>$PARAM[ctrl_h]</height>
-				<texture colordiffuse="FF101014">drawn/circle.png</texture>
+				<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.bg)]">drawn/circle.png</texture>
 			</control>
 			<control type="button" id="74">
 				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1)</visible>
@@ -681,11 +681,11 @@
 				<width>274</width>
 				<height>$PARAM[ctrl_h]</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/pill.png</texturefocus>
-				<texturenofocus colordiffuse="FF101014">drawn/pill.png</texturenofocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.bg)]">drawn/pill.png</texturenofocus>
 				<font>font13</font>
 				<align>center</align>
 				<aligny>center</aligny>
-				<textcolor>FF9A9AA2</textcolor>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 				<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 				<label>$LOCALIZE[31344]</label>
 				<onclick>RunScript(special://skin/scripts/main.py,pickcancel)</onclick>
@@ -702,7 +702,7 @@
 				<height>28</height>
 				<aspectratio align="left" aligny="center">keep</aspectratio>
 				<texture>header/search.png</texture>
-				<colordiffuse>FF9A9AA2</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.text2)]</colordiffuse>
 			</control>
 			<control type="image">
 				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1) + Control.HasFocus(74)</visible>
@@ -739,7 +739,7 @@
 				<height>38</height>
 				<aspectratio align="center" aligny="center">keep</aspectratio>
 				<texture>header/list.png</texture>
-				<colordiffuse>FF9A9AA2</colordiffuse>
+				<colordiffuse>$INFO[Window(10000).Property(bp.theme.text2)]</colordiffuse>
 			</control>
 			<control type="image">
 				<visible>!String.IsEqual(Window(10000).Property(bp.pick.active),1) + Control.HasFocus(32)</visible>
@@ -767,7 +767,7 @@
 					<width>1920</width>
 					<height>200</height>
 					<texture>drawn/fill.png</texture>
-					<colordiffuse>F21E1E26</colordiffuse>
+					<colordiffuse>$INFO[Window(10000).Property(bp.theme.panel_solid)]</colordiffuse>
 				</control>
 				<control type="image">
 					<left>0</left>
@@ -775,7 +775,7 @@
 					<width>1920</width>
 					<height>2</height>
 					<texture>drawn/fill.png</texture>
-					<colordiffuse>FF2A2A33</colordiffuse>
+					<colordiffuse>$INFO[Window(10000).Property(bp.theme.surface)]</colordiffuse>
 				</control>
 				
 				<control type="button" id="336">
@@ -800,7 +800,7 @@
 							<top>141</top>
 							<width>944</width>
 							<height>26</height>
-							<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark.png</texturesliderbar>
+							<texturesliderbar colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/bar-dark.png</texturesliderbar>
 							<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
 							<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
 							<info>Player.Progress</info>
@@ -813,7 +813,7 @@
 							<width>10.8</width>
 							<height>130</height>
 							<orientation>vertical</orientation>
-							<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbar>
+							<texturesliderbar colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/bar-dark-vertical.png</texturesliderbar>
 						</control>
 						<control type="slider" id="357">
 							<left>1170.6</left>
@@ -822,9 +822,9 @@
 							<height>130</height>
 							<orientation>vertical</orientation>
 							<enable>false</enable>
-							<texturesliderbardisabled colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbardisabled>
+							<texturesliderbardisabled colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/bar-dark-vertical.png</texturesliderbardisabled>
 							<textureslidernibdisabled colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibdisabled>
-							<texturesliderbar colordiffuse="FF18181E">drawn/bar-dark-vertical.png</texturesliderbar>
+							<texturesliderbar colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/bar-dark-vertical.png</texturesliderbar>
 							<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernib>
 							<textureslidernibfocus colordiffuse="$INFO[Skin.String(accent)]">drawn/nib.png</textureslidernibfocus>
 							<info>Skin.Numeric(volume.level)</info>
@@ -835,7 +835,7 @@
 							<width>64</width>
 							<height>64</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonfocus>
 							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioonnofocus>
 							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-start.png</textureradioofffocus>
@@ -858,7 +858,7 @@
 							<width>64</width>
 							<height>64</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioonfocus>
 							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioonnofocus>
 							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/rewind.png</textureradioofffocus>
@@ -885,7 +885,7 @@
 								<top>0</top>
 								<width>96</width>
 								<height>96</height>
-								<texture colordiffuse="FF18181E">drawn/circle.png</texture>
+								<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texture>
 							</control>
 							<control type="image">
 								<left>0</left>
@@ -932,7 +932,7 @@
 							<width>64</width>
 							<height>64</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonfocus>
 							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioonnofocus>
 							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/stop.png</textureradioofffocus>
@@ -954,7 +954,7 @@
 							<width>64</width>
 							<height>64</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioonfocus>
 							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioonnofocus>
 							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/fast-forward.png</textureradioofffocus>
@@ -977,7 +977,7 @@
 							<width>64</width>
 							<height>64</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonfocus>
 							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioonnofocus>
 							<textureradioofffocus colordiffuse="$INFO[Skin.String(accent)]">osd/skip-end.png</textureradioofffocus>
@@ -1004,7 +1004,7 @@
 							<width>48</width>
 							<height>48</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<font></font>
 							<onclick>RunScript(special://skin/scripts/main.py,infoopen)</onclick>
 							<onleft>359</onleft>
@@ -1018,7 +1018,7 @@
 							<width>22</width>
 							<height>22</height>
 							<aspectratio>keep</aspectratio>
-					<texture colordiffuse="FF9A9AA2">osd/info-circle.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/info-circle.png</texture>
 						</control>
 						<control type="button" id="358">
 							<left>1492</left>
@@ -1026,7 +1026,7 @@
 							<width>48</width>
 							<height>48</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<font></font>
 							<onclick>RunScript(special://skin/scripts/main.py,speed)</onclick>
 							<onleft>359</onleft>
@@ -1041,7 +1041,7 @@
 								<top>142</top>
 								<width>24</width>
 								<height>24</height>
-								<texture colordiffuse="FF9A9AA2">osd/speedometer2.png</texture>
+								<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/speedometer2.png</texture>
 							</control>
 						</control>
 						<control type="group">
@@ -1063,7 +1063,7 @@
 							<width>48</width>
 							<height>48</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<font></font>
 							<onclick>Mute()</onclick>
 							<onleft>358</onleft>
@@ -1087,7 +1087,7 @@
 						<width>28</width>
 						<height>28</height>
 						<aspectratio>keep</aspectratio>
-						<texture colordiffuse="FF9A9AA2">osd/volume-mute.png</texture>
+						<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/volume-mute.png</texture>
 						</control>
 						<control type="button" id="354">
 							<left>1612</left>
@@ -1095,7 +1095,7 @@
 							<width>48</width>
 							<height>48</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<font></font>
 							<onclick>PlayerControl(Repeat)</onclick>
 							<onleft>353</onleft>
@@ -1110,7 +1110,7 @@
 							<width>22</width>
 							<height>22</height>
 							<aspectratio>keep</aspectratio>
-							<texture colordiffuse="FF9A9AA2">osd/repeat.png</texture>
+							<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/repeat.png</texture>
 						</control>
 						<control type="image">
 							<visible>Playlist.IsRepeat</visible>
@@ -1136,7 +1136,7 @@
 							<width>48</width>
 							<height>48</height>
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
-							<texturenofocus colordiffuse="FF18181E">drawn/circle.png</texturenofocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<font></font>
 							<onclick>PlayerControl(Random)</onclick>
 							<onleft>354</onleft>
@@ -1160,7 +1160,7 @@
 							<width>22</width>
 							<height>22</height>
 							<aspectratio>keep</aspectratio>
-							<texture colordiffuse="FF9A9AA2">osd/shuffle.png</texture>
+							<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">osd/shuffle.png</texture>
 						</control>
 					</control>
 					</control>
@@ -1176,8 +1176,8 @@
 					<top>0</top>
 					<width>1920</width>
 					<height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.drives)</onclick>
 					<onback>ClearProperty(bp.drives)</onback>
 					<onback>SetFocus(30)</onback>				</control>
@@ -1187,7 +1187,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>92</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="95">
@@ -1207,7 +1207,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>168</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="96">
@@ -1227,7 +1227,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>244</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="97">
@@ -1247,7 +1247,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>320</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="98">
@@ -1267,7 +1267,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>396</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="99">
@@ -1287,7 +1287,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>472</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="100">
@@ -1308,7 +1308,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>548</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="930">
@@ -1328,7 +1328,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>624</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="931">
@@ -1348,7 +1348,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>700</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="932">
@@ -1368,7 +1368,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>776</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="933">
@@ -1388,12 +1388,12 @@
 					<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.1)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1))</visible>
@@ -1409,7 +1409,7 @@
 					<top>137</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.1.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.1.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.1)) + !Control.HasFocus(60)</visible>
 				</control>
 				<control type="image">
@@ -1426,12 +1426,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.2)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.2))</visible>
@@ -1447,7 +1447,7 @@
 					<top>213</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.2.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.2.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.2)) + !Control.HasFocus(61)</visible>
 				</control>
 				<control type="image">
@@ -1464,12 +1464,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.3)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.3))</visible>
@@ -1485,7 +1485,7 @@
 					<top>289</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.3.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.3.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.3)) + !Control.HasFocus(62)</visible>
 				</control>
 				<control type="image">
@@ -1502,12 +1502,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.4)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.4))</visible>
@@ -1523,7 +1523,7 @@
 					<top>365</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.4.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.4.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.4)) + !Control.HasFocus(63)</visible>
 				</control>
 				<control type="image">
@@ -1540,12 +1540,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.5)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.5))</visible>
@@ -1561,7 +1561,7 @@
 					<top>441</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.5.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.5.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.5)) + !Control.HasFocus(64)</visible>
 				</control>
 				<control type="image">
@@ -1578,12 +1578,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.6)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.6))</visible>
@@ -1599,7 +1599,7 @@
 					<top>517</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.6.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.6.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.6)) + !Control.HasFocus(65)</visible>
 				</control>
 				<control type="image">
@@ -1616,12 +1616,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.7)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.7))</visible>
@@ -1637,7 +1637,7 @@
 					<top>593</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.7.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.7.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.7)) + !Control.HasFocus(66)</visible>
 				</control>
 				<control type="image">
@@ -1654,12 +1654,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.8)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.8))</visible>
@@ -1675,7 +1675,7 @@
 					<top>669</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.8.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.8.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.8)) + !Control.HasFocus(67)</visible>
 				</control>
 				<control type="image">
@@ -1692,12 +1692,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.9)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.9))</visible>
@@ -1713,7 +1713,7 @@
 					<top>745</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.9.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.9.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.9)) + !Control.HasFocus(68)</visible>
 				</control>
 				<control type="image">
@@ -1730,12 +1730,12 @@
 				<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>left</align>
 					<aligny>center</aligny>
 					<textoffsetx>56</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.drive.10)]</label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.10))</visible>
@@ -1752,7 +1752,7 @@
 					<top>821</top>
 					<width>26</width>
 					<height>26</height>
-					<texture colordiffuse="FF9A9AA2">$INFO[Window(10000).Property(bp.drive.10.icon)]</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">$INFO[Window(10000).Property(bp.drive.10.icon)]</texture>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.drive.10)) + !Control.HasFocus(69)</visible>
 				</control>
 				<control type="image">
@@ -1774,8 +1774,8 @@
 					<top>0</top>
 					<width>1920</width>
 					<height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.menu)</onclick>
 					<onback>ClearProperty(bp.menu)</onback>
 					<onback>SetFocus(32)</onback>				</control>
@@ -1784,7 +1784,7 @@
 					<top>104</top>
 					<width>413</width>
 					<height>396</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				
 				<control type="button" id="94">
@@ -1803,12 +1803,12 @@
 					<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>right</align>
 					<aligny>center</aligny>
 					<textoffsetx>60</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$INFO[Window(10000).Property(bp.name)]</label>
 					<onclick>ClearProperty(bp.menu)</onclick>
@@ -1831,12 +1831,12 @@
 					<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>right</align>
 					<aligny>center</aligny>
 					<textoffsetx>60</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31307]</label>
 					<onup>76</onup>
@@ -1853,12 +1853,12 @@
 					<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>right</align>
 					<aligny>center</aligny>
 					<textoffsetx>60</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31308]</label>
 					<onup>70</onup>
@@ -1874,12 +1874,12 @@
 					<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>right</align>
 					<aligny>center</aligny>
 					<textoffsetx>60</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31310]</label>
 					<onup>71</onup>
@@ -1895,12 +1895,12 @@
 					<width>381</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>right</align>
 					<aligny>center</aligny>
 					<textoffsetx>60</textoffsetx>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31494]</label>
 					<onclick>ClearProperty(bp.menu)</onclick>
@@ -1917,7 +1917,7 @@
 					<width>34</width>
 					<height>34</height>
 					<aspectratio>keep</aspectratio>
-					<texture colordiffuse="FF9A9AA2">header/browsybare-icon.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">header/browsybare-icon.png</texture>
 					<visible>!Control.HasFocus(72)</visible>
 				</control>
 				<control type="image">
@@ -1935,7 +1935,7 @@
 					<width>26</width>
 					<height>26</height>
 					<aspectratio>keep</aspectratio>
-					<texture colordiffuse="FF9A9AA2">header/keyboard.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">header/keyboard.png</texture>
 					<visible>!Control.HasFocus(76)</visible>
 				</control>
 				<control type="image">
@@ -1953,7 +1953,7 @@
 					<width>26</width>
 					<height>26</height>
 					<aspectratio>keep</aspectratio>
-					<texture colordiffuse="FF9A9AA2">settings/gear.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">settings/gear.png</texture>
 					<visible>!Control.HasFocus(70)</visible>
 				</control>
 				<control type="image">
@@ -1971,7 +1971,7 @@
 					<width>34</width>
 					<height>34</height>
 					<aspectratio>keep</aspectratio>
-					<texture colordiffuse="FF9A9AA2">header/kodi-symbol.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">header/kodi-symbol.png</texture>
 					<visible>!Control.HasFocus(71)</visible>
 				</control>
 				<control type="image">
@@ -1989,7 +1989,7 @@
 					<width>30</width>
 					<height>30</height>
 					<aspectratio>keep</aspectratio>
-					<texture colordiffuse="FF9A9AA2">header/power.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">header/power.png</texture>
 					<visible>!Control.HasFocus(73)</visible>
 				</control>
 				<control type="image">
@@ -2015,8 +2015,8 @@
 					<top>0</top>
 					<width>1920</width>
 					<height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.ctx)</onclick>
 					<onclick>ClearProperty(bp.ctx.reduced)</onclick>
 					<onback>ClearProperty(bp.ctx)</onback>
@@ -2032,7 +2032,7 @@
 							<top>0</top>
 							<width>380</width>
 							<height>556</height>
-							<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+							<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 						</control>
 						<control type="button">
 							<left>0</left>
@@ -2050,11 +2050,11 @@
 						<width>340</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31327]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,rename,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
@@ -2071,12 +2071,12 @@
 						<top>96</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+							<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF5A5A62</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 							<label>$LOCALIZE[31394]</label>
 						</control>
 					</control>
@@ -2087,11 +2087,11 @@
 						<width>340</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31394]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,clipcopy,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
@@ -2108,12 +2108,12 @@
 						<top>172</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+							<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF5A5A62</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 							<label>$LOCALIZE[31410]</label>
 						</control>
 					</control>
@@ -2124,11 +2124,11 @@
 						<width>340</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31410]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,clipcut,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
@@ -2145,12 +2145,12 @@
 						<top>248</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+							<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF5A5A62</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 							<label>$LOCALIZE[31417]</label>
 						</control>
 					</control>
@@ -2160,12 +2160,12 @@
 						<top>20</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+							<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF5A5A62</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 							<label>$LOCALIZE[31327]</label>
 						</control>
 					</control>
@@ -2175,12 +2175,12 @@
 						<top>324</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+							<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF5A5A62</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 							<label>$LOCALIZE[31328]</label>
 						</control>
 					</control>
@@ -2190,12 +2190,12 @@
 						<top>400</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+							<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>340</width><height>60</height>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF5A5A62</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 							<label>$LOCALIZE[31329]</label>
 						</control>
 					</control>
@@ -2206,11 +2206,11 @@
 						<width>340</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31417]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,clippaste)</onclick>
@@ -2227,11 +2227,11 @@
 						<width>340</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31328]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,delete,$INFO[Window(10000).Property(bp.ctx.path)])</onclick>
@@ -2250,11 +2250,11 @@
 						<width>340</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31329]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,mkdir)</onclick>
@@ -2270,11 +2270,11 @@
 						<width>340</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31344]</label>
 						<onclick>ClearProperty(bp.ctx)</onclick>
@@ -2302,7 +2302,7 @@
 						<top>0</top>
 						<width>380</width>
 						<height>252</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					<control type="button">
 						<left>0</left>
@@ -2320,11 +2320,11 @@
 					<width>340</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>center</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31329]</label>
 					<onclick>RunScript(special://skin/scripts/main.py,mkdir)</onclick>
@@ -2344,12 +2344,12 @@
 					<top>96</top>
 					<control type="image">
 						<left>0</left><top>0</top><width>340</width><height>60</height>
-						<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left><top>0</top><width>340</width><height>60</height>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF5A5A62</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 						<label>$LOCALIZE[31417]</label>
 					</control>
 				</control>
@@ -2359,12 +2359,12 @@
 					<top>20</top>
 					<control type="image">
 						<left>0</left><top>0</top><width>340</width><height>60</height>
-						<texture border="18" colordiffuse="FF18181E">drawn/row.png</texture>
+						<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left><top>0</top><width>340</width><height>60</height>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF5A5A62</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
 						<label>$LOCALIZE[31329]</label>
 					</control>
 				</control>
@@ -2375,11 +2375,11 @@
 					<width>340</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>center</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31417]</label>
 					<onclick>RunScript(special://skin/scripts/main.py,clippaste)</onclick>
@@ -2398,11 +2398,11 @@
 					<width>340</width>
 					<height>60</height>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-					<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<font>font13</font>
 					<align>center</align>
 					<aligny>center</aligny>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31344]</label>
 					<onclick>ClearProperty(bp.ctx)</onclick>
@@ -2432,8 +2432,8 @@
 					<top>0</top>
 					<width>1920</width>
 					<height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.del)</onclick>
 					<onback>ClearProperty(bp.del)</onback>
 					<onback>SetFocus(33)</onback>
@@ -2446,18 +2446,18 @@
 						<top>0</top>
 						<width>560</width>
 						<height>236</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 						</control>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>60</height>
-						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left><top>0</top><width>560</width><height>60</height>
 						<font>font25_modal</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FFF2F2F4</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<scroll>true</scroll>
 						<scrollsuffix>   |   </scrollsuffix>
 						<label>$INFO[Window(10000).Property(bp.del.title.rep)]</label>
@@ -2481,7 +2481,7 @@
 						<aligny>center</aligny>
 						<wrapmultiline>true</wrapmultiline>
 						<font>font13</font>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.del.line)]</label>
 						</control>
 					<control type="button" id="125">
@@ -2490,11 +2490,11 @@
 						<width>200</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31340]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,delconfirm)</onclick>
@@ -2509,11 +2509,11 @@
 						<width>200</width>
 						<height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font>
 						<align>center</align>
 						<aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<label>$LOCALIZE[31341]</label>
 					<onclick>ClearProperty(bp.del)</onclick>
@@ -2532,8 +2532,8 @@
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="970">
 					<left>0</left><top>0</top><width>1920</width><height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,timerclose)</onclick>
 					<onback>RunScript(special://skin/scripts/main.py,timerclose)</onback>
 					<onleft>970</onleft>
@@ -2545,7 +2545,7 @@
 					<left>672</left><top>194</top>
 					<control type="image">
 						<left>0</left><top>0</top><width>576</width><height>692</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					<control type="button" id="977">
 						<left>0</left><top>0</top><width>576</width><height>692</height>
@@ -2559,20 +2559,20 @@
 					</control>
 					<control type="image">
 						<left>0</left><top>0</top><width>576</width><height>60</height>
-						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left><top>0</top><width>576</width><height>60</height>
-						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<font>font25_modal</font><textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<align>center</align><aligny>center</aligny>
 						<label>$LOCALIZE[20150]</label>
 					</control>
 					<control type="button" id="975">
 						<left>20</left><top>80</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$INFO[Window(10000).Property(bp.timer.cancel)]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timercancel)</onclick>
@@ -2585,9 +2585,9 @@
 					<control type="button" id="969">
 						<left>20</left><top>156</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31414]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timerset,5)</onclick>
@@ -2600,9 +2600,9 @@
 					<control type="button" id="971">
 						<left>20</left><top>232</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31406]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timerset,15)</onclick>
@@ -2615,9 +2615,9 @@
 					<control type="button" id="972">
 						<left>20</left><top>308</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31407]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timerset,30)</onclick>
@@ -2630,9 +2630,9 @@
 					<control type="button" id="973">
 						<left>20</left><top>384</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31408]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timerset,60)</onclick>
@@ -2645,9 +2645,9 @@
 					<control type="button" id="968">
 						<left>20</left><top>460</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31413]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timerset,90)</onclick>
@@ -2660,9 +2660,9 @@
 					<control type="button" id="974">
 						<left>20</left><top>536</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31409]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timerset,120)</onclick>
@@ -2675,9 +2675,9 @@
 					<control type="button" id="976">
 						<left>20</left><top>612</top><width>536</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31344]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,timerclose)</onclick>
@@ -2696,8 +2696,8 @@
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="904">
 					<left>0</left><top>0</top><width>1920</width><height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,resumecancel)</onclick>
 					<onback>RunScript(special://skin/scripts/main.py,resumecancel)</onback>
 					<onleft>904</onleft>
@@ -2709,7 +2709,7 @@
 					<left>680</left><top>400</top>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>280</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					<control type="button" id="905">
 						<left>0</left><top>0</top><width>560</width><height>280</height>
@@ -2723,11 +2723,11 @@
 					</control>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>60</height>
-						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left><top>0</top><width>560</width><height>60</height>
-						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<font>font25_modal</font><textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<align>center</align><aligny>center</aligny>
 						<label>$LOCALIZE[31527]</label>
 					</control>
@@ -2735,15 +2735,15 @@
 						<left>30</left><top>66</top><width>500</width><height>124</height>
 						<align>center</align><aligny>center</aligny>
 						<wrapmultiline>true</wrapmultiline>
-						<font>font13</font><textcolor>FF9A9AA2</textcolor>
+						<font>font13</font><textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.resume.line)]</label>
 					</control>
 					<control type="button" id="906">
 						<left>42</left><top>198</top><width>230</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31529]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,resumeyes)</onclick>
@@ -2756,9 +2756,9 @@
 					<control type="button" id="907">
 						<left>288</left><top>198</top><width>230</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31530]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,resumeno)</onclick>
@@ -2777,8 +2777,8 @@
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="860">
 					<left>0</left><top>0</top><width>1920</width><height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,noticeclose)</onclick>
 					<onback>RunScript(special://skin/scripts/main.py,noticeclose)</onback>
 					<onleft>860</onleft>
@@ -2790,7 +2790,7 @@
 					<left>580</left><top>302</top>
 					<control type="image">
 						<left>0</left><top>0</top><width>760</width><height>476</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					<control type="button" id="861">
 						<left>0</left><top>0</top><width>760</width><height>476</height>
@@ -2804,11 +2804,11 @@
 					</control>
 					<control type="image">
 						<left>0</left><top>0</top><width>760</width><height>60</height>
-						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left><top>0</top><width>760</width><height>60</height>
-						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<font>font25_modal</font><textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<align>center</align><aligny>center</aligny>
 						<label>$INFO[Window(10000).Property(bp.notice.head)]</label>
 					</control>
@@ -2833,17 +2833,17 @@
 					<control type="scrollbar" id="864">
 						<left>732</left><top>84</top><width>8</width><height>276</height>
 						<texturesliderbackground>drawn/blank.png</texturesliderbackground>
-						<texturesliderbar border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbar>
-						<texturesliderbarfocus border="3" colordiffuse="FF2E2E39">drawn/scrollbar.png</texturesliderbarfocus>
+						<texturesliderbar border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbar>
+						<texturesliderbarfocus border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbarfocus>
 						<scrolltime>200</scrolltime>
 						<orientation>vertical</orientation>
 					</control>
 					<control type="button" id="862">
 						<left>270</left><top>390</top><width>220</width><height>64</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31343]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,noticeclose)</onclick>
@@ -2877,8 +2877,8 @@
 					<top>0</top>
 					<width>1920</width>
 					<height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.about)</onclick>
 					<onclick>SetFocus(32)</onclick>
 					<onback>ClearProperty(bp.about)</onback>
@@ -2896,7 +2896,7 @@
 						<top>0</top>
 						<width>1080</width>
 						<height>850</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					
 					<control type="button" id="93">
@@ -2929,7 +2929,7 @@
 						<height>50</height>
 						<font>font36_title</font>
 						<align>center</align>
-						<textcolor>FFF2F2F4</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.name)]</label>
 					</control>
 					<control type="label">
@@ -2939,7 +2939,7 @@
 						<height>30</height>
 						<font>font13</font>
 						<align>center</align>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.summary)]</label>
 					</control>
 					<control type="label">
@@ -2949,7 +2949,7 @@
 						<height>30</height>
 						<font>font20_title</font>
 						<align>center</align>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$LOCALIZE[31313] $INFO[Window(10000).Property(bp.version)]</label>
 					</control>
 					<control type="label">
@@ -2960,7 +2960,7 @@
 						<font>font13</font>
 						<align>center</align>
 						<wrapmultiline>true</wrapmultiline>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.description)]</label>
 					</control>
 					<control type="button" id="89">
@@ -3012,7 +3012,7 @@
 						<height>30</height>
 						<font>font13</font>
 						<align>center</align>
-						<textcolor>FFF2F2F4</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<label>© 2026 Browsybare contributors</label>
 					</control>
 					
@@ -3023,7 +3023,7 @@
 						<height>30</height>
 						<font>font20_title</font>
 						<align>center</align>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.sys.os)] | Kodi $INFO[System.BuildVersionShort] | $INFO[System.ScreenWidth]x$INFO[System.ScreenHeight]$INFO[Window(10000).Property(bp.sys.hz),@]</label>
 					</control>
 				</control>
@@ -3035,8 +3035,8 @@
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="954">
 					<left>0</left><top>0</top><width>1920</width><height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
 					<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
 					<onleft>954</onleft>
@@ -3048,7 +3048,7 @@
 					<left>680</left><top>400</top>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>280</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 						</control>
 					<control type="button" id="957">
 						<left>0</left><top>0</top><width>560</width><height>280</height>
@@ -3062,11 +3062,11 @@
 					</control>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>60</height>
-						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left><top>0</top><width>560</width><height>60</height>
-						<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+						<font>font25_modal</font><textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<align>center</align><aligny>center</aligny>
 						<label>$INFO[Window(10000).Property(bp.confirm.title)]</label>
 					</control>
@@ -3074,15 +3074,15 @@
 						<left>30</left><top>66</top><width>500</width><height>124</height>
 						<align>center</align><aligny>center</aligny>
 						<wrapmultiline>true</wrapmultiline>
-						<font>font13</font><textcolor>FF9A9AA2</textcolor>
+						<font>font13</font><textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.confirm.line)]</label>
 						</control>
 					<control type="button" id="955">
 						<left>72</left><top>198</top><width>200</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31340]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,powerrun)</onclick>
@@ -3095,9 +3095,9 @@
 					<control type="button" id="956">
 						<left>288</left><top>198</top><width>200</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31341]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
@@ -3119,8 +3119,8 @@
 					<top>0</top>
 					<width>1920</width>
 					<height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.keys)</onclick>
 					<onclick>SetFocus(32)</onclick>
 					<onback>ClearProperty(bp.keys)</onback>
@@ -3138,7 +3138,7 @@
 						<top>0</top>
 						<width>880</width>
 						<height>680</height>
-						<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					<control type="button" id="949">
 						<left>0</left>
@@ -3160,7 +3160,7 @@
 						<top>0</top>
 						<width>880</width>
 						<height>60</height>
-						<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 					</control>
 					<control type="label">
 						<left>0</left>
@@ -3168,7 +3168,7 @@
 						<width>880</width>
 						<height>60</height>
 						<font>font25_modal</font>
-						<textcolor>FFF2F2F4</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<align>center</align>
 						<aligny>center</aligny>
 						<label>$LOCALIZE[31494]</label>
@@ -3281,8 +3281,8 @@
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="910">
 					<left>0</left><top>0</top><width>1920</width><height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>noop</onclick>
 					<onup>910</onup><ondown>910</ondown><onleft>910</onleft><onright>910</onright>
 					<onback>noop</onback>
@@ -3291,17 +3291,17 @@
 					<left>680</left><top>422</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>560</width><height>236</height>
-							<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+							<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 						</control>
 						<control type="image">
 							<left>0</left><top>0</top><width>560</width><height>60</height>
-							<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+							<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>560</width><height>60</height>
 							<font>font25_modal</font>
 							<align>center</align><aligny>center</aligny>
-							<textcolor>FFF2F2F4</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 							<label>$INFO[Window(10000).Property(bp.prog.title)]</label>
 						</control>
 						<control type="button">
@@ -3312,7 +3312,7 @@
 																		<control type="image">
 							<visible>!String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
 							<left>40</left><top>103</top><width>480</width><height>11</height>
-							<texture colordiffuse="FF18181E">drawn/fill.png</texture>
+							<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/fill.png</texture>
 						</control>
 						<control type="image">
 							<visible>String.IsEqual(Window(10000).Property(bp.prog.f1),1) + !String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
@@ -3418,9 +3418,9 @@
 							<visible>!String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
 							<left>180</left><top>156</top><width>200</width><height>60</height>
 							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF9A9AA2</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 							<label>$LOCALIZE[31344]</label>
 							<onclick>SetProperty(bp.prog.cancel,1)</onclick>
@@ -3433,16 +3433,16 @@
 							<align>center</align><aligny>center</aligny>
 							<wrapmultiline>true</wrapmultiline>
 							<font>font13</font>
-							<textcolor>FF9A9AA2</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 							<label>$INFO[Window(10000).Property(bp.prog.msg)]</label>
 						</control>
 						<control type="button" id="911">
 							<visible>String.IsEqual(Window(10000).Property(bp.prog.state),error)</visible>
 							<left>180</left><top>156</top><width>200</width><height>60</height>
 							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF9A9AA2</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 							<label>$LOCALIZE[31344]</label>
 							<onclick>ClearProperty(bp.prog)</onclick>
@@ -3460,7 +3460,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<control type="image">
 					<left>0</left><top>0</top><width>1920</width><height>880</height>
-					<texture colordiffuse="80101014">drawn/fill.png</texture>
+					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texture>
 				</control>
 				<control type="image">
 					<left>924</left><top>404</top><width>72</width><height>72</height>
@@ -3475,8 +3475,8 @@
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="920">
 					<left>0</left><top>0</top><width>1920</width><height>1080</height>
-					<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-					<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.srcq)</onclick>
 					<onclick>ClearProperty(bp.srcq.title)</onclick>
 					<onclick>ClearProperty(bp.srcq.line)</onclick>
@@ -3490,17 +3490,17 @@
 					<left>680</left><top>405</top>
 						<control type="image">
 							<left>0</left><top>0</top><width>560</width><height>270</height>
-							<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+							<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 						</control>
 						<control type="image">
 							<left>0</left><top>0</top><width>560</width><height>60</height>
-							<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+							<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 						</control>
 						<control type="label">
 							<left>0</left><top>0</top><width>560</width><height>60</height>
 							<font>font25_modal</font>
 							<align>center</align><aligny>center</aligny>
-							<textcolor>FFF2F2F4</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 							<scroll>true</scroll><scrollsuffix>   |   </scrollsuffix>
 							<label>$INFO[Window(10000).Property(bp.srcq.title)]</label>
 						</control>
@@ -3514,15 +3514,15 @@
 							<align>center</align><aligny>center</aligny>
 							<wrapmultiline>true</wrapmultiline>
 							<font>font13</font>
-							<textcolor>FF9A9AA2</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 							<label>$INFO[Window(10000).Property(bp.srcq.line)]</label>
 						</control>
 						<control type="button" id="922">
 							<left>72</left><top>188</top><width>200</width><height>60</height>
 							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF9A9AA2</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 							<label>$LOCALIZE[31340]</label>
 							<onclick>RunScript(special://skin/scripts/main.py,srcadd)</onclick>
@@ -3536,9 +3536,9 @@
 						<control type="button" id="921">
 							<left>288</left><top>188</top><width>200</width><height>60</height>
 							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-							<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+							<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>FF9A9AA2</textcolor>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 							<label>$LOCALIZE[31341]</label>
 							<onclick>ClearProperty(bp.srcq)</onclick>
@@ -3588,7 +3588,7 @@
 				
 				<control type="label">
 					<left>22</left><top>0</top><width>648</width><height>88</height>
-					<font>font13</font><textcolor>FF9A9AA2</textcolor>
+					<font>font13</font><textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<align>left</align><aligny>center</aligny>
 					<wrapmultiline>true</wrapmultiline>
 					<visible>!Control.HasFocus($PARAM[rid])</visible>
@@ -3653,7 +3653,7 @@
 					<width>250</width>
 					<height>36</height>
 					<font>font13</font>
-					<textcolor>FFF2F2F4</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 					<align>left</align>
 					<aligny>center</aligny>
 					<label>$LOCALIZE[$PARAM[key]]</label>
@@ -3665,7 +3665,7 @@
 					<width>250</width>
 					<height>36</height>
 					<font>font13</font>
-					<textcolor>FFF2F2F4</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 					<align>left</align>
 					<aligny>center</aligny>
 					<label>$LOCALIZE[$PARAM[k2]]</label>
@@ -3693,7 +3693,7 @@
 					<width>512</width>
 					<height>36</height>
 					<font>font13</font>
-					<textcolor>FF9A9AA2</textcolor>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<align>right</align>
 					<aligny>center</aligny>
 					<label>$LOCALIZE[$PARAM[act]]</label>
@@ -3704,7 +3704,7 @@
 					<width>792</width>
 					<height>1</height>
 					<texture>drawn/fill.png</texture>
-					<colordiffuse>26FFFFFF</colordiffuse>
+					<colordiffuse>$INFO[Window(10000).Property(bp.theme.divider)]</colordiffuse>
 				</control>
 			</control>
 		</definition>

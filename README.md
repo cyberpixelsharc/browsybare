@@ -72,7 +72,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 ## Settings
 
 * Own settings dialog with 5 tabs: General, Player, Sources, Blocklist, Remote. It opens over the file manager, which stays visible behind it.
-* Appearance and colors: 9 accent swatches with intensity levels, zebra toggle.
+* Appearance and colors: 9 accent swatches with intensity levels, zebra toggle, and a theme switch. A theme recolours every background and text in the skin at once (a light, a medium and a dark palette ship as `LightPearl`, `MediumOvercast` and `DarkNightfall`). Each theme is one JSON file in `themes/`; its file name is the theme name and the numeric sort prefix is not shown. All themes share the same role set with a fixed meaning per role, so a new theme only supplies values. Drop another file in `themes/` to add your own theme. The files carry `//` comments that the loader strips, with each role documented next to its value. Default: `MediumOvercast`.
 * Files and folders: hidden files, folder-size scan, network scan, sorting, folders-first.
 * System and Kodi: GUI sound volume, screen dimmer.
 * Audio player: source path, label scrolling.
@@ -86,7 +86,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Local drives from the mount table with real labels at any depth. Network and directory sources merge in as quasi-drives.
 * Hiding is opt-out by identity, so new sticks stay visible. Unplugged directory sources show a hint.
 * Entered sources have no `..` at their root. The folder picker turns the main list into a folder-only picker with a bottom bar.
-* Network sources: ftp, ftps (read-only), smb, nfs, WebDAV/davs. Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default; greyed for ftp/ftps), OK, Test, Cancel. Live connection test with state icons. Browser parity plus VFS rename, delete, and new folder (greyed out on read-only sources). Copy, cut, and paste work on writable sources (a server-side move/copy is used when possible). WebDAV listings retry transient server errors, support Digest authentication, and keep file names with special characters intact.
+* Network sources: ftp, ftps (read-only), smb, nfs, WebDAV/davs. Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default; greyed for ftp/ftps), OK, Test, Cancel. Live connection test with state icons. Browser parity plus VFS rename, delete, and new folder (greyed out on read-only sources). Copy, cut, and paste work on writable sources (a server-side move/copy is used when possible) and between local drives and network sources. WebDAV listings retry transient server errors, support Digest authentication, and keep file names with special characters intact.
 * Blocklist: read-only seed (Windows system plus macOS dotfiles) plus user list minus off-list, sorted. Inline rows with per-row toggle, add via keyboard, remove via X or row menu, optional match-case. Enforced in listing and folder-size scan.
 
 ## Remote, keyboard, shortcut map

@@ -30,6 +30,11 @@ def _run_accents():
     return _f()
 
 
+def _run_theme_next():
+    from sync import theme_next as _f
+    return _f()
+
+
 def _accent_level(level):
     from sync import set_accent_level as _f
     return _f(level)
@@ -2865,8 +2870,7 @@ def powerconfirm():
         win.setProperty("bp.confirm.title", xbmc.getLocalizedString(31310))
     win.setProperty("bp.confirm.from", xbmc.getInfoLabel("System.CurrentControlId"))
     win.setProperty("bp.confirm", "open")
-    time.sleep(0.4)
-    xbmc.executebuiltin("SetFocus(956)")
+    focus_control(956)
     log("power confirm: %s" % op)
 
 
@@ -2878,8 +2882,7 @@ def powergeneric():
     win.setProperty("bp.confirm.line", xbmc.getLocalizedString(31403))
     win.setProperty("bp.confirm.from", xbmc.getInfoLabel("System.CurrentControlId"))
     win.setProperty("bp.confirm", "open")
-    time.sleep(0.4)
-    xbmc.executebuiltin("SetFocus(956)")
+    focus_control(956)
     log("power confirm (generic): %s" % win.getProperty("bp.confirm.cmd.1"))
 
 
@@ -2990,8 +2993,7 @@ def timeropen():
     else:
         win.setProperty("bp.timer.cancel", xbmc.getLocalizedString(31412))
     win.setProperty("bp.timer", "open")
-    time.sleep(0.3)
-    xbmc.executebuiltin("SetFocus(975)")
+    focus_control(975)
     log("timer menu open (active=%s)" % active)
 
 
@@ -3069,6 +3071,7 @@ if __name__ == "__main__":
                     "netsrcclose", "netsrctest",
                    "pickopen", "pickselect",
                    "sort", "foldersfirst", "grid", "accent_next",
+                   "themecycle",
                    "listbump"):
             try:
                 if xbmcgui.Window(10000).getProperty("bp.sync.active") == "1":
@@ -3227,6 +3230,8 @@ if __name__ == "__main__":
             dropdown_open()
         elif cmd == "accent_next":
             accent_next()
+        elif cmd == "themecycle":
+            _run_theme_next()
         elif cmd == "intensity":
             intensity(sys.argv[2] if len(sys.argv) > 2 else "")
         elif cmd == "intensity_next":

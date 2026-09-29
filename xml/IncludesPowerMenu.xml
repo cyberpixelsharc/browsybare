@@ -6,8 +6,8 @@
 			<visible>String.IsEqual(Window(10000).Property(bp.power),open)</visible>
 			<control type="button" id="952">
 				<left>0</left><top>0</top><width>1920</width><height>1080</height>
-				<texturefocus colordiffuse="80101014">drawn/fill.png</texturefocus>
-				<texturenofocus colordiffuse="80101014">drawn/fill.png</texturenofocus>
+				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 				<onclick>ClearProperty(bp.power)</onclick>
 				<onclick>SetFocus(33)</onclick>
 				<onback>ClearProperty(bp.power)</onback>
@@ -17,15 +17,15 @@
 				<left>640</left><top>460</top>
 				<control type="image">
 					<left>0</left><top>0</top><width>640</width><height>160</height>
-					<texture border="24" colordiffuse="FF1E1E26">drawn/panel.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 				</control>
 				<control type="image">
 					<left>0</left><top>0</top><width>640</width><height>60</height>
-					<texture border="24" colordiffuse="FF32323C">drawn/header.png</texture>
+					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
 				</control>
 				<control type="label">
 					<left>0</left><top>0</top><width>640</width><height>60</height>
-					<font>font25_modal</font><textcolor>FFF2F2F4</textcolor>
+					<font>font25_modal</font><textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 					<align>center</align><aligny>center</aligny>
 					<label>$LOCALIZE[31310]</label>
 				</control>
@@ -36,9 +36,9 @@
 					<control type="button" id="951">
 						<width>600</width><height>60</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
-						<texturenofocus border="18" colordiffuse="FF18181E">drawn/row.png</texturenofocus>
+						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
-						<textcolor>FF9A9AA2</textcolor>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31344]</label>
 						<onclick>ClearProperty(bp.power)</onclick>

@@ -1,0 +1,23 @@
+{
+  // DarkNightfall
+  "colors": {
+    "bg": "FF101014",           // window + file-list background
+    "panel": "FF1E1E26",        // menus, dialogs and panels
+    "panel_solid": "F21E1E26",  // top bar, photo OSD, audio footer
+    "panel_solid2": "FC1E1E26", // video OSD sheet
+    "row": "FF18181E",          // chip / button backgrounds (drive, breadcrumb)
+    "zebra": "FF1E1E26",        // list stripe (every other row; == panel_solid)
+    "header": "FF32323C",       // top-bar separator + dialog headers
+    "raised": "FF3A3A44",       // raised small elements
+    "raised2": "FF2E2E39",      // scrollbar
+    "raised3": "FF292D38",      // extra small elements
+    "surface": "FF2A2A33",      // modal surfaces
+    "divider": "26FFFFFF",      // thin separator (alpha 0x26)
+    "divider2": "33FFFFFF",     // stronger separator (alpha 0x33)
+    "veil": "80101014",         // dim backdrop behind menus (alpha 0x80)
+    "text": "FFF2F2F4",         // primary text
+    "text2": "FF9A9AA2",        // list / secondary text
+    "muted": "FF5A5A62",        // faint text
+    "control": "FF48484E"       // off/inactive controls (row + one step lighter)
+  }
+}

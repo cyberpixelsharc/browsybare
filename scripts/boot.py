@@ -14,7 +14,7 @@ import xbmcvfs
 
 from common import (log, state_dir, read_json, write_json, skin_root,
                     record_issue, take_issues, kodi_screensaver_mode, L, redact)
-from sync import sync, accents, skin_version
+from sync import sync, accents, themes, skin_version
 import main
 import sources
 import volume
@@ -640,6 +640,7 @@ def run():
         step("dirsources", main.dirsrc_open)
         step("netsources", main.netsrc_open)
         step("remotes", main.remote_open)
+        step("themes", themes)
         step("accents", accents)
         step("volume", volume.init)
         step("refreshdelay", main.refreshdelay)

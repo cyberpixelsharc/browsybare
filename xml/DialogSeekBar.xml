@@ -8,7 +8,7 @@
 			<width>1920</width>
 			<height>10</height>
 			<info>Player.Seekbar</info>
-			<texturebg colordiffuse="33FFFFFF">drawn/white.png</texturebg>
+			<texturebg colordiffuse="$INFO[Window(10000).Property(bp.theme.divider2)]">drawn/white.png</texturebg>
 			<midtexture colordiffuse="bp_accent">drawn/white.png</midtexture>
 			<scrolltime>200</scrolltime>
 		</control>
