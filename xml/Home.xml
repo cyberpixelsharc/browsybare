@@ -107,7 +107,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1080</height>
+				<height>1152</height>
 				<texture>drawn/fill.png</texture>
 				<colordiffuse>$INFO[Window(10000).Property(bp.theme.bg)]</colordiffuse>
 			</control>
@@ -115,7 +115,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1080</height>
+				<height>1152</height>
 				<texturefocus>drawn/blank.png</texturefocus>
 				<texturenofocus>drawn/blank.png</texturenofocus>
 				<onleft>29</onleft>

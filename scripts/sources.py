@@ -100,36 +100,183 @@ def _is_android():
         return False
 
 
-def _android_drives():
-    """Android shared storage as drives: /storage/emulated/0 internal, other
-    /storage/<id> removable; bare /storage/emulated skipped."""
-    out = []
-    try:
-        internal = "/storage/emulated/0"
-        if os.path.isdir(internal):
-            try:
-                label = xbmc.getLocalizedString(31447)
-            except Exception:
-                label = ""
-            out.append({"label": safe_label(label or "Internal storage"),
-                        "path": internal + "/", "type": "local", "system": False})
+def _android_shared():
+    """The Android shared (external) storage root -- the user's visible folder.
+    EXTERNAL_STORAGE first, then the standard emulated path and /sdcard."""
+    for cand in (os.environ.get("EXTERNAL_STORAGE"), "/storage/emulated/0", "/sdcard"):
         try:
-            names = sorted(os.listdir("/storage"))
-        except OSError:
-            names = []
-        for name in names:
-            if name == "emulated":
+            if cand and os.path.isdir(cand):
+                return cand.rstrip("/")
+        except Exception:
+            continue
+    return ""
+
+
+# Where Android mounts removable media. The public /storage/<id> view is not
+# always created -- an OTG USB stick is often only at /mnt/media_rw/<id>.
+_ANDROID_REMOVABLE_BASES = ("/storage", "/mnt/media_rw", "/mnt/usb", "/mnt/usbhost",
+                            "/mnt/usb_storage", "/mnt/usbdrive", "/media", "/run/media")
+
+
+def _mount_devices():
+    """{mountpoint.rstrip('/'): (device, fstype)} from /proc/mounts."""
+    out = {}
+    try:
+        with open("/proc/mounts", encoding="utf-8", errors="replace") as f:
+            lines = f.read().splitlines()
+    except OSError:
+        return out
+    for line in lines:
+        parts = line.split()
+        if len(parts) >= 3:
+            out[_unescape_mnt(parts[1]).rstrip("/")] = (parts[0], parts[2])
+    return out
+
+
+def _exfat_label(f, boot):
+    """Volume label from an exFAT root directory (0x83 entry); "" on failure."""
+    try:
+        bps = 1 << boot[0x6C]
+        spc = 1 << boot[0x6D]
+        heap = int.from_bytes(boot[0x58:0x5C], "little")
+        root = int.from_bytes(boot[0x60:0x64], "little")
+        f.seek((heap + (root - 2) * spc) * bps)
+        data = f.read(spc * bps)
+    except Exception:
+        return ""
+    for i in range(0, len(data) - 31, 32):
+        if data[i] == 0x00:
+            break
+        if data[i] == 0x83:
+            return data[i + 1:i + 23].decode("utf-16-le", "ignore").strip("\x00").strip()
+    return ""
+
+
+def _volume_label(dev, fstype):
+    """Best-effort real volume label of a mounted FAT/exFAT device, "" if the
+    filesystem is unsupported or the device node is unreadable (it is usually
+    root-only on Android, so callers fall back to a generic label)."""
+    try:
+        f = open(dev, "rb")
+    except Exception:
+        return ""
+    try:
+        boot = f.read(512)
+        if len(boot) < 512:
+            return ""
+        if boot[3:11] == b"EXFAT   ":
+            return _exfat_label(f, boot)
+        if fstype in ("ntfs", "ntfs3", "tntfs") or boot[3:11] == b"NTFS    ":
+            return ""
+        raw = boot[0x47:0x52].decode("latin-1", "ignore").strip()
+        if not raw or raw.upper().replace(" ", "") == "NONAME":
+            return ""
+        return raw
+    except Exception:
+        return ""
+    finally:
+        try:
+            f.close()
+        except Exception:
+            pass
+
+
+def _android_source_labels():
+    """{path.rstrip('/'): label} of Kodi's media sources. Kodi's own file browser
+    gets the removable volumes (with their REAL names, e.g. the USB stick's
+    volume label) through the `sources://<type>/` listing -- the same names the
+    "Install from zip" dialog shows, and the only label source a script can read
+    (the block device is root-only)."""
+    import json as _json
+    out = {}
+    for directory in ("sources://video/", "sources://music/", "sources://pictures/",
+                      "sources://programs/", "sources://files/"):
+        try:
+            res = xbmc.executeJSONRPC(
+                '{"jsonrpc":"2.0","id":1,"method":"Files.GetDirectory",'
+                '"params":{"directory":"%s","media":"files"}}' % directory)
+            for f in ((_json.loads(res).get("result") or {}).get("files") or []):
+                p = (f.get("file") or "").rstrip("/")
+                lab = (f.get("label") or "").strip()
+                if p and lab:
+                    out[p] = lab
+        except Exception:
+            continue
+    return out
+
+
+def _android_label(path, mounts, sources):
+    """Best-effort real label of an Android removable volume: Kodi's file
+    sources first (the file-browser names), then the FAT/exFAT boot sector,
+    else ""."""
+    p = path.rstrip("/")
+    if sources.get(p):
+        return sources[p]
+    base = os.path.basename(p).lower()
+    for sp, lab in sources.items():
+        if lab and os.path.basename(sp).lower() == base:
+            return lab
+    return _android_volume_label(path, mounts)
+
+
+def _android_volume_label(path, mounts):
+    """Best-effort real label of an Android removable volume, "" if unknown."""
+    p = path.rstrip("/")
+    dev, fs = mounts.get(p, ("", ""))
+    if not dev:
+        # The public /storage/<id> view is not itself a mountpoint; match the
+        # raw mount (/mnt/media_rw/<id>) by the volume name.
+        base = os.path.basename(p).lower()
+        for mnt, (d, fst) in mounts.items():
+            if os.path.basename(mnt).lower() == base:
+                dev, fs = d, fst
+                break
+    if not dev:
+        return ""
+    return _volume_label(dev, fs)
+
+
+def _android_drives():
+    """Android REMOVABLE volumes (SD/USB): the /storage/<id> public view plus
+    real mounts under the removable bases (a USB is often only at
+    /mnt/media_rw/<id>). The emulated shared storage (the home source) and its
+    symlinks are skipped; entries are de-duplicated by volume name. Each volume
+    gets its real filesystem label when readable, else a generic label."""
+    out = []
+    seen = set()
+    mounts = _mount_devices()
+    sources = _android_source_labels()
+    try:
+        fallback = safe_label(xbmc.getLocalizedString(31539) or "External storage")
+    except Exception:
+        fallback = "External storage"
+
+    def add(path):
+        try:
+            real = os.path.realpath(path).rstrip("/")
+        except Exception:
+            real = path.rstrip("/")
+        if real.startswith("/storage/emulated"):
+            return
+        key = (os.path.basename(path.rstrip("/")) or real).lower()
+        if key in seen:
+            return
+        seen.add(key)
+        label = _android_label(path, mounts, sources) or fallback
+        out.append({"label": safe_label(label), "path": path.rstrip("/") + "/",
+                    "type": "local", "system": False})
+
+    try:
+        for name in sorted(os.listdir("/storage")):
+            if name in ("emulated", "self"):
                 continue
             path = "/storage/%s" % name
-            try:
-                is_dir = os.path.isdir(path)
-            except Exception:
-                continue
-            if is_dir:
-                out.append({"label": safe_label(name), "path": path + "/",
-                            "type": "local", "system": False})
-    except Exception:
+            if os.path.isdir(path):
+                add(path)
+    except OSError:
         pass
+    for _label, path in _linux_mounts(_ANDROID_REMOVABLE_BASES):
+        add(path)
     return out
 
 
@@ -246,9 +393,13 @@ def local_drives():
 def home_drive():
     """The user home folder as a source (type home, topmost when visible).
 
-    Visible by default (opt-out hide.home); ~ always exists, unlike drives."""
+    Visible by default (opt-out hide.home). On Android the app-private ~ is
+    empty, so the shared storage is the user's folder instead."""
     try:
-        home = os.path.expanduser("~")
+        if _is_android():
+            home = _android_shared() or os.path.expanduser("~")
+        else:
+            home = os.path.expanduser("~")
     except Exception:
         return None
     if not home or not os.path.isdir(home):

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="browsybare" name="Browsybare"   version="0.3.10" provider-name="cyberpixelsharc">
+<addon id="browsybare" name="Browsybare"   version="0.3.11" provider-name="cyberpixelsharc">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0"/>
 		<import addon="xbmc.python" version="3.0.0"/>
 	</requires>
 	<extension point="xbmc.gui.skin" debugging="false">
 		<res width="1920" height="1080" aspect="16:9" default="true" folder="xml" />
+		<res width="1920" height="1152" aspect="5:3" default="false" folder="xml" />
 	</extension>
 	<extension point="xbmc.python.pluginsource" library="scripts/list.py"/>
 	<extension point="xbmc.python.script" library="scripts/main.py"/>

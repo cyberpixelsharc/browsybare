@@ -351,7 +351,7 @@ def _decode(arg):
 
 def _set_default_source(visible):
     """Pick and navigate to the boot default source over the VISIBLE list only
-    (prefer real data drives, else first visible, else Home)."""
+    (prefer the home folder, else a real data drive, else the first visible)."""
     win = xbmcgui.Window(10000)
     candidates = [d for d in visible if d.get("path") and os.path.isdir(d["path"])]
     home_path = (sources.home_drive() or {}).get("path", "").rstrip("/")
@@ -359,7 +359,9 @@ def _set_default_source(visible):
     def bootable(d):
         p = d["path"].rstrip("/")
         if p == home_path:
-            return False
+            # The user folder is the first choice on every platform; only a
+            # hidden or missing home falls through to a real data drive.
+            return True
         if sources.is_system_volume(d["path"]):
             return False
         return not os.path.isdir(d["path"].rstrip("/") + "/Applications")

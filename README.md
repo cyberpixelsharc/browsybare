@@ -83,7 +83,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 
 ## Sources and blocklist
 
-* Local drives from the mount table with real labels at any depth. Network and directory sources merge in as quasi-drives.
+* Local drives from the mount table with real labels at any depth. Network and directory sources merge in as quasi-drives. On Android the shared storage is the home source and only real removable volumes (SD/USB) appear as drives.
 * Hiding is opt-out by identity, so new sticks stay visible. Unplugged directory sources show a hint.
 * Entered sources have no `..` at their root. The folder picker turns the main list into a folder-only picker with a bottom bar.
 * Network sources: ftp, ftps (read-only), smb, nfs, WebDAV/davs. Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default; greyed for ftp/ftps), OK, Test, Cancel. Live connection test with state icons. Browser parity plus VFS rename, delete, and new folder (greyed out on read-only sources). Copy, cut, and paste work on writable sources (a server-side move/copy is used when possible) and between local drives and network sources. WebDAV listings retry transient server errors, support Digest authentication, and keep file names with special characters intact.

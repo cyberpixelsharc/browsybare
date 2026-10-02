@@ -8,7 +8,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1080</height>
+				<height>1152</height>
 				<texturefocus colordiffuse="FF000000">drawn/fill.png</texturefocus>
 				<texturenofocus colordiffuse="FF000000">drawn/fill.png</texturenofocus>
 				<onclick condition="String.IsEqual(Window(10000).Property(bp.photo.osd),1)">RunScript(special://skin/scripts/main.py,photoclose)</onclick>
@@ -21,7 +21,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1080</height>
+				<height>1152</height>
 				<aspectratio>keep</aspectratio>
 				<fadetime>800</fadetime>
 				<texture>$INFO[Window(10000).Property(bp.photo.path)]</texture>
@@ -31,7 +31,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1080</height>
+				<height>1152</height>
 				<aspectratio>scale</aspectratio>
 				<fadetime>800</fadetime>
 				<texture>$INFO[Window(10000).Property(bp.photo.path)]</texture>
@@ -41,7 +41,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1080</height>
+				<height>1152</height>
 				<aspectratio>scale</aspectratio>
 				<fadetime>800</fadetime>
 				<texture>$INFO[Window(10000).Property(bp.photo.path)]</texture>
@@ -65,10 +65,15 @@
 			</control>
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.photo.osd),1)</visible>
+			<control type="group">
+				<left>0</left>
+				<bottom>0</bottom>
+				<width>1920</width>
+				<height>200</height>
 			<!-- Bottom overlay: file name, folder path, transport plus function rows. Hides after 7 s idle. -->
 			<control type="image">
 				<left>0</left>
-				<top>880</top>
+				<top>0</top>
 				<width>1920</width>
 				<height>200</height>
 				<texture>drawn/fill.png</texture>
@@ -76,7 +81,7 @@
 			</control>
 			<control type="image">
 				<left>0</left>
-				<top>878</top>
+				<top>-2</top>
 				<width>1920</width>
 				<height>2</height>
 				<texture>drawn/fill.png</texture>
@@ -85,7 +90,7 @@
 			
 			<control type="label">
 				<left>200</left>
-				<top>906</top>
+				<top>26</top>
 				<width>1100</width>
 				<height>50</height>
 				<font>font36_title</font>
@@ -97,7 +102,7 @@
 			</control>
 			<control type="fadelabel">
 				<left>200</left>
-				<top>906</top>
+				<top>26</top>
 				<width>1100</width>
 				<height>50</height>
 				<font>font36_title</font>
@@ -109,7 +114,7 @@
 			
 			<control type="label">
 				<left>200</left>
-				<top>970</top>
+				<top>90</top>
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
@@ -122,7 +127,7 @@
 			</control>
 			<control type="fadelabel">
 				<left>200</left>
-				<top>970</top>
+				<top>90</top>
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
@@ -133,7 +138,7 @@
 			</control>
 			<control type="label">
 				<left>200</left>
-				<top>970</top>
+				<top>90</top>
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
@@ -146,7 +151,7 @@
 			</control>
 			<control type="fadelabel">
 				<left>200</left>
-				<top>970</top>
+				<top>90</top>
 				<width>1100</width>
 				<height>30</height>
 				<font>font20_title</font>
@@ -158,7 +163,7 @@
 			
 			<control type="slider">
 				<left>200</left>
-				<top>1021</top>
+				<top>141</top>
 				<width>1100</width>
 				<height>26</height>
 				<enable>false</enable>
@@ -172,7 +177,7 @@
 			
 			<control type="radiobutton" id="900">
 				<left>1360</left>
-				<top>916</top>
+				<top>36</top>
 				<width>64</width>
 				<height>64</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -196,7 +201,7 @@
 			
 			<control type="group">
 				<left>1448</left>
-				<top>900</top>
+				<top>20</top>
 				<width>96</width>
 				<height>96</height>
 				<control type="image">
@@ -249,7 +254,7 @@
 			
 			<control type="radiobutton" id="903">
 				<left>1568</left>
-				<top>916</top>
+				<top>36</top>
 				<width>64</width>
 				<height>64</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -273,7 +278,7 @@
 			
 			<control type="radiobutton" id="902">
 				<left>1656</left>
-				<top>916</top>
+				<top>36</top>
 				<width>64</width>
 				<height>64</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -297,7 +302,7 @@
 		
 		<control type="button" id="447">
 			<left>1432</left>
-			<top>1010</top>
+			<top>130</top>
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -312,7 +317,7 @@
 		</control>
 		<control type="image">
 			<left>1445</left>
-			<top>1023</top>
+			<top>143</top>
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
@@ -321,7 +326,7 @@
 		
 		<control type="button" id="443">
 			<left>1612</left>
-			<top>1010</top>
+			<top>130</top>
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -337,7 +342,7 @@
 		<control type="image">
 			<visible>!String.IsEqual(Window(10000).Property(bp.photo.repeat),1)</visible>
 			<left>1625</left>
-			<top>1023</top>
+			<top>143</top>
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
@@ -346,7 +351,7 @@
 		<control type="image">
 			<visible>String.IsEqual(Window(10000).Property(bp.photo.repeat),1)</visible>
 			<left>1625</left>
-			<top>1023</top>
+			<top>143</top>
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
@@ -354,7 +359,7 @@
 		</control>
 		<control type="button" id="444">
 			<left>1672</left>
-			<top>1010</top>
+			<top>130</top>
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -370,7 +375,7 @@
 		<control type="image">
 			<visible>!String.IsEqual(Window(10000).Property(bp.photo.shuffle),1)</visible>
 			<left>1685</left>
-			<top>1023</top>
+			<top>143</top>
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
@@ -379,7 +384,7 @@
 		<control type="image">
 			<visible>String.IsEqual(Window(10000).Property(bp.photo.shuffle),1)</visible>
 			<left>1685</left>
-			<top>1023</top>
+			<top>143</top>
 			<width>22</width>
 			<height>22</height>
 			<aspectratio>keep</aspectratio>
@@ -388,7 +393,7 @@
 		
 		<control type="button" id="446">
 			<left>1552</left>
-			<top>1010</top>
+			<top>130</top>
 			<width>48</width>
 			<height>48</height>
 			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -404,7 +409,7 @@
 			<control type="image">
 				<visible>String.IsEqual(Window(10000).Property(bp.photo.mode),0)</visible>
 				<left>1565</left>
-				<top>1023</top>
+				<top>143</top>
 				<width>22</width>
 				<height>22</height>
 				<aspectratio>keep</aspectratio>
@@ -413,7 +418,7 @@
 			<control type="image">
 				<visible>String.IsEqual(Window(10000).Property(bp.photo.mode),1)</visible>
 				<left>1565</left>
-				<top>1023</top>
+				<top>143</top>
 				<width>22</width>
 				<height>22</height>
 				<aspectratio>keep</aspectratio>
@@ -422,7 +427,7 @@
 			<control type="image">
 				<visible>String.IsEqual(Window(10000).Property(bp.photo.mode),2)</visible>
 				<left>1565</left>
-				<top>1023</top>
+				<top>143</top>
 				<width>22</width>
 				<height>22</height>
 				<aspectratio>keep</aspectratio>
@@ -431,7 +436,7 @@
 			
 		<control type="button" id="445">
 			<left>1492</left>
-				<top>1010</top>
+				<top>130</top>
 				<width>48</width>
 				<height>48</height>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
@@ -446,7 +451,7 @@
 			</control>
 			<control type="image">
 				<left>1502</left>
-				<top>1020</top>
+				<top>140</top>
 				<width>28</width>
 				<height>28</height>
 				<aspectratio>keep</aspectratio>
@@ -455,12 +460,13 @@
 			</control>
 			<control type="image">
 				<left>1502</left>
-				<top>1020</top>
+				<top>140</top>
 				<width>28</width>
 				<height>28</height>
 				<aspectratio>keep</aspectratio>
 				<texture colordiffuse="$INFO[Skin.String(accent)]">$INFO[Window(10000).Property(bp.photo.interval.icon)]</texture>
 				<visible>!String.IsEqual(Window(10000).Property(bp.photo.interval),5)</visible>
+			</control>
 			</control>
 			</control>
 

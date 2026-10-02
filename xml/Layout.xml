@@ -24,7 +24,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1080</height>
+				<height>1152</height>
 				<texture>drawn/fill.png</texture>
 				<colordiffuse>$INFO[Window(10000).Property(bp.theme.bg)]</colordiffuse>
 			</control>
@@ -757,7 +757,7 @@
 				<!-- Also shown while a network track loads (bp.aload), so the bar appears at once. -->
 				<visible>[Player.HasAudio + !Player.HasVideo] | String.IsEqual(Window(10000).Property(bp.aload),1)</visible>
 				<left>0</left>
-				<top>880</top>
+				<bottom>0</bottom>
 				<width>1920</width>
 				<height>200</height>
 				<animation effect="fade" time="200">VisibleChange</animation>
@@ -1175,7 +1175,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.drives)</onclick>
@@ -1773,7 +1773,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.menu)</onclick>
@@ -2014,7 +2014,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.ctx)</onclick>
@@ -2431,7 +2431,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.del)</onclick>
@@ -2531,7 +2531,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="970">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,timerclose)</onclick>
@@ -2695,7 +2695,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="904">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,resumecancel)</onclick>
@@ -2776,7 +2776,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="860">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,noticeclose)</onclick>
@@ -2876,7 +2876,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.about)</onclick>
@@ -3034,7 +3034,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="954">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
@@ -3118,7 +3118,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.keys)</onclick>
@@ -3280,7 +3280,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="910">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>noop</onclick>
@@ -3474,7 +3474,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="920">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>ClearProperty(bp.srcq)</onclick>

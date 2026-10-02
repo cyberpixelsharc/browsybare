@@ -2634,14 +2634,6 @@ def read_info(path):
     return _read_mp4(path)
 
 
-# Backwards-compatible alias (older callers only wanted the tags).
-def read_tags(path):
-    info = read_info(path)
-    return {k: info[k] for k in
-            ("title", "artist", "album", "year", "genre", "composer",
-             "description", "encoder") if k in info}
-
-
 if __name__ == "__main__":
     import sys
     for p in sys.argv[1:]:

@@ -185,17 +185,6 @@ def scan_last_key_raw(since):
     return btn if (btn or "").startswith("obc") else key
 
 
-def scan_last_key(since):
-    """Newest HandleKey line past `since` as `button / action`, else ''. Needs
-    debug logging (HandleKey is debug level)."""
-    r = _scan_last_line(since)
-    if not r:
-        return ""
-    key, btn, action = r
-    label = btn if (btn or "").startswith("obc") else key
-    return ("%s / %s" % (label, action)) if action else label
-
-
 def is_pvr_dialog_visible():
     # While our keyboard (bp.kb) is open, any PVR/shutdown dialog is the
     # accidental hardware shortcut (Kodi 21 keymaps have no conditions) -> close it.
@@ -484,7 +473,14 @@ def main():
             if win.getProperty("bp.photo") == "open":
                 visible = win.getProperty("bp.photo.osd") == "1"
                 if xbmc.getCondVisibility("System.IdleTime(7)"):
-                    if visible:
+                    # Only hide once the OSD itself has been up for the whole
+                    # idle window -- a just-shown OSD must not flash away (idle
+                    # is often already >7 s at the moment it is shown).
+                    try:
+                        t0 = float(win.getProperty("bp.photo.osd.t0") or 0)
+                    except (TypeError, ValueError):
+                        t0 = 0.0
+                    if visible and (t0 <= 0.0 or time.time() - t0 >= 7):
                         try:
                             cid = xbmc.getInfoLabel("System.CurrentControlId")
                         except Exception:
@@ -494,7 +490,7 @@ def main():
                         win.clearProperty("bp.photo.osd")
                         xbmc.executebuiltin("SetFocus(899)")
                 elif not visible:
-                    win.setProperty("bp.photo.osd", "1")
+                    fileops._photo_osd_on(win)
                     xbmc.executebuiltin(
                         "SetFocus(%s)" % (win.getProperty("bp.photo.osd.focus") or "901"))
         except Exception as e:

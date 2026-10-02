@@ -614,6 +614,10 @@ def run():
         log("boot: another boot in progress, exit")
         return
     try:
+        # The install veil (Home.xml) and the skin-keep dialog (DialogConfirm.xml)
+        # paint before sync() finishes, so set the theme colours FIRST (the JSON
+        # is read here; a hard-coded fallback keeps them readable without it).
+        step("themes", themes)
         step("addon_data", ensure_addon_data)
         step("drivevis", migrate_drivevis)
         step("drivevis.identity", migrate_drive_identity)
@@ -640,7 +644,6 @@ def run():
         step("dirsources", main.dirsrc_open)
         step("netsources", main.netsrc_open)
         step("remotes", main.remote_open)
-        step("themes", themes)
         step("accents", accents)
         step("volume", volume.init)
         step("refreshdelay", main.refreshdelay)

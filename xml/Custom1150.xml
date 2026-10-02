@@ -18,7 +18,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>Dialog.Close(1150)</onclick>
@@ -10077,7 +10077,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,remscancancel)</onclick>
@@ -10187,7 +10187,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1080</height>
+					<height>1152</height>
 					<texturefocus />
 					<texturenofocus />
 					<onclick>RunScript(special://skin/scripts/main.py,rowmenuclose)</onclick>
@@ -10382,7 +10382,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="940">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,resetclose)</onclick>
@@ -10451,7 +10451,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="790">
-					<left>0</left><top>0</top><width>1920</width><height>1080</height>
+					<left>0</left><top>0</top><width>1920</width><height>1152</height>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,netsrcclose)</onclick>

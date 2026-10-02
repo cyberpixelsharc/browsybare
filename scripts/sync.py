@@ -1224,6 +1224,11 @@ def themes(tid=None):
     if not colors and ids:
         tid = ids[0]
         colors = theme_load(tid)
+    if not colors:
+        # No readable theme (missing/corrupt JSON): leave the colours as they
+        # are instead of clearing them to transparent.
+        log("theme: no readable theme for %s, colours left unchanged" % tid)
+        return
     for role in THEME_ROLES:
         v = colors.get(role)
         if v:

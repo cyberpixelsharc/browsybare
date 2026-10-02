@@ -2620,8 +2620,7 @@ def _photo_open_ui(win, path):
     except Exception:
         pass
     # OSD starts visible; the home daemon hides/reveals it.
-    win.setProperty("bp.photo.osd", "1")
-    win.setProperty("bp.photo.osd.focus", "901")
+    _photo_osd_on(win, "901")
     time.sleep(0.08)
     _photo_show(win, plist, idx)
     # Spinner is for the OPEN only; slideshow steps need none.
@@ -2859,12 +2858,26 @@ def photo_shuffle_toggle():
     log("photo shuffle -> %d" % nxt)
 
 
+def _photo_osd_on(win, focus=None):
+    """Show the photo OSD and stamp the show time. The daemon hides the OSD once
+    it has been visible AND idle for the full idle window -- a just-shown OSD is
+    never hidden on the first tick (idle is often already >7 s when the photo
+    opened from an advancing slideshow, which made the OSD flash for ~0.1 s)."""
+    win.setProperty("bp.photo.osd", "1")
+    try:
+        win.setProperty("bp.photo.osd.t0", "%.3f" % time.time())
+    except Exception:
+        pass
+    if focus:
+        win.setProperty("bp.photo.osd.focus", focus)
+
+
 def photo_show_osd():
     """Reveal the photo OSD (backdrop click / OK while it is hidden)."""
     win = xbmcgui.Window(10000)
     if win.getProperty("bp.photo") != "open":
         return
-    win.setProperty("bp.photo.osd", "1")
+    _photo_osd_on(win)
     xbmc.executebuiltin(
         "SetFocus(%s)" % (win.getProperty("bp.photo.osd.focus") or "901"))
 
@@ -2891,7 +2904,7 @@ def photo_close():
                    "bp.photo.interval", "bp.photo.interval.icon",
                    "bp.photo.mode", "bp.photo.repeat", "bp.photo.shuffle",
                    "bp.photo.kb", "bp.photo.kb.t",
-                   "bp.photo.osd", "bp.photo.osd.focus"):
+                   "bp.photo.osd", "bp.photo.osd.focus", "bp.photo.osd.t0"):
         win.clearProperty(prop)
     try:
         xbmc.executebuiltin("ActivateWindow(Home)")

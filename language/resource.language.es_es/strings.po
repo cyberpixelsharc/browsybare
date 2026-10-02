@@ -852,3 +852,7 @@ msgstr "Acceso de escritura"
 msgid "Theme"
 msgctxt "#31538"
 msgstr "Tema"
+
+msgid "External storage"
+msgctxt "#31539"
+msgstr "Almacenamiento externo"

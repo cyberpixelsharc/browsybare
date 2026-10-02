@@ -92,23 +92,6 @@ def current_source_root(path):
     return dirsource_root_of(path) or os.path.expanduser("~")
 
 
-def crumb_of(path):
-    # Display path relative to the source root, format "/ A / B" ("" at root); the source name lives in the chip.
-    root = current_source_root(path)
-    if path == root:
-        return ""
-    if path.startswith(root + "/"):
-        rel = path[len(root) + 1:]
-    else:
-        for prefix in ("/Volumes/", "Volumes\\"):
-            if path.startswith(prefix):
-                rel = path[len(prefix):]
-                break
-        else:
-            rel = path
-    return "/ " + rel.replace("/", " / ")
-
-
 def crumb_parts(path):
     """Individual folder segments below the source root (list)."""
     root = current_source_root(path)
