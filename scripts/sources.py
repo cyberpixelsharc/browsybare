@@ -240,10 +240,11 @@ def _android_drives():
     """Android REMOVABLE volumes (SD/USB): the /storage/<id> public view plus
     real mounts under the removable bases (a USB is often only at
     /mnt/media_rw/<id>). The emulated shared storage (the home source) and its
-    symlinks are skipped; entries are de-duplicated by volume name. Each volume
-    gets its real filesystem label when readable, else a generic label."""
-    out = []
-    seen = set()
+    symlinks are skipped; entries are de-duplicated by volume name. A volume can
+    appear as several paths: prefer the one Kodi's file browser uses (readable;
+    e.g. an encrypted/portable SD is empty through the public /storage view but
+    readable via the mount Kodi uses), else the first readable path WITH content,
+    else skip the volume. Each volume gets its real label, else a generic one."""
     mounts = _mount_devices()
     sources = _android_source_labels()
     try:
@@ -251,32 +252,57 @@ def _android_drives():
     except Exception:
         fallback = "External storage"
 
-    def add(path):
+    groups = {}
+    order = []
+
+    def collect(path):
+        p = path.rstrip("/")
         try:
-            real = os.path.realpath(path).rstrip("/")
+            real = os.path.realpath(p)
         except Exception:
-            real = path.rstrip("/")
+            real = p
         if real.startswith("/storage/emulated"):
             return
-        key = (os.path.basename(path.rstrip("/")) or real).lower()
-        if key in seen:
-            return
-        seen.add(key)
-        label = _android_label(path, mounts, sources) or fallback
-        out.append({"label": safe_label(label), "path": path.rstrip("/") + "/",
-                    "type": "local", "system": False})
+        key = (os.path.basename(p) or real).lower()
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        if p not in groups[key]:
+            groups[key].append(p)
 
     try:
         for name in sorted(os.listdir("/storage")):
             if name in ("emulated", "self"):
                 continue
-            path = "/storage/%s" % name
-            if os.path.isdir(path):
-                add(path)
+            p = "/storage/%s" % name
+            if os.path.isdir(p):
+                collect(p)
     except OSError:
         pass
-    for _label, path in _linux_mounts(_ANDROID_REMOVABLE_BASES):
-        add(path)
+    for _label, p in _linux_mounts(_ANDROID_REMOVABLE_BASES):
+        collect(p)
+
+    out = []
+    for key in order:
+        # Kodi's own source path for this volume wins (the path the file browser
+        # actually reads), else the first readable path that has content.
+        kodi = [sp for sp in sources if os.path.basename(sp).lower() == key]
+        chosen = kodi[0] if kodi else ""
+        if not chosen:
+            readable = []
+            for p in groups[key]:
+                try:
+                    n = len(os.listdir(p))
+                except OSError:
+                    continue
+                readable.append((1 if n else 0, p))
+            if readable:
+                chosen = sorted(readable, key=lambda t: t[0], reverse=True)[0][1]
+        if not chosen:
+            continue
+        label = _android_label(chosen, mounts, sources) or fallback
+        out.append({"label": safe_label(label), "path": chosen.rstrip("/") + "/",
+                    "type": "local", "system": False})
     return out
 
 

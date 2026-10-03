@@ -688,14 +688,14 @@ def settings_tab(tab, tabid):
         return
     win = xbmcgui.Window(10000)
     win.setProperty("bp.settings.tab", str(tab))
-    time.sleep(0.18)
+    time.sleep(0.08)
     candidates = {1: (274,), 2: (272, 701), 3: (129, 105, 271),
                   4: (277,), 5: (500,)}.get(tab, ())
     reset = False
     for cid in candidates:
         try:
             xbmc.executebuiltin("SetFocus(%d)" % cid)
-            time.sleep(0.10)
+            time.sleep(0.03)
             if xbmc.getCondVisibility("Control.HasFocus(%d)" % cid):
                 reset = True
                 break

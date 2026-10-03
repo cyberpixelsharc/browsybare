@@ -8,7 +8,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 
 ## Screenshots
 
-![Slideshow](screenshots/slideshow.gif)
+![Slideshow](screenshots/slideshow-browsybare.gif)
 
 ## File manager
 

@@ -391,7 +391,7 @@ _POWER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 \t\t\t<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 \t\t\t<animation effect="slide" start="0,24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 \t\t\t<control type="button" id="952">
-\t\t\t\t<left>0</left><top>0</top><width>1920</width><height>1080</height>
+\t\t\t\t<left>0</left><top>0</top><width>1920</width><height>1152</height>
 \t\t\t\t<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 \t\t\t\t<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 \t\t\t\t<onclick>ClearProperty(bp.power)</onclick>
@@ -404,7 +404,7 @@ _POWER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 \t\t\t\t<ondown>952</ondown>
 \t\t\t</control>
 \t\t\t<control type="group">
-\t\t\t\t<left>{left}</left><top>{top}</top>
+\t\t\t\t<left>{left}</left><centertop>50%</centertop><height>{total_h}</height>
 \t\t\t\t<control type="image">
 \t\t\t\t\t<left>0</left><top>0</top><width>{pw}</width><height>{total_h}</height>
 \t\t\t\t\t<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
@@ -530,8 +530,7 @@ def merge_button_menu(est, root):
                                       actions=actions, up=up, down=down))
     cancel_top = POWER_TOP0 + n * step
     total_h = cancel_top + POWER_ROW_H + 20
-    top = max(0, (1080 - total_h) // 2)
-    out = _POWER_TEMPLATE.format(left=POWER_PANEL_LEFT, top=top, pw=POWER_PANEL_W,
+    out = _POWER_TEMPLATE.format(left=POWER_PANEL_LEFT, pw=POWER_PANEL_W,
                                  total_h=total_h, rows="".join(rows),
                                  cancel_top=cancel_top, lw=POWER_LIST_W,
                                  rh=POWER_ROW_H, last_id=(ids[-1] if ids else 960),

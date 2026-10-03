@@ -14,7 +14,7 @@
 				<onback>RunScript(special://skin/scripts/keyboard.py,special,cancel)</onback>
 			</control>
 			<control type="group">
-				<left>486</left><top>285</top>
+				<left>486</left><centertop>50%</centertop><height>510</height>
 				<control type="image">
 					<left>0</left><top>0</top><width>948</width><height>510</height>
 					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>

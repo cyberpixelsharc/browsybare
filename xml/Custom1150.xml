@@ -29,7 +29,7 @@
 				
 				<control type="group">
 					<left>575</left>
-					<top>115</top>
+					<centertop>50%</centertop><height>850</height>
 					<control type="image">
 						<left>0</left>
 						<top>0</top>
@@ -10085,7 +10085,7 @@
 				</control>
 				<control type="group">
 					<left>730</left>
-					<top>386</top>
+					<centertop>50%</centertop><height>308</height>
 					<control type="image">
 						<left>0</left>
 						<top>0</top>
@@ -10195,7 +10195,7 @@
 				</control>
 				<control type="group">
 					<left>770</left>
-					<top>346</top>
+					<centertop>50%</centertop><height>388</height>
 					
 					<control type="image">
 						<visible>String.IsEqual(Window(10000).Property(bp.rowmenu.canedit),1)</visible>
@@ -10389,7 +10389,7 @@
 					<onback>RunScript(special://skin/scripts/main.py,resetclose)</onback>
 				</control>
 				<control type="group">
-					<left>680</left><top>400</top>
+					<left>680</left><centertop>50%</centertop><height>280</height>
 					<control type="image">
 						<left>0</left><top>0</top><width>560</width><height>280</height>
 						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
@@ -10460,7 +10460,7 @@
 				</control>
 				<control type="group">
 					<left>521</left>
-					<top>212</top>
+					<centertop>50%</centertop><height>724</height>
 					<control type="image">
 						<left>0</left><top>0</top><width>878</width><height>724</height>
 						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>

@@ -426,7 +426,7 @@ def main():
                     updating = xbmc.getCondVisibility("Container(33).IsUpdating")
                 except Exception:
                     updating = False
-                if (ready and not updating) or time.time() - ll_t > 12.0:
+                if (ready and not updating) or time.time() - ll_t > 120.0:
                     win.clearProperty("bp.listload")
                     win.clearProperty("bp.listload.t")
                     win.clearProperty("bp.listload.ready")

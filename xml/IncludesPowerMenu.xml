@@ -14,7 +14,7 @@
 				<onback>SetFocus(33)</onback>
 			</control>
 			<control type="group">
-				<left>640</left><top>460</top>
+				<left>640</left><centertop>50%</centertop><height>160</height>
 				<control type="image">
 					<left>0</left><top>0</top><width>640</width><height>160</height>
 					<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
