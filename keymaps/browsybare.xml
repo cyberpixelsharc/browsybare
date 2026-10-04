@@ -157,7 +157,7 @@
            No existing entries, so zero regression risk either way. -->
       <key id="61607">RunScript(special://skin/scripts/keyboard.py,hardware,sect)</key>
       <section>RunScript(special://skin/scripts/keyboard.py,hardware,sect)</section>
-      <!-- Box-proven arrivals (German syms, 2026-09-22 HandleKey log):
+      <!-- Box-proven arrivals (German syms, HandleKey log):
            Shift+plus-key arrives as asterisk (must insert star), Shift+8 as
            leftbracket/0x28 (must insert lparen, hence 61480 below), Shift+9
            as rightbracket (rparen, correct). Shift+3 never reaches Kodi
@@ -177,7 +177,7 @@
       <f10 mod="shift">RunScript(special://skin/scripts/keyboard.py,special,menu)</f10>
       <!--/GEN:typing-->
       <!--GEN:home_keyboard-->
-      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
       <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
@@ -252,7 +252,7 @@
          forward, pageplus, ...), which returns 0 for "obc*"; only
          <universalremote> runs TranslateUniversalRemoteString. OBC entries in
          <remote> were silently dropped, so box 2 (Meson-IR) fell back to the
-         system mapping (2026-09-14 fix). -->
+         system mapping. -->
     <universalremote>
       <!-- Spare Meson-IR keys run into the void (unmapped = noop). The
            app/colored buttons (YouTube/Netflix/Google/Prime) and P+/P- are
@@ -288,7 +288,7 @@
   <!-- Settings window (id 1150 -> keymap section window1150): the SAME
        hardware typing as Home, so the on-screen keyboard types with a real
        keyboard there too (letters/digits/umlauts/symbols). No transport
-       genes, but Home must close the dialog like Back (user 2026-09-22). -->
+       genes, but Home must close the dialog like Back. -->
   <window1150>
     <keyboard>
       <!--GEN:typing-->
@@ -413,7 +413,7 @@
            No existing entries, so zero regression risk either way. -->
       <key id="61607">RunScript(special://skin/scripts/keyboard.py,hardware,sect)</key>
       <section>RunScript(special://skin/scripts/keyboard.py,hardware,sect)</section>
-      <!-- Box-proven arrivals (German syms, 2026-09-22 HandleKey log):
+      <!-- Box-proven arrivals (German syms, HandleKey log):
            Shift+plus-key arrives as asterisk (must insert star), Shift+8 as
            leftbracket/0x28 (must insert lparen, hence 61480 below), Shift+9
            as rightbracket (rparen, correct). Shift+3 never reaches Kodi
@@ -438,6 +438,12 @@
     <universalremote>
       <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
     </universalremote>
+    <mouse>
+      <!-- The settings window has no context menu; the native right-click
+           (ContextMenu) would open a dialog over it and push the network-source
+           editor into the background. Keep the right button inert here. -->
+      <rightclick>noop</rightclick>
+    </mouse>
   </window1150>
   <VideoOSD>
     <keyboard>
@@ -489,7 +495,7 @@
       <return mod="ctrl">noop</return>
       <enter mod="ctrl">noop</enter>
       <!--GEN:osd_keyboard-->
-      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
       <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
@@ -578,7 +584,7 @@
   <FullscreenVideo>
     <keyboard>
       <!-- Plain arrows are owned by the generated block below (transport:
-           up=next, down=prev, left=rewind, right=forward, user 2026-09-14).
+           up=next, down=prev, left=rewind, right=forward).
            OK stays native (opens the OSD). -->
       <up mod="longpress">noop</up>
       <down mod="longpress">noop</down>
@@ -650,7 +656,7 @@
       <return mod="ctrl">noop</return>
       <enter mod="ctrl">noop</enter>
       <!--GEN:fullscreen_keyboard-->
-      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
       <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
@@ -781,7 +787,7 @@
   <window1151>
     <keyboard>
       <!--GEN:photo_keyboard-->
-      <backspace>RunScript(special://skin/scripts/keyboard.py,special,back)</backspace>
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
       <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <enter>Select</enter>

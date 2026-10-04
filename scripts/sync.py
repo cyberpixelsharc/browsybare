@@ -391,7 +391,7 @@ _POWER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 \t\t\t<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 \t\t\t<animation effect="slide" start="0,24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 \t\t\t<control type="button" id="952">
-\t\t\t\t<left>0</left><top>0</top><width>1920</width><height>1152</height>
+\t\t\t\t<left>0</left><top>0</top><width>1920</width><bottom>0</bottom>
 \t\t\t\t<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 \t\t\t\t<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 \t\t\t\t<onclick>ClearProperty(bp.power)</onclick>

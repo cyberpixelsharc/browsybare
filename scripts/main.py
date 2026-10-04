@@ -930,7 +930,20 @@ def netcommit():
         log("netsource: rejected '%s'" % redact(url))
 
 
-NET_PROTOCOLS = ("ftp", "ftps", "smb", "nfs", "dav", "davs")
+NET_PROTOCOLS = ("ftp", "ftps", "sftp", "smb", "nfs", "dav", "davs")
+
+
+def _netsrc_set_ro(win, scheme):
+    """Publish whether the editor's scheme is read-only (ftp/ftps/sftp cannot
+    write through Kodi's VFS), so the XML greys the write toggle."""
+    key = (scheme or "").split("://", 1)[0].strip().lower() + "://"
+    ro = key in sources.RO_SCHEMES
+    try:
+        win.setProperty("bp.netsrc.ro", "1" if ro else "")
+        if ro:
+            win.setProperty("bp.netsrc.write", "")  # read-only: never writable
+    except Exception:
+        pass
 
 
 def _netsrc_clear_editor():
@@ -1018,6 +1031,8 @@ def netsrcnew(idx=None):
     win.setProperty("bp.netsrc.pass.mask", "••••••" if passwd else "")
     win.setProperty("bp.netsrc.write",
                     ("1" if e.get("writeaccess") else "") if e else "")
+    # LAST: a read-only scheme must never show the write toggle as on.
+    _netsrc_set_ro(win, scheme)
     win.setProperty("bp.netsrc.test", "")
     win.setProperty("bp.netsrc", "open")
     focus_control(792)
@@ -1035,6 +1050,7 @@ def netproto_next():
     nxt = NET_PROTOCOLS[(i + 1) % len(NET_PROTOCOLS)]
     win.setProperty("bp.netsrc.scheme", nxt + "://")
     win.setProperty("bp.netsrc.proto", nxt.upper())
+    _netsrc_set_ro(win, nxt)
     log("netsource: protocol %s" % nxt)
 
 
@@ -1080,6 +1096,8 @@ def netsrcadd():
             label = os.urandom(4).hex()[:7]
     edit = (win.getProperty("bp.netsrc.edit") or "").strip()
     writeaccess = win.getProperty("bp.netsrc.write") == "1"
+    if ((scheme or "").split("://", 1)[0].strip().lower() + "://") in sources.RO_SCHEMES:
+        writeaccess = False  # read-only schemes never carry write access
     slot = 0
     if edit.isdigit() and int(edit) >= 1:
         added = sources.netsrc_replace(int(edit), label, url, fields, writeaccess)
@@ -1116,7 +1134,7 @@ def netsrctest():
     if url:
         try:
             import xbmcvfs
-            res = xbmcvfs.listdir(url)
+            res = xbmcvfs.listdir(sources.vfs_dir(url))
             ok = isinstance(res, tuple) and len(res) == 2 and res[0] is not False
             if ok and not res[0] and not res[1]:
                 # Kodi's VFS returns empty lists (not False) for a dead host,

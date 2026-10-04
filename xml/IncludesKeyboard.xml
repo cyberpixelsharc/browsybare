@@ -10,7 +10,9 @@
 				<left>0</left><top>0</top><width>1920</width><bottom>0</bottom>
 				<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
-				<onclick>RunScript(special://skin/scripts/keyboard.py,special,cancel)</onclick>
+				<!-- A stray click beside the keyboard must not discard the typed
+				     text; dismiss only via the keyboard's Cancel/OK or Back. -->
+				<onclick>noop</onclick>
 				<onback>RunScript(special://skin/scripts/keyboard.py,special,cancel)</onback>
 			</control>
 			<control type="group">
@@ -61,7 +63,7 @@
 					<font>font20_title</font><align>center</align><aligny>center</aligny>
 					<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
-					<onclick>RunScript(special://skin/scripts/keyboard.py,special,back)</onclick>
+					<onclick>RunScript(special://skin/scripts/keyboard.py,special,del)</onclick>
 				<onback>RunScript(special://skin/scripts/keyboard.py,special,cancel)</onback>
 									<onleft>185</onleft>
 					<onright>186</onright>

@@ -245,7 +245,7 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
             _NET_COOLDOWN.pop(k, None)
     _NET_COOLDOWN[cur] = now
     try:
-        res = xbmcvfs.listdir(cur)
+        res = xbmcvfs.listdir(sources.vfs_dir(cur))
     except Exception:
         return
     if not (isinstance(res, tuple) and len(res) == 2 and res[0] is not False):

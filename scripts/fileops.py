@@ -91,7 +91,7 @@ def _vfs_list(path):
     deadline = time.time() + 3.0
     while True:
         try:
-            res = xbmcvfs.listdir(path)
+            res = xbmcvfs.listdir(sources.vfs_dir(path))
         except Exception:
             res = None
         if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
@@ -1070,7 +1070,7 @@ def _folder_playlist(folder, exts):
     names = []
     if net:
         try:
-            res = xbmcvfs.listdir(folder)
+            res = xbmcvfs.listdir(sources.vfs_dir(folder))
             if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
                 names = list(res[1] or [])
         except Exception:
@@ -1436,7 +1436,7 @@ def _photo_playlist_tree(folder, exts, _depth=0):
     dirs, files = [], []
     if net:
         try:
-            res = xbmcvfs.listdir(folder)
+            res = xbmcvfs.listdir(sources.vfs_dir(folder))
             if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
                 dirs = list(res[0] or [])
                 files = list(res[1] or [])

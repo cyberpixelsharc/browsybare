@@ -10,7 +10,8 @@ from urllib.parse import unquote, quote
 import xbmc
 import xbmcvfs
 
-from common import (read_json as _read_json, state_file as _state_file,
+from common import (read_json as _read_json, write_json as _write_json,
+                    state_file as _state_file,
                     safe_label as safe_label, redact, log as _log)
 _safe_label = safe_label
 
@@ -465,12 +466,14 @@ def network_sources():
 
 
 # Schemes Kodi opens natively (VFS); netsrc_add rejects everything else.
+# sftp needs the separate `vfs.sftp` addon (default port 22).
 NET_SCHEMES = ("ftp://", "ftps://", "smb://", "nfs://",
-               "dav://", "davs://")
+               "dav://", "davs://", "sftp://")
 
 # Read-only Kodi VFS schemes: CCurlFile (ftp/ftps) has no Delete/Rename and
-# CFTPDirectory no Create/Remove; the context menu greys those rows.
-RO_SCHEMES = ("ftp://", "ftps://")
+# CFTPDirectory no Create/Remove; vfs.sftp declares no write support (it opens
+# files O_RDONLY). The context menu greys those rows.
+RO_SCHEMES = ("ftp://", "ftps://", "sftp://")
 
 
 def is_network_path(path):
@@ -574,6 +577,55 @@ def _dav_origin(url):
         return None
 
 
+# Cache of the last WWW-Authenticate challenge per DAV origin, persisted in
+# userdata/skindev/dav-auth.json. WebDAV otherwise probes unauthenticated on
+# EVERY listing/copy/upload (a full extra round trip, and a stalled probe can
+# burn Kodi's timeout); each of those runs in its own process, so the cache must
+# be a file, not memory. Digest reuse works until the server's nonce expires,
+# then the 401 path refreshes it (worst case one extra round trip, never wrong).
+_DAV_CHALLENGE = None  # lazy {origin_key: challenge}
+_DAV_CHALLENGE_MAX = 50
+
+
+def _dav_origin_key(scheme, host, port):
+    return "%s://%s:%d" % (scheme, (host or "").lower(), int(port or 0))
+
+
+def _dav_cache():
+    global _DAV_CHALLENGE
+    if _DAV_CHALLENGE is None:
+        try:
+            data = _read_json(_state_file("dav-auth.json"), {})
+            _DAV_CHALLENGE = data if isinstance(data, dict) else {}
+        except Exception:
+            _DAV_CHALLENGE = {}
+    return _DAV_CHALLENGE
+
+
+def _dav_cached_challenge(scheme, host, port):
+    """Cached WWW-Authenticate header for the origin, or None when unknown."""
+    try:
+        return _dav_cache().get(_dav_origin_key(scheme, host, port))
+    except Exception:
+        return None
+
+
+def _dav_store_challenge(scheme, host, port, challenge):
+    try:
+        d = _dav_cache()
+        key = _dav_origin_key(scheme, host, port)
+        challenge = challenge or ""
+        if d.get(key) == challenge:
+            return
+        d[key] = challenge
+        if len(d) > _DAV_CHALLENGE_MAX:
+            for k in list(d.keys())[:len(d) - _DAV_CHALLENGE_MAX]:
+                d.pop(k, None)
+        _write_json(_state_file("dav-auth.json"), d)
+    except Exception:
+        pass
+
+
 def dav_copy_file(src_url, dst_url, timeout=60):
     """Server-side copy for one file whose URLs share a DAV origin.
 
@@ -598,11 +650,14 @@ def dav_copy_file(src_url, dst_url, timeout=60):
         return False, "unsupported"
     if src_url.endswith("/"):
         return False, "unsupported"
-    scheme, _host, _port, netloc, src_path, username, password = src
+    scheme, host, port, netloc, src_path, username, password = src
     dst_path = dst[4]
     absolute_destination = "%s://%s%s" % (scheme, netloc, dst_path)
+    cached = _dav_cached_challenge(scheme, host, port)
+    pre_auth = (_dav_auth_header("COPY", src_path, username, password, cached)
+                if (username is not None and cached) else "")
     for destination in (absolute_destination, dst_path):
-        auth_header = ""
+        auth_header = pre_auth
         challenges = 0
         last = ""
         while True:
@@ -640,6 +695,7 @@ def dav_copy_file(src_url, dst_url, timeout=60):
                 if err.code == 401 and username is not None and challenges < 1:
                     challenge = (err.headers.get("WWW-Authenticate", "")
                                  if err.headers else "") or ""
+                    _dav_store_challenge(scheme, host, port, challenge)
                     new_auth = _dav_auth_header("COPY", src_path, username,
                                                 password, challenge)
                     if new_auth and new_auth != auth_header:
@@ -776,25 +832,29 @@ def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=
     try:
         scheme, host, port, netloc, path, username, password = dst
         total = _src_size(src_local) or 0
-        # Auth: prefer the server's challenge (unauthenticated Depth-0
-        # PROPFIND, a few tries -- a flaky server answers 5xx); fall back to
-        # PREEMPTIVE Basic so a failed probe never sends us in unauthenticated.
-        # A 401 on the PUT itself is answered once more below.
-        challenge = ""
-        for _ in range(3):
-            try:
-                req = urllib.request.Request(
-                    "%s://%s%s" % (scheme, netloc, path), method="PROPFIND")
-                req.add_header("Depth", "0")
-                urllib.request.urlopen(req, timeout=min(timeout, 20),
-                                       context=ssl.create_default_context())
-                break
-            except urllib.error.HTTPError as e:
-                if e.code == 401 and e.headers:
-                    challenge = e.headers.get("WWW-Authenticate", "") or ""
+        # Auth: reuse the cached challenge (no extra round trip); otherwise
+        # probe unauthenticated (Depth-0 PROPFIND, a few tries -- a flaky server
+        # answers 5xx) and cache the result. Fall back to PREEMPTIVE Basic so a
+        # failed probe never sends us in unauthenticated. A 401 on the PUT is
+        # answered once more below (which also refreshes the cache).
+        challenge = _dav_cached_challenge(scheme, host, port)
+        if challenge is None:
+            challenge = ""
+            for _ in range(3):
+                try:
+                    req = urllib.request.Request(
+                        "%s://%s%s" % (scheme, netloc, path), method="PROPFIND")
+                    req.add_header("Depth", "0")
+                    urllib.request.urlopen(req, timeout=min(timeout, 20),
+                                           context=ssl.create_default_context())
                     break
-            except Exception:
-                pass
+                except urllib.error.HTTPError as e:
+                    if e.code == 401 and e.headers:
+                        challenge = e.headers.get("WWW-Authenticate", "") or ""
+                        break
+                except Exception:
+                    pass
+            _dav_store_challenge(scheme, host, port, challenge)
         auth = _dav_auth_header("PUT", path, username, password,
                                 challenge or "Basic")
 
@@ -843,6 +903,7 @@ def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=
                 if status in (200, 201, 204):
                     return True, ""
                 if status == 401 and attempt == 0:
+                    _dav_store_challenge(scheme, host, port, ch)
                     new_auth = _dav_auth_header("PUT", path, username,
                                                 password, ch)
                     if new_auth and new_auth != auth:
@@ -903,9 +964,14 @@ def dav_details(url, timeout=8, attempts=2):
         request_url = "%s://%s%s" % (u.scheme, netloc, path)
         username = unquote(u.username) if u.username is not None else None
         password = unquote(u.password or "")
+        port = u.port or (443 if u.scheme == "https" else 80)
+        # Reuse the cached challenge (skip the extra unauthenticated PROPFIND).
+        auth_header = ""
+        cached = _dav_cached_challenge(u.scheme, host, port)
+        if username is not None and cached:
+            auth_header = _dav_auth_header("PROPFIND", path, username, password, cached)
         body = None
         last = ""
-        auth_header = ""
         handshake = 0
         tries = max(1, attempts)
         attempt = 0
@@ -928,6 +994,7 @@ def dav_details(url, timeout=8, attempts=2):
                     handshake += 1
                     challenge = (e.headers.get("WWW-Authenticate", "")
                                  if e.headers else "") or ""
+                    _dav_store_challenge(u.scheme, host, port, challenge)
                     new_auth = _dav_auth_header("PROPFIND", path, username,
                                                 password, challenge)
                     if new_auth and new_auth != auth_header:
@@ -1116,6 +1183,17 @@ def rstrip_slash(path):
     while p.endswith("/") and not p.endswith("://"):
         p = p[:-1]
     return p
+
+
+def vfs_dir(path):
+    """A directory path for xbmcvfs.listdir, WITH a trailing slash. Some VFS
+    addons (notably vfs.sftp) build a child path by appending the name to the
+    folder STRING: without the slash "VAR" + "page.mkv" becomes "VARpage.mkv",
+    giving a wrong listing name and a failed Stat. Harmless for the others."""
+    p = path or ""
+    if not p or p.endswith("/"):
+        return p
+    return p + "/"
 
 
 def netsrc_url(scheme, server, port, path, user, passwd):

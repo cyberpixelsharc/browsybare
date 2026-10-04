@@ -10220,8 +10220,8 @@
 					<top>0</top>
 					<width>1920</width>
 					<bottom>0</bottom>
-					<texturefocus />
-					<texturenofocus />
+					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,rowmenuclose)</onclick>
 					<onback>RunScript(special://skin/scripts/main.py,rowmenuclose)</onback>
 				</control>
@@ -10486,7 +10486,9 @@
 					<left>0</left><top>0</top><width>1920</width><bottom>0</bottom>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
-					<onclick>RunScript(special://skin/scripts/main.py,netsrcclose)</onclick>
+					<!-- A stray click beside the form must not discard the entries;
+					     close only via Cancel or Back. -->
+					<onclick>noop</onclick>
 					<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
 					<ondown>792</ondown>
 				</control>
@@ -10658,7 +10660,7 @@
 						<label>$LOCALIZE[31457]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrcfield,pass)</onclick>
 						<onup>795</onup>
-						<ondown condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">797</ondown>
+						<ondown condition="String.IsEqual(Window(10000).Property(bp.netsrc.ro),1)">797</ondown>
 						<ondown>802</ondown>
 						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
 					</control>
@@ -10687,7 +10689,7 @@
 						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31537]</label>
-						<enable>!String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) + !String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)</enable>
+						<enable>!String.IsEqual(Window(10000).Property(bp.netsrc.ro),1)</enable>
 						<selected>String.IsEqual(Window(10000).Property(bp.netsrc.write),1)</selected>
 						<onclick>RunScript(special://skin/scripts/main.py,netro_toggle)</onclick>
 						<onup>796</onup>
@@ -10704,7 +10706,7 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31458]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrcadd)</onclick>
-						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">796</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.ro),1)">796</onup>
 						<onup>802</onup>
 						<onright>801</onright>
 						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>
@@ -10720,7 +10722,7 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31465]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrctest)</onclick>
-						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">796</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.ro),1)">796</onup>
 						<onup>802</onup>
 						<onleft>798</onleft>
 						<onright>797</onright>
@@ -10766,7 +10768,7 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$LOCALIZE[31344]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,netsrcclose)</onclick>
-						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftp://) | String.IsEqual(Window(10000).Property(bp.netsrc.scheme),ftps://)">796</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.netsrc.ro),1)">796</onup>
 						<onup>802</onup>
 						<onleft>801</onleft>
 						<onback>RunScript(special://skin/scripts/main.py,netsrcclose)</onback>

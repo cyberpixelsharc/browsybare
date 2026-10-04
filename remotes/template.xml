@@ -117,6 +117,12 @@
     <universalremote>
       <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
     </universalremote>
+    <mouse>
+      <!-- The settings window has no context menu; the native right-click
+           (ContextMenu) would open a dialog over it and push the network-source
+           editor into the background. Keep the right button inert here. -->
+      <rightclick>noop</rightclick>
+    </mouse>
   </window1150>
   <VideoOSD>
     <keyboard>

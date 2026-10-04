@@ -676,6 +676,15 @@ def toggle_ctx():
         # Photo viewer open: swallow Menu/right-click.
         _log("keyboard: ctx toggle ignored (photo viewer open)")
         return
+    # Modal forms own the input: opening the native context menu would dismiss
+    # them (its controls close via onback), so Menu/right-click is inert here.
+    try:
+        if (win.getProperty("bp.netsrc") == "open"
+                or win.getProperty("bp.pick.active") == "1"):
+            _log("keyboard: ctx toggle ignored (modal form open)")
+            return
+    except Exception:
+        pass
     if win.getProperty("bp.ctx") == "open":
         win.clearProperty("bp.ctx")
         win.clearProperty("bp.ctx.reduced")
@@ -687,11 +696,12 @@ def toggle_ctx():
 
 
 def special(tok):
-    """Function keys: shift, space, back, esc, ok, cancel.
+    """Function keys: shift, space, back, del, esc, ok, cancel.
 
     Keymap calls arrive with the keyboard closed (Kodi 21 ignores keymap
     conditions), so the default Home behavior is reconstructed here; with the
-    keyboard open, back deletes and ok selects the focused control."""
+    keyboard open, back deletes and ok selects the focused control. `del` is
+    the on-screen backspace key: it only deletes (never closes)."""
     win = _win()
     if _scan_armed():
         _log("keyboard: special %s swallowed (scan armed)" % tok)
@@ -733,6 +743,20 @@ def special(tok):
                 _log("keyboard: space transport disabled")
             else:
                 xbmc.executebuiltin("Action(pause)")
+    elif tok == "del":
+        # On-screen backspace key: delete only. An empty field must NOT close
+        # the keyboard (that is the Cancel key / hardware Back / ESC).
+        if _kb_open() and _cursor() > 0:
+            _backspace()
+    elif tok == "bsp":
+        # Hardware Backspace: with the keyboard open it only deletes (an empty
+        # field must not close it, like the on-screen delete key); otherwise it
+        # keeps its Back behaviour (browse up, close overlays, ...).
+        if _kb_open():
+            if _cursor() > 0:
+                _backspace()
+        else:
+            special("back")
     elif tok == "back":
         if _kb_open():
             if _cursor() == 0:

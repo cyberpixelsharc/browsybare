@@ -345,10 +345,13 @@ def list_network(handle, path, picker_active=False):
             # a budget (not an attempt count) caps how long we keep trying.
             deadline = time.time() + 6.0
             attempt = 0
+            # Kodi's vfs.sftp (and some others) build child paths by appending the
+            # name to the folder STRING: list the slash form (see sources.vfs_dir).
+            ls_path = sources.vfs_dir(path)
             while True:
                 attempt += 1
                 try:
-                    res = xbmcvfs.listdir(path)
+                    res = xbmcvfs.listdir(ls_path)
                 except Exception as e:
                     res = None
                     err = str(e) or "error"

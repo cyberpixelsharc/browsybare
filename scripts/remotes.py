@@ -101,6 +101,9 @@ _NATIVE_ACTION = {
 # while the on-screen keyboard is open, else toggles playback.
 _KEY_ACTION = {
     "space": "RunScript(special://skin/scripts/keyboard.py,special,space)",
+    # Hardware Backspace: delete-only while the on-screen keyboard is open
+    # (never closes it), Back behaviour otherwise -- see keyboard.special("bsp").
+    "backspace": "RunScript(special://skin/scripts/keyboard.py,special,bsp)",
 }
 
 
