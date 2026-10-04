@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Navigation + breadcrumb state for Browsybare (Home window). set_current() is the single writer of bp.path/bp.src/bp.title/bp.crumb*; bp.path/bp.src are stored PERCENT-ENCODED (window properties mangle surrogateescape names, so every reader decodes via common.path_dec)."""
 import os
+import re
 import time
 
 import xbmc
@@ -59,10 +60,33 @@ def resolve_real(path):
     return path
 
 
+def _norm_sep(path):
+    """Forward-slash (and, on Windows, lower-case) form for prefix compares."""
+    p = (path or "").replace("\\", "/")
+    return p.lower() if os.name == "nt" else p
+
+
+def _under(path, root):
+    """True when `path` is `root` itself or inside it (any slash direction;
+    case-insensitive on Windows)."""
+    p = _norm_sep(path).rstrip("/")
+    r = _norm_sep(root).rstrip("/")
+    return bool(r) and (p == r or p.startswith(r + "/"))
+
+
 def drive_root_of(path):
-    """Physical drive root (macOS: /Volumes/<name>; else home)."""
-    if path.startswith("/Volumes/"):
-        return "/Volumes/" + path.split("/Volumes/")[1].split("/")[0]
+    """Physical drive root: macOS /Volumes/<name>, Windows X:\\ (or a UNC share),
+    else home."""
+    p = (path or "").replace("\\", "/")
+    if p.startswith("/Volumes/"):
+        return "/Volumes/" + p.split("/Volumes/")[1].split("/")[0]
+    if os.name == "nt":
+        m = re.match(r"^([A-Za-z]:)", path or "")
+        if m:
+            return m.group(1) + "\\"
+        m = re.match(r"^\\\\([^\\/]+[\\/][^\\/]+)", path or "")
+        if m:
+            return "\\\\" + m.group(1).replace("/", "\\")
     return os.path.expanduser("~")
 
 
@@ -72,8 +96,8 @@ def dirsource_root_of(path):
         import dirsources as _ds
         best = ""
         for p in _ds.load():
-            pp = (p or "").strip().rstrip("/")
-            if pp and (path == pp or path.startswith(pp + "/")) and len(pp) > len(best):
+            pp = (p or "").strip().rstrip("/\\")
+            if pp and _under(path, pp) and len(pp) > len(best):
                 best = pp
         return best
     except Exception:
@@ -85,19 +109,38 @@ def current_source_root(path):
     path = sources.rstrip_slash(path or "")
     win = xbmcgui.Window(10000)
     src = sources.rstrip_slash(path_dec(win.getProperty("bp.src") or ""))
-    if src and (path == src or path.startswith(src + "/")):
+    if src and _under(path, src):
         return src
-    if path.startswith("/Volumes/"):
-        return drive_root_of(path)
-    return dirsource_root_of(path) or os.path.expanduser("~")
+    home = os.path.expanduser("~")
+    dr = drive_root_of(path)
+    # A local drive keeps its root on every subfolder (macOS /Volumes/<name>,
+    # Windows X:\); elsewhere the physical root is home and is resolved below.
+    if dr and dr != home and _under(path, dr):
+        return dr
+    return dirsource_root_of(path) or home
 
 
 def crumb_parts(path):
-    """Individual folder segments below the source root (list)."""
+    """Individual folder segments below the source root (list). Slash-direction
+    and (on Windows) case agnostic, so local `X:\\` paths work like network URLs."""
     root = current_source_root(path)
-    if path == root or not path.startswith(root + "/"):
+    if not root or not _under(path, root):
         return []
-    return [p for p in path[len(root) + 1:].split("/") if p]
+    p = (path or "").replace("\\", "/")
+    r = (root or "").replace("\\", "/").rstrip("/")
+    if p.rstrip("/") == r:
+        return []
+    return [seg for seg in p[len(r):].split("/") if seg]
+
+
+def _join_under(root, parts):
+    """Join `parts` onto `root` using the root's own separator (Windows `\\`,
+    otherwise `/`); never mixes separators."""
+    sep = "\\" if ("\\" in root and "/" not in root) else "/"
+    out = root.rstrip("/\\")
+    for seg in parts:
+        out = out + sep + seg
+    return out
 
 
 def crumb_display_parts(parts, title, max_chars=74):
@@ -293,7 +336,7 @@ def goto(level):
         target_level = 1
     else:
         target_level = n - (len(real) - level)
-    target = root_p + "/" + "/".join(parts[:target_level])
+    target = _join_under(root_p, parts[:target_level])
     if target == p:
         return
     reset_top()

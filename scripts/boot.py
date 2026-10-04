@@ -258,6 +258,45 @@ def _lock_path():
         return ""
 
 
+def _pid_alive(pid):
+    """Best-effort liveness of a boot-lock owner; True when unsure. A DEAD owner
+    must be stealable at once (a boot killed during a zip install would
+    otherwise block the post-install boot for LOCK_STALE)."""
+    if pid <= 0:
+        return False
+    if os.name == "nt":
+        # os.kill(pid, 0) is unusable on Windows: it raises OSError for a
+        # missing pid AND would TerminateProcess a live one (POSIX signal 0
+        # does not exist there). Query the exit code instead.
+        try:
+            import ctypes
+            from ctypes import wintypes
+            PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+            STILL_ACTIVE = 259
+            k = ctypes.windll.kernel32
+            h = k.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+            if not h:
+                return False
+            try:
+                code = wintypes.DWORD()
+                if k.GetExitCodeProcess(h, ctypes.byref(code)):
+                    return code.value == STILL_ACTIVE
+                return True
+            finally:
+                k.CloseHandle(h)
+        except Exception:
+            return True
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except Exception:
+        return True
+
+
 def acquire_boot_lock():
     """Single-instance guard for the whole boot (sync copy + reload): two
     concurrent boots re-copy the base and stack ReloadSkin calls, leaving Home half-loaded (black screen). The latecomer exits; a stale lock is stolen."""
@@ -286,14 +325,9 @@ def acquire_boot_lock():
                     owner = int((f.read().strip() or "0"))
             except Exception:
                 owner = 0
-            if owner > 0:
-                try:
-                    os.kill(owner, 0)
-                except ProcessLookupError:
-                    log("boot: lock owner %d is gone, stealing" % owner)
-                    age = LOCK_STALE + 1.0
-                except Exception:
-                    pass
+            if owner > 0 and not _pid_alive(owner):
+                log("boot: lock owner %d is gone, stealing" % owner)
+                age = LOCK_STALE + 1.0
             if age <= LOCK_STALE:
                 return False
             # Steal ATOMICALLY via rename: only one of two racing boots wins
