@@ -643,6 +643,24 @@ def reload_when_ready(force=False):
             focus_default()
 
 
+def _maybe_update_autocheck():
+    """Opt-in (setting update.autocheck): hand ONE automatic update check to a
+    separate script, so the network wait never blocks the boot. Guarded per
+    session by a window property (survives skin reloads, cleared on exit)."""
+    try:
+        if not xbmc.getCondVisibility("Skin.HasSetting(update.autocheck)"):
+            return
+        win = xbmcgui.Window(10000)
+        if win.getProperty("bp.update.autocheck.done"):
+            return
+        win.setProperty("bp.update.autocheck.done", "1")
+        xbmc.executebuiltin(
+            "RunScript(special://skin/scripts/main.py,updateautocheck)")
+        log("boot: update autocheck scheduled")
+    except Exception as e:
+        log("boot: autocheck failed: %s" % e)
+
+
 def run():
     if not acquire_boot_lock():
         log("boot: another boot in progress, exit")
@@ -703,6 +721,7 @@ def run():
             # so the version/install watch runs here (copy path: post-reload boot).
             check_version_warning()
             check_install_errors()
+        _maybe_update_autocheck()
     finally:
         release_boot_lock()
 
@@ -722,6 +741,7 @@ def ready_only():
     # Home's boot is often blocked by the still-held boot.lock).
     check_version_warning()
     check_install_errors()
+    _maybe_update_autocheck()
 
 
 if __name__ == "__main__":

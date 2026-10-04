@@ -2527,9 +2527,42 @@ def _dev_update():
     return None
 
 
+def _github_latest():
+    """Newest release (version, zip URL) from the GitHub API, or (None, None)."""
+    try:
+        import urllib.request
+        req = urllib.request.Request(
+            "https://api.github.com/repos/cyberpixelsharc/browsybare/releases/latest",
+            headers={"User-Agent": "Browsybare"})
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        log("update check failed: %s" % e)
+        return None, None
+    latest = (data.get("tag_name") or "").lstrip("vV").strip()
+    url = ""
+    for a in (data.get("assets") or []):
+        u = a.get("browser_download_url") or ""
+        if u.lower().endswith(".zip"):
+            url = u
+            break
+    if latest and not url:
+        url = ("https://github.com/cyberpixelsharc/browsybare/releases/"
+               "download/v%s/browsybare-%s.zip" % (latest, latest))
+    return latest, url
+
+
+def _set_avail(win, latest, url):
+    """Stage an available update: button label + state for the install flow."""
+    win.setProperty("bp.update.state", "avail")
+    win.setProperty("bp.update.ver", latest)
+    win.setProperty("bp.update.url", url)
+    _update_text(win, 31531, latest)  # "New version %s available", until clicked
+
+
 def update_check():
     """Ask GitHub for the newest release tag. If it is newer, turn the button
-    into an Download+Install action; otherwise show a 3 s info. Nothing is
+    into a Download+Install action; otherwise show a 3 s info. Nothing is
     installed automatically. A dev-update.json overrides the GitHub lookup."""
     win = xbmcgui.Window(10000)
     for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
@@ -2544,42 +2577,58 @@ def update_check():
         latest, url = dev
         log("update: dev override -> %s" % latest)
         _search_hold(t0)
-        win.setProperty("bp.update.state", "avail")
-        win.setProperty("bp.update.ver", latest)
-        win.setProperty("bp.update.url", url)
-        _update_text(win, 31531, latest)
+        _set_avail(win, latest, url)
         return
-    else:
-        try:
-            import urllib.request
-            req = urllib.request.Request(
-                "https://api.github.com/repos/cyberpixelsharc/browsybare/releases/latest",
-                headers={"User-Agent": "Browsybare"})
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-            latest = (data.get("tag_name") or "").lstrip("vV").strip()
-        except Exception as e:
-            log("update check failed: %s" % e)
-            _search_hold(t0)
-            _update_result(win, 31526)
-            return
-        url = ""
-        for a in (data.get("assets") or []):
-            u = a.get("browser_download_url") or ""
-            if u.lower().endswith(".zip"):
-                url = u
-                break
-        if latest and not url:
-            url = ("https://github.com/cyberpixelsharc/browsybare/releases/"
-                   "download/v%s/browsybare-%s.zip" % (latest, latest))
+    latest, url = _github_latest()
+    if latest is None:
+        _search_hold(t0)
+        _update_result(win, 31526)
+        return
     _search_hold(t0)
     if latest and _version_tuple(latest) > _version_tuple(current):
-        win.setProperty("bp.update.state", "avail")
-        win.setProperty("bp.update.ver", latest)
-        win.setProperty("bp.update.url", url)
-        _update_text(win, 31531, latest)  # "Download %s", stays until clicked
+        _set_avail(win, latest, url)
     else:
         _update_result(win, 31524)
+
+
+def update_autocheck():
+    """Opt-in automatic update check (setting update.autocheck), one per session,
+    run from its own script (boot triggers it) so the network wait never blocks
+    the UI. Silent unless a newer release exists, then it opens the same install
+    confirmation as the manual check. Declining is not repeated until the next
+    session (the boot trigger is one-shot)."""
+    mon = xbmc.Monitor()
+    if mon.waitForAbort(10):  # let the skin settle after boot
+        return
+    try:
+        if not xbmc.getCondVisibility("Skin.HasSetting(update.autocheck)"):
+            return
+    except Exception:
+        return
+    if mon.abortRequested():
+        return
+    win = xbmcgui.Window(10000)
+    # Never stack onto a found-but-unactioned update, an open modal or a player.
+    if win.getProperty("bp.update.state") == "avail":
+        return
+    if not xbmc.getCondVisibility("Window.IsActive(10000)"):
+        return
+    if xbmc.getCondVisibility("Player.HasVideo | Player.HasAudio"):
+        return
+    for p in ("bp.confirm", "bp.notice", "bp.info", "bp.keys", "bp.resume",
+              "bp.del", "bp.rowmenu", "bp.srcq", "bp.settings"):
+        if win.getProperty(p):
+            return
+    dev = _dev_update()
+    latest, url = dev if dev else _github_latest()
+    if not latest:
+        return
+    if _version_tuple(latest) <= _version_tuple(win.getProperty("bp.version") or ""):
+        log("update autocheck: up to date (%s)" % latest)
+        return
+    log("update autocheck: offering %s" % latest)
+    _set_avail(win, latest, url)
+    update_confirm()
 
 
 def updatebutton():
@@ -2765,7 +2814,7 @@ def update_install():
     win = xbmcgui.Window(10000)
     url = win.getProperty("bp.update.url")
     ver = win.getProperty("bp.update.ver") or "latest"
-    _update_text(win, 31532)  # "Downloading..."
+    _update_text(win, 31532, ver)  # "Version %s is being downloaded"
     t0 = time.time()
     tmp = _temp_dir()
     zip_path = os.path.join(tmp, "browsybare-%s.zip" % ver) if tmp else ""
@@ -2776,7 +2825,7 @@ def update_install():
     if not ok:
         _update_result(win, 31534)  # "Download failed"
         return
-    _update_text(win, 31541)  # "Installing..."
+    _update_text(win, 31541, ver)  # "Version %s is being installed"
     t1 = time.time()
     good, err = _install_zip(zip_path, skin_root(), ver)
     _hold(t1, UPDATE_PHASE_HOLD)
@@ -2789,7 +2838,7 @@ def update_install():
         _update_result(win, 31543)  # "Install failed"
         return
     log("update install: %s copied into the addon folder" % ver)
-    _update_text(win, 31542, ver)  # "Installed: %s"
+    _update_text(win, 31542, ver)  # "Version %s installed"
     # New files are on disk; let Kodi re-read them. UpdateLocalAddons refreshes
     # the addons db; ReloadSkin re-reads the skin XML (the reloaded Home boot
     # then re-merges the Estuary base layer). The label shows briefly first.
@@ -3155,7 +3204,7 @@ if __name__ == "__main__":
                      "photoshow", "photomode", "photointerval",
                      "photorepeat", "photoshuffle",
                      "resetopen", "keysopen", "settings_tab", "updatecheck",
-                     "updatebutton", "updateinstall",
+                     "updatebutton", "updateinstall", "updateautocheck",
                      "resumeyes", "resumeno", "resumecancel",
                    "remdeftoggle", "rowmenuopen", "rowmenutoggle",
                    "rowmenuremove", "rowmenuclose", "rowmenuedit", "intensity", "intensity_next",
@@ -3285,6 +3334,8 @@ if __name__ == "__main__":
             updatebutton()
         elif cmd == "updateinstall":
             update_install()
+        elif cmd == "updateautocheck":
+            update_autocheck()
         elif cmd == "resumeyes":
             resumeyes()
         elif cmd == "resumeno":

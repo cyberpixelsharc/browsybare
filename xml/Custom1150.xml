@@ -18,7 +18,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1152</height>
+					<bottom>0</bottom>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>Dialog.Close(1150)</onclick>
@@ -5868,10 +5868,42 @@
 								<selected>Skin.HasSetting(dim.screen)</selected>
 								<onright>219</onright>
 								<onup>440</onup>
-								<ondown>274</ondown>
+								<ondown>451</ondown>
 							</control>
 						</control>
 																							
+						<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+							<height>68</height>
+							<control type="radiobutton" id="451">
+								<left>0</left>
+								<top>0</top>
+								<width>704</width>
+								<height>60</height>
+								<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+								<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+								<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">buttons/radio-button-on.png</textureradioonfocus>
+								<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">buttons/radio-button-on.png</textureradioonnofocus>
+								<textureradioofffocus colordiffuse="$INFO[Window(10000).Property(bp.theme.control)]">buttons/radio-button-off.png</textureradioofffocus>
+								<textureradiooffnofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.control)]">buttons/radio-button-off.png</textureradiooffnofocus>
+								<font>font13</font>
+								<textoffsetx>26</textoffsetx>
+								<textwidth>563</textwidth>
+								<radioposx>581</radioposx>
+								<radioposy>-6</radioposy>
+								<radiowidth>132</radiowidth>
+								<radioheight>76</radioheight>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+								<label>$LOCALIZE[31544]</label>
+								<onclick>Skin.ToggleSetting(update.autocheck)</onclick>
+								<selected>Skin.HasSetting(update.autocheck)</selected>
+								<onright>451</onright>
+								<onup>219</onup>
+								<ondown>274</ondown>
+							</control>
+						</control>
+						
 						<control type="group">
 						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),4)</visible>
 							<height>83</height>
@@ -10077,7 +10109,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1152</height>
+					<bottom>0</bottom>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,remscancancel)</onclick>
@@ -10187,7 +10219,7 @@
 					<left>0</left>
 					<top>0</top>
 					<width>1920</width>
-					<height>1152</height>
+					<bottom>0</bottom>
 					<texturefocus />
 					<texturenofocus />
 					<onclick>RunScript(special://skin/scripts/main.py,rowmenuclose)</onclick>
@@ -10382,7 +10414,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,-24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="940">
-					<left>0</left><top>0</top><width>1920</width><height>1152</height>
+					<left>0</left><top>0</top><width>1920</width><bottom>0</bottom>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,resetclose)</onclick>
@@ -10451,7 +10483,7 @@
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 				<animation effect="slide" start="0,24" end="0,0" time="150" tween="cubic" easing="out">Visible</animation>
 				<control type="button" id="790">
-					<left>0</left><top>0</top><width>1920</width><height>1152</height>
+					<left>0</left><top>0</top><width>1920</width><bottom>0</bottom>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
 					<onclick>RunScript(special://skin/scripts/main.py,netsrcclose)</onclick>

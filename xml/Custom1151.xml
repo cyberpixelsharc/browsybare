@@ -8,7 +8,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1152</height>
+				<bottom>0</bottom>
 				<texturefocus colordiffuse="FF000000">drawn/fill.png</texturefocus>
 				<texturenofocus colordiffuse="FF000000">drawn/fill.png</texturenofocus>
 				<onclick condition="String.IsEqual(Window(10000).Property(bp.photo.osd),1)">RunScript(special://skin/scripts/main.py,photoclose)</onclick>
@@ -21,7 +21,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1152</height>
+				<bottom>0</bottom>
 				<aspectratio>keep</aspectratio>
 				<fadetime>800</fadetime>
 				<texture>$INFO[Window(10000).Property(bp.photo.path)]</texture>
@@ -31,7 +31,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1152</height>
+				<bottom>0</bottom>
 				<aspectratio>scale</aspectratio>
 				<fadetime>800</fadetime>
 				<texture>$INFO[Window(10000).Property(bp.photo.path)]</texture>
@@ -41,7 +41,7 @@
 				<left>0</left>
 				<top>0</top>
 				<width>1920</width>
-				<height>1152</height>
+				<bottom>0</bottom>
 				<aspectratio>scale</aspectratio>
 				<fadetime>800</fadetime>
 				<texture>$INFO[Window(10000).Property(bp.photo.path)]</texture>

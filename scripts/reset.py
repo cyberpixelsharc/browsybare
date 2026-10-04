@@ -134,6 +134,7 @@ def _reset_system():
     # Dimmer default mirrors Kodi: ON where Kodi has a screensaver configured.
     from common import kodi_screensaver_mode
     _set_bool("dim.screen", bool(kodi_screensaver_mode().strip()))
+    _set_bool("update.autocheck", False)
 
 
 def _reset_audio():

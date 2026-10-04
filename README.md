@@ -103,8 +103,9 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Install as addon zip or copy the folder to `addons/<id>/`, then switch the skin to Browsybare.
 * First load syncs the Estuary base layer into the install folder when the marker is stale (Kodi/Estuary version plus content hashes). Only the base is copied, own windows, scripts, merged colors, merged languages, merged includes, fonts, power menu, and keymap stay protected or are regenerated.
 * Failures show an error dialog and an error label instead of the list. Corrupt addon data is healed by remove and recreate. Downgrade and reinstall show a one-time report modal together with any install errors.
-* Built-in update check: the About modal (hamburger menu, skin name) compares the installed version against the latest GitHub release. While it checks, the button shows a "Searching for update" state and then either the download action or "No new version available".
-* If a newer version exists, the button becomes a download-and-install action. A short confirmation then downloads the release into Kodi's own temp folder (with a writable fallback to the OS temp folder, so it works on every platform), verifies it (addon id and version) and installs it directly over the skin, then reloads -- no manual *Add-ons -> Install from zip file* and no Downloads folder, so it also works where Kodi is sandboxed (e.g. Ubuntu).
+* Built-in update check: the About modal (hamburger menu, skin name) compares the installed version against the latest GitHub release. While it checks, the button shows a "Searching for update" state, then either the available version ("New version X available") or "No new version available".
+* If a newer version exists, the button becomes a download-and-install action. A short confirmation ("Download and install the new version X?") then downloads the release into Kodi's own temp folder (with a writable fallback to the OS temp folder, so it works on every platform), verifies it (addon id and version) and installs it directly over the skin, then reloads -- no manual *Add-ons -> Install from zip file* and no Downloads folder, so it also works where Kodi is sandboxed (e.g. Ubuntu). The progress names the version ("Downloading version X" -> "Installing version X" -> "Version X installed").
+* Optional automatic check: an "Automatically check for updates" toggle in Settings (General, off by default) checks once per session in the background and opens the same install confirmation when a newer release exists. It only offers while the file manager is idle (no player, no open dialog) and is not repeated for the rest of the session if you decline.
 * The release zip is staged and the current files are backed up before any file is replaced, so a broken download can never leave a half-updated skin. The downloaded and staging files are removed afterwards. Nothing is installed without your confirmation.
 * User commands are gated during the sync. Fast quit waits for the daemons with a bounded handshake.
 
@@ -113,6 +114,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Kodi 21 ("Omega") or 22 ("Piers")
 * The **Estuary skin stays installed** -- Browsybare takes over its windows (settings, player, system dialogs) at runtime as the base layer.
 * Languages: English, German, French, Spanish (interface strings plus matching on-screen keyboard layouts). Any other Kodi language falls back to English.
+* Screen aspects: 16:9, 16:10, 5:3/15:9, 3:2 and 4:3 each have their own skin resolution, so round elements stay round and the layout fills the screen. Ultrawide (21:9/32:9) is not supported yet.
 
 ## Development
 
