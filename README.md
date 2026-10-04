@@ -103,8 +103,9 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Install as addon zip or copy the folder to `addons/<id>/`, then switch the skin to Browsybare.
 * First load syncs the Estuary base layer into the install folder when the marker is stale (Kodi/Estuary version plus content hashes). Only the base is copied, own windows, scripts, merged colors, merged languages, merged includes, fonts, power menu, and keymap stay protected or are regenerated.
 * Failures show an error dialog and an error label instead of the list. Corrupt addon data is healed by remove and recreate. Downgrade and reinstall show a one-time report modal together with any install errors.
-* Built-in update check: the About modal (hamburger menu, skin name) compares the installed version against the latest GitHub release.
-* If a newer version exists, the button becomes a download action; a short confirmation prompt then saves the release zip into your Downloads folder (with fallbacks on systems that have none) for manual installation via *Add-ons -> Install from zip file* -- nothing is installed automatically.
+* Built-in update check: the About modal (hamburger menu, skin name) compares the installed version against the latest GitHub release. While it checks, the button shows a "Searching for update" state and then either the download action or "No new version available".
+* If a newer version exists, the button becomes a download-and-install action. A short confirmation then downloads the release into Kodi's own temp folder (with a writable fallback to the OS temp folder, so it works on every platform), verifies it (addon id and version) and installs it directly over the skin, then reloads -- no manual *Add-ons -> Install from zip file* and no Downloads folder, so it also works where Kodi is sandboxed (e.g. Ubuntu).
+* The release zip is staged and the current files are backed up before any file is replaced, so a broken download can never leave a half-updated skin. The downloaded and staging files are removed afterwards. Nothing is installed without your confirmation.
 * User commands are gated during the sync. Fast quit waits for the daemons with a bounded handshake.
 
 ## Requirement

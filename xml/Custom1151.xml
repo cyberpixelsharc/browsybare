@@ -476,7 +476,7 @@
 			<animation effect="fade" start="0" end="100" time="120">Visible</animation>
 			<control type="image">
 				<left>924</left>
-				<top>504</top>
+				<top>568</top>
 				<width>72</width>
 				<height>72</height>
 				<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>

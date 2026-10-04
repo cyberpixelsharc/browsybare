@@ -14,7 +14,7 @@ import xbmcvfs
 import sources
 import resume
 
-from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label, redact, focus_control
+from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label, redact, focus_control, skin_root
 from urllib.parse import unquote_to_bytes
 from navigation import current_source_root, set_current, nav, up, root, goto, reset_top
 
@@ -2495,37 +2495,85 @@ def _version_tuple(text):
     return tuple(int(p) for p in parts[:4]) if parts else (0,)
 
 
+UPDATE_SEARCH_HOLD = 2.0  # keep "Searching for update" visible at least this long
+UPDATE_PHASE_HOLD = 1.0  # and each download/install phase label too
+
+
+def _hold(t0, secs):
+    """Keep a transient status label up for at least `secs` seconds so a fast
+    step does not make it flash by."""
+    try:
+        rest = secs - (time.time() - t0)
+        if rest > 0:
+            time.sleep(rest)
+    except Exception:
+        pass
+
+
+def _search_hold(t0):
+    _hold(t0, UPDATE_SEARCH_HOLD)
+
+
+def _dev_update():
+    """Dev-only override (state_dir/dev-update.json): {"version": "...",
+    "source": "<local zip path or URL>"}. Lets a dev point the updater at a
+    local build without a GitHub release; returns (version, source) or None."""
+    try:
+        d = read_json(state_file("dev-update.json"), None)
+        if isinstance(d, dict) and d.get("version") and d.get("source"):
+            return str(d["version"]), str(d["source"])
+    except Exception:
+        pass
+    return None
+
+
 def update_check():
     """Ask GitHub for the newest release tag. If it is newer, turn the button
-    into a Download action (into the user's Downloads folder); otherwise show a
-    3 s info. Nothing is installed automatically."""
+    into an Download+Install action; otherwise show a 3 s info. Nothing is
+    installed automatically. A dev-update.json overrides the GitHub lookup."""
     win = xbmcgui.Window(10000)
-    for p in ("bp.update.state", "bp.update.ver", "bp.update.url",
-              "bp.update.dest"):
+    for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
         win.clearProperty(p)
+    _update_text(win, 31540)  # "Searching for update", shown during the request
+    t0 = time.time()
     current = win.getProperty("bp.version") or ""
-    try:
-        import urllib.request
-        req = urllib.request.Request(
-            "https://api.github.com/repos/cyberpixelsharc/browsybare/releases/latest",
-            headers={"User-Agent": "Browsybare"})
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        latest = (data.get("tag_name") or "").lstrip("vV").strip()
-    except Exception as e:
-        log("update check failed: %s" % e)
-        _update_result(win, 31526)
+    dev = _dev_update()
+    if dev:
+        # Dev override: offer the given build directly, no version comparison
+        # (install the repo's own zip to exercise the update path safely).
+        latest, url = dev
+        log("update: dev override -> %s" % latest)
+        _search_hold(t0)
+        win.setProperty("bp.update.state", "avail")
+        win.setProperty("bp.update.ver", latest)
+        win.setProperty("bp.update.url", url)
+        _update_text(win, 31531, latest)
         return
-    if latest and _version_tuple(latest) > _version_tuple(current):
+    else:
+        try:
+            import urllib.request
+            req = urllib.request.Request(
+                "https://api.github.com/repos/cyberpixelsharc/browsybare/releases/latest",
+                headers={"User-Agent": "Browsybare"})
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            latest = (data.get("tag_name") or "").lstrip("vV").strip()
+        except Exception as e:
+            log("update check failed: %s" % e)
+            _search_hold(t0)
+            _update_result(win, 31526)
+            return
         url = ""
         for a in (data.get("assets") or []):
             u = a.get("browser_download_url") or ""
             if u.lower().endswith(".zip"):
                 url = u
                 break
-        if not url:
+        if latest and not url:
             url = ("https://github.com/cyberpixelsharc/browsybare/releases/"
                    "download/v%s/browsybare-%s.zip" % (latest, latest))
+    _search_hold(t0)
+    if latest and _version_tuple(latest) > _version_tuple(current):
         win.setProperty("bp.update.state", "avail")
         win.setProperty("bp.update.ver", latest)
         win.setProperty("bp.update.url", url)
@@ -2544,24 +2592,20 @@ def updatebutton():
 
 
 def update_confirm():
-    """Ask before downloading the newer release (own confirm modal, focus on No).
-    Yes runs `updatedownload` via the generic confirm handler."""
+    """Ask before downloading + installing the newer release (own confirm modal,
+    focus on No). Yes runs `updateinstall` via the generic confirm handler."""
     win = xbmcgui.Window(10000)
     ver = win.getProperty("bp.update.ver") or ""
-    # Resolve the destination now so the prompt names the real folder; the
-    # download reuses it (single _downloads_dir call, no folder drift).
-    dest = _downloads_dir()
-    win.setProperty("bp.update.dest", dest)
     win.clearProperty("bp.confirm.op")
     win.setProperty("bp.confirm.title", xbmc.getLocalizedString(31535))
     line = xbmc.getLocalizedString(31536)
     try:
-        line = line % (ver, dest)
+        line = line % ver
     except Exception:
-        line = "%s %s %s" % (line, ver, dest)
+        line = "%s %s" % (line, ver)
     win.setProperty("bp.confirm.line", line)
     win.setProperty("bp.confirm.cmd.1",
-                    "RunScript(special://skin/scripts/main.py,updatedownload)")
+                    "RunScript(special://skin/scripts/main.py,updateinstall)")
     win.setProperty("bp.confirm.cmds", "1")
     win.setProperty("bp.confirm.from", xbmc.getInfoLabel("System.CurrentControlId"))
     win.setProperty("bp.confirm", "open")
@@ -2574,141 +2618,191 @@ def update_confirm():
         except Exception:
             break
         time.sleep(0.05)
-    log("update: download confirm")
+    log("update: install confirm")
 
 
-def _existing_dir(path):
-    """An existing directory at `path`, else a case-variant sibling when one
-    exists. Boxes ship a lowercase `downloads` while `~` points at `Downloads`;
-    on the case-sensitive Linux FS the sibling lookup finds the real folder."""
+def _download_to(url, target):
+    """Stream `url` to `target`; True on a non-empty file. A plain local path or
+    `file://` URL (the dev override) is copied directly. Removes a partial file
+    on any error."""
+    import shutil
+    import urllib.request
     try:
-        if path and os.path.isdir(path):
-            return path
-    except Exception:
-        pass
-    try:
-        parent, _sep, name = (path or "").rpartition("/")
-        if parent and name:
-            want = name.lower()
-            for entry in os.listdir(parent):
-                if entry.lower() == want:
-                    cand = os.path.join(parent, entry)
-                    if os.path.isdir(cand):
-                        return cand
-    except Exception:
-        pass
-    return ""
+        local = url[7:] if url.startswith("file://") else url
+        if "://" not in local and os.path.isfile(local):
+            shutil.copyfile(local, target)
+            return os.path.getsize(target) > 0
+        req = urllib.request.Request(url, headers={"User-Agent": "Browsybare"})
+        with urllib.request.urlopen(req, timeout=120) as r:
+            with open(target, "wb") as f:
+                while True:
+                    chunk = r.read(65536)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+        return os.path.getsize(target) > 0
+    except Exception as e:
+        log("update download failed: %s" % e)
+        try:
+            os.remove(target)
+        except OSError:
+            pass
+        return False
 
 
-def _downloads_dir():
-    """Preferred Downloads folder (all OSes).
-
-    An EXISTING folder always wins: a box ships a lowercase `downloads` while
-    `~` resolves to `Downloads`, and creating the uppercase variant before ever
-    looking for the real folder left that folder unused -- the old
-    first-existing order fell through to temp instead."""
-    box = []
+def _temp_dir():
+    """A writable staging folder for the updater: Kodi's `special://temp` first,
+    else the OS temp dir. Probe-written, so it holds on every platform (Android
+    scoped storage, Linux/CoreELEC, macOS, Windows). "" only if none is usable."""
+    import tempfile
     try:
-        if os.path.isdir("/storage"):
-            box = [("/storage/downloads", "storage-downloads"),
-                   ("/storage/Downloads", "storage-Downloads")]
+        cands = [xbmcvfs.translatePath("special://temp"), tempfile.gettempdir()]
     except Exception:
-        pass
-    profile = None
-    try:
-        profile = (os.path.join(
-            xbmcvfs.translatePath("special://home"), "downloads"),
-            "profile-downloads")
-    except Exception:
-        pass
-    home = []
-    try:
-        h = os.path.expanduser("~")
-        if h and h != "~":
-            home = [(os.path.join(h, "Downloads"), "home-Downloads")]
-    except Exception:
-        pass
-    # Existing-folder order: Kodi's own dirs win over an invented ~/Downloads.
-    existing = box + ([profile] if profile else []) + home
-    # Creation order: a real Downloads wins over Kodi's profile dir.
-    create = box + home + ([profile] if profile else [])
-    for d, label in existing:
-        found = _existing_dir(d)
-        if found:
-            if found != d or label != "home-Downloads":
-                log("update: using %s folder" % label)
-            return found
-    for d, label in create:
+        try:
+            cands = [tempfile.gettempdir()]
+        except Exception:
+            cands = []
+    for d in cands:
         try:
             if not d:
                 continue
             os.makedirs(d, exist_ok=True)
-            if os.path.isdir(d):
-                log("update: using %s folder" % label)
-                return d
+            probe = os.path.join(d, "browsybare-probe.tmp")
+            with open(probe, "wb") as f:
+                f.write(b"1")
+            os.remove(probe)
+            return d
         except Exception:
-            pass
-    try:
-        tmp = xbmcvfs.translatePath("special://temp")
-        if tmp:
-            os.makedirs(tmp, exist_ok=True)
-            return tmp
-    except Exception:
-        pass
+            continue
     return ""
 
 
-def update_download():
-    """Download the newer release zip into the user's Downloads folder (the
-    user installs it themselves). No automatic install."""
+def _install_zip(zip_path, dest_root, ver=None):
+    """Copy a release zip (single `browsybare/` root) over `dest_root` -- this
+    running skin. Verifies the addon id/version, stages the whole zip first and
+    rolls back replaced files from a backup on a copy error, so a broken
+    download can never leave a half-updated skin. Returns (ok, error)."""
+    import shutil
+    import xml.etree.ElementTree as ET
+    import zipfile
+    tmp = _temp_dir()
+    if not tmp:
+        return False, "no writable temp folder"
+    try:
+        zf = zipfile.ZipFile(zip_path)
+    except Exception as e:
+        return False, "zip open: %s" % e
+    stage = os.path.join(tmp, "browsybare-update")
+    backup = os.path.join(tmp, "browsybare-backup")
+    try:
+        names = zf.namelist()
+        tops = {n.split("/")[0] for n in names if n and not n.startswith("/")}
+        if tops != {"browsybare"}:
+            return False, "unexpected zip layout"
+        raw = zf.read("browsybare/addon.xml").decode("utf-8", "replace")
+        el = ET.fromstring(raw)
+        if el.get("id") != "browsybare":
+            return False, "wrong addon id: %r" % el.get("id")
+        if ver and el.get("version") != ver:
+            return False, "version mismatch: %s != %s" % (el.get("version"), ver)
+        # Stage: extract the whole zip before touching the live addon.
+        shutil.rmtree(stage, ignore_errors=True)
+        os.makedirs(stage, exist_ok=True)
+        for n in names:
+            parts = [p for p in n.split("/") if p not in ("", ".")]
+            if ".." in parts:
+                return False, "unsafe zip path"
+            out = os.path.join(stage, *parts)
+            if n.endswith("/"):
+                os.makedirs(out, exist_ok=True)
+                continue
+            os.makedirs(os.path.dirname(out), exist_ok=True)
+            with zf.open(n) as src, open(out, "wb") as dst:
+                shutil.copyfileobj(src, dst)
+    except Exception as e:
+        return False, "stage: %s" % e
+    finally:
+        zf.close()
+    new_root = os.path.join(stage, "browsybare")
+    if not os.path.isfile(os.path.join(new_root, "addon.xml")):
+        return False, "no addon.xml in zip"
+    # Copy over the live addon; keep a backup of every replaced file.
+    shutil.rmtree(backup, ignore_errors=True)
+    replaced = []
+    try:
+        for dirpath, _dirs, files in os.walk(new_root):
+            for fn in files:
+                src = os.path.join(dirpath, fn)
+                rel = os.path.relpath(src, new_root)
+                dst = os.path.join(dest_root, rel)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                if os.path.exists(dst):
+                    b = os.path.join(backup, rel)
+                    os.makedirs(os.path.dirname(b), exist_ok=True)
+                    shutil.copy2(dst, b)
+                    replaced.append(rel)
+                shutil.copy2(src, dst)
+    except Exception as e:
+        for rel in replaced:
+            b = os.path.join(backup, rel)
+            if os.path.exists(b):
+                try:
+                    shutil.copy2(b, os.path.join(dest_root, rel))
+                except Exception:
+                    pass
+        return False, "copy: %s" % e
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+        shutil.rmtree(backup, ignore_errors=True)
+    return True, ""
+
+
+def update_install():
+    """Download the newer release zip into Kodi's temp folder, then copy it over
+    this addon folder and reload the skin -- the whole update runs in-skin, so it
+    works wherever Kodi can write (`special://temp`): no manual "Install from
+    zip" and no Downloads folder a sandboxed Kodi cannot see."""
     win = xbmcgui.Window(10000)
     url = win.getProperty("bp.update.url")
     ver = win.getProperty("bp.update.ver") or "latest"
     _update_text(win, 31532)  # "Downloading..."
-    dest = win.getProperty("bp.update.dest") or _downloads_dir()
-    name = "browsybare-%s.zip" % ver
-    target = ""
-    ok = False
-    if url and dest:
-        import urllib.request
-        target = os.path.join(dest, name)
-        try:
-            req = urllib.request.Request(
-                url, headers={"User-Agent": "Browsybare"})
-            with urllib.request.urlopen(req, timeout=120) as r:
-                with open(target, "wb") as f:
-                    while True:
-                        chunk = r.read(65536)
-                        if not chunk:
-                            break
-                        f.write(chunk)
-            ok = False
-            size = 0
-            try:
-                size = os.path.getsize(target)
-                ok = size > 0
-            except OSError:
-                pass
-        except Exception as e:
-            log("update download failed: %s" % e)
-            try:
-                os.remove(target)
-            except OSError:
-                pass
-    for p in ("bp.update.state", "bp.update.ver", "bp.update.url",
-              "bp.update.dest"):
+    t0 = time.time()
+    tmp = _temp_dir()
+    zip_path = os.path.join(tmp, "browsybare-%s.zip" % ver) if tmp else ""
+    ok = bool(url) and bool(tmp) and _download_to(url, zip_path)
+    _hold(t0, UPDATE_PHASE_HOLD)
+    for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
         win.clearProperty(p)
-    if ok:
-        log("update download: saved %d bytes" % size)
-        # The list container caches the plugin directory listing (the r URL
-        # param): bump r now so any later navigation is fresh, and let the home
-        # daemon refresh the CURRENT view once the About overlay closes
-        # (Container.Refresh is ignored while a focused overlay is up).
-        win.setProperty("bp.refresh", str(time.time()))
-        win.setProperty("bp.update.dl", "1")
-        _update_result(win, 31533, ver)  # "Saved: %s" (version, not the long path)
-    else:
+    if not ok:
         _update_result(win, 31534)  # "Download failed"
+        return
+    _update_text(win, 31541)  # "Installing..."
+    t1 = time.time()
+    good, err = _install_zip(zip_path, skin_root(), ver)
+    _hold(t1, UPDATE_PHASE_HOLD)
+    try:
+        os.remove(zip_path)
+    except OSError:
+        pass
+    if not good:
+        log("update install failed: %s" % (err or "?"))
+        _update_result(win, 31543)  # "Install failed"
+        return
+    log("update install: %s copied into the addon folder" % ver)
+    _update_text(win, 31542, ver)  # "Installed: %s"
+    # New files are on disk; let Kodi re-read them. UpdateLocalAddons refreshes
+    # the addons db; ReloadSkin re-reads the skin XML (the reloaded Home boot
+    # then re-merges the Estuary base layer). The label shows briefly first.
+    try:
+        xbmc.executebuiltin("UpdateLocalAddons")
+    except Exception:
+        pass
+    time.sleep(2)
+    try:
+        win.clearProperty("bp.about")
+        xbmc.executebuiltin("ReloadSkin()")
+    except Exception as e:
+        log("update install: reload failed: %s" % e)
 
 
 def _update_text(win, sid, value=None):
@@ -3061,7 +3155,7 @@ if __name__ == "__main__":
                      "photoshow", "photomode", "photointerval",
                      "photorepeat", "photoshuffle",
                      "resetopen", "keysopen", "settings_tab", "updatecheck",
-                     "updatebutton", "updatedownload",
+                     "updatebutton", "updateinstall",
                      "resumeyes", "resumeno", "resumecancel",
                    "remdeftoggle", "rowmenuopen", "rowmenutoggle",
                    "rowmenuremove", "rowmenuclose", "rowmenuedit", "intensity", "intensity_next",
@@ -3189,8 +3283,8 @@ if __name__ == "__main__":
             update_check()
         elif cmd == "updatebutton":
             updatebutton()
-        elif cmd == "updatedownload":
-            update_download()
+        elif cmd == "updateinstall":
+            update_install()
         elif cmd == "resumeyes":
             resumeyes()
         elif cmd == "resumeno":

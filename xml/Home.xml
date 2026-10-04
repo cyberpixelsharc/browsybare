@@ -33,8 +33,6 @@
 	<onload>ClearProperty(bp.update.state)</onload>
 	<onload>ClearProperty(bp.update.ver)</onload>
 	<onload>ClearProperty(bp.update.url)</onload>
-	<onload>ClearProperty(bp.update.dest)</onload>
-	<onload>ClearProperty(bp.update.dl)</onload>
 	<onload>ClearProperty(bp.info)</onload>
 	<onload>ClearProperty(bp.info.done)</onload>
 	<onload>ClearProperty(bp.photo)</onload>

@@ -1827,7 +1827,6 @@
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.state)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.ver)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.url)</onclick>
-					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.dest)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetFocus(86)</onclick>
 					<onclick condition="String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.about)</onclick>
 					<onback>ClearProperty(bp.menu)</onback>
@@ -2976,7 +2975,7 @@
 					<control type="button" id="89">
 						<left>65</left>
 						<top>633</top>
-						<width>560</width>
+						<width>470</width>
 						<height>44</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus />
@@ -2995,9 +2994,9 @@
 						<onback>SetFocus(32)</onback>
 					</control>
 					<control type="button" id="84">
-						<left>635</left>
+						<left>545</left>
 						<top>633</top>
-						<width>380</width>
+						<width>470</width>
 						<height>44</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus />
@@ -3473,7 +3472,7 @@
 					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texture>
 				</control>
 				<control type="image">
-					<left>924</left><top>404</top><width>72</width><height>72</height>
+					<left>924</left><top>568</top><width>72</width><height>72</height>
 					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
 					<texture colordiffuse="$INFO[Skin.String(accent)]">osd/arrow-clockwise.png</texture>
 				</control>
