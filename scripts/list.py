@@ -274,6 +274,29 @@ def _localized(i):
         return ""
 
 
+def _notify_net_error(path, err):
+    """Top-right notification for a failed network listing, with a per-path
+    cooldown so repeated listings do not spam."""
+    try:
+        win = xbmcgui.Window(10000)
+        now = time.time()
+        try:
+            last_t = float(win.getProperty("bp.neterr.t") or 0)
+        except ValueError:
+            last_t = 0
+        if win.getProperty("bp.neterr.path") == path and now - last_t < 30:
+            return
+        win.setProperty("bp.neterr.path", path)
+        win.setProperty("bp.neterr.t", str(now))
+        host = sources.netsrc_host(path) or path
+        xbmcgui.Dialog().notification(
+            safe_label(_localized(31467)),  # "Connection error"
+            "%s (%s)" % (safe_label(host), safe_label(err)),
+            xbmcgui.NOTIFICATION_ERROR, 10000)
+    except Exception:
+        pass
+
+
 def _dav_entries_from_details(path, details):
     """Ordered DAV children [(vfs, disp, is_dir, size, mtime)] from a
     dav_details() answer, or None when the answer is missing/partial.
@@ -390,6 +413,9 @@ def list_network(handle, path, picker_active=False):
                     err = "unreachable"
             except Exception as e:
                 err = str(e) or "error"
+
+    if err and not path.endswith("://"):
+        _notify_net_error(path, err)
 
     query = sys.argv[0] + (sys.argv[2] if len(sys.argv) > 2 else "")
     show_hidden = search.hidden_from_url(query)

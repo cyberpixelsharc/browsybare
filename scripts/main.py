@@ -2545,8 +2545,20 @@ def _dev_update():
     return None
 
 
+def _notify_update(message):
+    """Top-right Kodi notification for an updater failure, including the reason
+    (so a device without easy log access still shows what went wrong)."""
+    try:
+        xbmcgui.Dialog().notification(
+            xbmc.getLocalizedString(31535), safe_label(str(message)),
+            xbmcgui.NOTIFICATION_ERROR, 10000)
+    except Exception:
+        pass
+
+
 def _github_latest():
-    """Newest release (version, zip URL) from the GitHub API, or (None, None)."""
+    """Newest release (version, zip URL, error) from the GitHub API; version is
+    None on failure and the error carries the reason."""
     try:
         import urllib.request
         req = urllib.request.Request(
@@ -2556,7 +2568,7 @@ def _github_latest():
             data = json.loads(resp.read().decode("utf-8"))
     except Exception as e:
         log("update check failed: %s" % e)
-        return None, None
+        return None, None, "%s: %s" % (type(e).__name__, e)
     latest = (data.get("tag_name") or "").lstrip("vV").strip()
     url = ""
     for a in (data.get("assets") or []):
@@ -2567,7 +2579,7 @@ def _github_latest():
     if latest and not url:
         url = ("https://github.com/cyberpixelsharc/browsybare/releases/"
                "download/v%s/browsybare-%s.zip" % (latest, latest))
-    return latest, url
+    return latest, url, ""
 
 
 def _set_avail(win, latest, url):
@@ -2597,9 +2609,10 @@ def update_check():
         _search_hold(t0)
         _set_avail(win, latest, url)
         return
-    latest, url = _github_latest()
+    latest, url, err = _github_latest()
     if latest is None:
         _search_hold(t0)
+        _notify_update("%s: %s" % (xbmc.getLocalizedString(31526), err))
         _update_result(win, 31526)
         return
     _search_hold(t0)
@@ -2638,7 +2651,10 @@ def update_autocheck():
         if win.getProperty(p):
             return
     dev = _dev_update()
-    latest, url = dev if dev else _github_latest()
+    if dev:
+        latest, url = dev
+    else:
+        latest, url, _err = _github_latest()
     if not latest:
         return
     if _version_tuple(latest) <= _version_tuple(win.getProperty("bp.version") or ""):
@@ -2689,16 +2705,17 @@ def update_confirm():
 
 
 def _download_to(url, target):
-    """Stream `url` to `target`; True on a non-empty file. A plain local path or
-    `file://` URL (the dev override) is copied directly. Removes a partial file
-    on any error."""
+    """Stream `url` to `target`; (True, "") on a non-empty file, else
+    (False, reason). A plain local path or `file://` URL (the dev override) is
+    copied directly. Removes a partial file on any error."""
     import shutil
     import urllib.request
     try:
         local = url[7:] if url.startswith("file://") else url
         if "://" not in local and os.path.isfile(local):
             shutil.copyfile(local, target)
-            return os.path.getsize(target) > 0
+            ok = os.path.getsize(target) > 0
+            return ok, ("" if ok else "empty file")
         req = urllib.request.Request(url, headers={"User-Agent": "Browsybare"})
         with urllib.request.urlopen(req, timeout=120) as r:
             with open(target, "wb") as f:
@@ -2707,28 +2724,34 @@ def _download_to(url, target):
                     if not chunk:
                         break
                     f.write(chunk)
-        return os.path.getsize(target) > 0
+        ok = os.path.getsize(target) > 0
+        return ok, ("" if ok else "empty file")
     except Exception as e:
         log("update download failed: %s" % e)
+        reason = "%s: %s" % (type(e).__name__, e)
         try:
             os.remove(target)
         except OSError:
             pass
-        return False
+        return False, reason
 
 
 def _temp_dir():
-    """A writable staging folder for the updater: Kodi's `special://temp` first,
-    else the OS temp dir. Probe-written, so it holds on every platform (Android
-    scoped storage, Linux/CoreELEC, macOS, Windows). "" only if none is usable."""
+    """A writable staging folder for the updater, probe-written. Kodi's temp
+    first, then the OS temp dir, then Kodi's userdata/home -- a sandboxed Kodi
+    (Android/Fire TV) can refuse the first two while the skin already writes its
+    own state under userdata, so that is always usable. "" only if none work."""
     import tempfile
-    try:
-        cands = [xbmcvfs.translatePath("special://temp"), tempfile.gettempdir()]
-    except Exception:
+    cands = []
+    for sp in ("special://temp", "special://userdata", "special://home"):
         try:
-            cands = [tempfile.gettempdir()]
+            cands.append(xbmcvfs.translatePath(sp))
         except Exception:
-            cands = []
+            pass
+    try:
+        cands.append(tempfile.gettempdir())
+    except Exception:
+        pass
     for d in cands:
         try:
             if not d:
@@ -2738,9 +2761,12 @@ def _temp_dir():
             with open(probe, "wb") as f:
                 f.write(b"1")
             os.remove(probe)
+            log("update: temp dir ok")
             return d
-        except Exception:
+        except Exception as e:
+            log("update: temp candidate failed: %s" % e)
             continue
+    log("update: no writable temp dir found")
     return ""
 
 
@@ -2836,11 +2862,17 @@ def update_install():
     t0 = time.time()
     tmp = _temp_dir()
     zip_path = os.path.join(tmp, "browsybare-%s.zip" % ver) if tmp else ""
-    ok = bool(url) and bool(tmp) and _download_to(url, zip_path)
+    if not url:
+        ok, reason = False, "no download URL"
+    elif not tmp:
+        ok, reason = False, "no writable temp folder"
+    else:
+        ok, reason = _download_to(url, zip_path)
     _hold(t0, UPDATE_PHASE_HOLD)
     for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
         win.clearProperty(p)
     if not ok:
+        _notify_update("%s: %s" % (xbmc.getLocalizedString(31534), reason))
         _update_result(win, 31534)  # "Download failed"
         return
     _update_text(win, 31541, ver)  # "Version %s is being installed"
@@ -2853,6 +2885,7 @@ def update_install():
         pass
     if not good:
         log("update install failed: %s" % (err or "?"))
+        _notify_update("%s: %s" % (xbmc.getLocalizedString(31543), err or "?"))
         _update_result(win, 31543)  # "Install failed"
         return
     log("update install: %s copied into the addon folder" % ver)

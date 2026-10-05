@@ -170,11 +170,7 @@ def _vfs_rmtree(path):
     ok = True
     for f in files:
         child = base + "/" + f
-        try:
-            done = bool(xbmcvfs.delete(child))
-        except Exception:
-            done = False
-        if not done and _vfs_exists(child):
+        if not _vfs_delete_file(child) and _vfs_exists(child):
             ok = False
     for d in dirs:
         if not _vfs_rmtree(base + "/" + d):
@@ -195,14 +191,28 @@ def _vfs_exists(path):
         return True  # unknown: assume it is still there (report the failure)
 
 
+def _vfs_delete_file(path):
+    """Delete ONE network file. WebDAV uses our own HTTP DELETE (Kodi's
+    CDAVFile::Delete is unreliable on some servers, e.g. CloudMe answers 502);
+    everything else uses the VFS. Returns True on success."""
+    if path.lower().startswith(("dav://", "davs://")):
+        try:
+            ok, _reason = sources.dav_delete_file(path)
+            if ok:
+                return True
+        except Exception:
+            pass
+    try:
+        return bool(xbmcvfs.delete(path))
+    except Exception:
+        return False
+
+
 def _vfs_delete(path):
     if _is_dir(path):
         return _vfs_rmtree(path)
-    try:
-        if xbmcvfs.delete(path):
-            return True
-    except Exception:
-        pass
+    if _vfs_delete_file(path):
+        return True
     return not _vfs_exists(path)
 
 
@@ -293,14 +303,18 @@ def _leaf_failed(state, reason):
 def _verify_vfs_copy(src, dst, trusted):
     """True when a copied file is verifiably complete.
 
-    Exact matching sizes are decisive. Stats on a flaky server can flap (a 503
-    turns a size into None, or a just-written file still reports a settling
-    size), so a mismatch gets one re-stat round after a short settle wait
-    before deciding; only then fall back to accepting an accepted COPY/stream
-    result whose destination is listed."""
+    Exact matching sizes are decisive. An UNSTATABLE source (vfs.sftp has no
+    working Stat) or a flapping stats server falls back to trusting the accepted
+    result (2xx / accepted COPY) -- never a false failure. A size mismatch gets
+    one re-stat round after a short settle wait before deciding."""
     for attempt in range(2):
         src_size = _vfs_size(src)
         dst_size = _vfs_size(dst)
+        if src_size is None and trusted:
+            # The source cannot be sized (vfs.sftp has no working Stat) or the
+            # stat flapped on a flaky server: an ACCEPTED write (2xx / accepted
+            # COPY) is the best evidence we have -- do not fail on that alone.
+            return True
         if src_size is None or dst_size is None:
             return trusted and _exists(dst)
         if src_size == dst_size:
@@ -380,10 +394,13 @@ def _copy_leaf(src, dst, state):
                 on_progress=_leaf_progress(state), cancelled=_prog_cancelled)
             if reason == "cancelled":
                 raise _ProgCancelled()
-            if ok and _verify_vfs_copy(src, dst, True):
-                return _leaf_done(state)
             if ok:
-                reason = "upload unverified"
+                # Our own streaming PUT sent the full Content-Length and the
+                # server answered 2xx -- that IS the completion proof. A size /
+                # listing check afterwards only flaps on some DAV servers
+                # (CloudMe), so it must not turn an accepted upload into a
+                # failure.
+                return _leaf_done(state)
             if (not _copy_transient(reason) or time.time() >= deadline
                     or attempt >= 1):
                 break
@@ -539,9 +556,10 @@ def ctx(path):
     win.setProperty("bp.ctx.path", quote(quote(p, safe="", errors="surrogateescape"), safe=""))
     win.setProperty("bp.ctx.title", name)
     win.clearProperty("bp.ctx.reduced")
-    # Copy/cut/paste need a writable target: hide them for read-only sources
-    # (ftp/ftps). WebDAV/smb/nfs writes go through the VFS.
-    # ftp/ftps is read-only: grey those rows and focus Cancel (450).
+    # A read-only source (ftp/ftps/sftp) can still be COPIED FROM (that is a
+    # read); only cut/paste/write are unavailable. `readonly` greys
+    # rename/delete/new folder; `noclip` greys cut (paste needs a writable
+    # target anyway). Focus Cancel (450) by default.
     ro = sources.is_readonly(p)
     if ro:
         win.setProperty("bp.ctx.readonly", "1")
@@ -918,6 +936,11 @@ def _paste_vfs(src, dest, mode):
         time.sleep(0.35)
         _prog_close()
         _reload_list()
+        if _net(dest):
+            # A cloud/WebDAV server can list a just-uploaded file late; the home
+            # daemon refreshes this folder once more a moment later.
+            win.setProperty("bp.pasterefresh", str(time.time() + 4.0))
+            win.setProperty("bp.pasterefresh.path", path_enc(dest))
         time.sleep(0.2)
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:

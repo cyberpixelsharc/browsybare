@@ -417,6 +417,28 @@ def main():
                     win.clearProperty("bp.listload.ready")
         except Exception as e:
             log("home-daemon error (list loading): %s" % e)
+        # Duty: one deferred list refresh after a network paste -- cloud/WebDAV
+        # servers often list a just-uploaded file late (CloudMe 502/503), so the
+        # immediate refresh misses it; a moment later it shows without a manual
+        # re-navigation.
+        try:
+            pr = win.getProperty("bp.pasterefresh")
+            if pr:
+                try:
+                    due = float(pr)
+                except ValueError:
+                    due = 0.0
+                if time.time() >= due:
+                    win.clearProperty("bp.pasterefresh")
+                    same = (win.getProperty("bp.pasterefresh.path")
+                            == win.getProperty("bp.path"))
+                    win.clearProperty("bp.pasterefresh.path")
+                    if same and xbmc.getCondVisibility("Control.HasFocus(33)"):
+                        win.setProperty("bp.refresh", str(time.time()))
+                        xbmc.executebuiltin("Container.Refresh")
+                        log("home-daemon: deferred network paste refresh")
+        except Exception as e:
+            log("home-daemon error (paste refresh): %s" % e)
         # Fast duty: photo slideshow auto-advance once bp.photo.next passes.
         try:
             if win.getProperty("bp.photo") == "open" \

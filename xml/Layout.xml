@@ -2074,23 +2074,7 @@
 						<onback>ClearProperty(bp.ctx)</onback>
 						<onback>SetFocus(33)</onback>
 					</control>
-					<control type="group">
-						<visible>String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
-						<left>20</left>
-						<top>96</top>
-						<control type="image">
-							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texture>
-						</control>
-						<control type="label">
-							<left>0</left><top>0</top><width>340</width><height>60</height>
-							<font>font13</font><align>center</align><aligny>center</aligny>
-							<textcolor>$INFO[Window(10000).Property(bp.theme.muted)]</textcolor>
-							<label>$LOCALIZE[31394]</label>
-						</control>
-					</control>
 					<control type="button" id="454">
-						<visible>!String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)</visible>
 						<left>20</left>
 						<top>96</top>
 						<width>340</width>
@@ -2107,6 +2091,7 @@
 						<onclick>ClearProperty(bp.ctx)</onclick>
 						<onup condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">121</onup>
 						<onup>450</onup>
+						<ondown condition="String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">450</ondown>
 						<ondown>455</ondown>
 						<onback>ClearProperty(bp.ctx)</onback>
 						<onback>SetFocus(33)</onback>
@@ -2290,7 +2275,7 @@
 						<onclick>SetFocus(33)</onclick>
 						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEmpty(Window(10000).Property(bp.clip.path)) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">456</onup>
 						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1) + !String.IsEqual(Window(10000).Property(bp.ctx.noclip),1)">455</onup>
-						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">450</onup>
+						<onup condition="String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">454</onup>
 						<onup>123</onup>
 						
 						<ondown condition="!String.IsEqual(Window(10000).Property(bp.ctx.readonly),1)">121</ondown>
