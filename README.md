@@ -23,7 +23,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * File operations: rename, copy, cut, paste, delete, new folder, cancel. Clipboard with overwrite and self-move protection. Delete uses a confirm overlay. Rename and new folder use our on-screen keyboard. Percent-encoded paths are decoded at the command edge.
 * Hamburger menu: skin name (opens About with OS, Kodi version, resolution, skin version), Shortcuts, Settings, System (base layer), Quit (power menu). Each row carries a matching icon and the panel matches the drive dropdown width.
 * Power menu and shutdown timer are generated from the installed Estuary dialog, with safe confirm overlays for destructive actions.
-* Own on-screen keyboard for rename, new folder, search, blacklist, and network source fields, with normal, one-shot, and caps-lock case modes. Hardware typing only inserts while the keyboard is open.
+* Own on-screen keyboard for rename, new folder, search, blacklist, and network source fields, with normal, one-shot, and caps-lock case modes. Hardware typing only inserts while the keyboard is open; Backspace deletes, ESC cancels the keyboard, and Ctrl+V / Command+V pastes the system clipboard (desktop only).
 * Empty folders show only `..` (subfolder) or an empty list (drive root).
 
 ## Audio player
@@ -86,7 +86,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Local drives from the mount table with real labels at any depth. Network and directory sources merge in as quasi-drives. On Android the shared storage is the home source and only real removable volumes (SD/USB) appear as drives.
 * Hiding is opt-out by identity, so new sticks stay visible. Unplugged directory sources show a hint.
 * Entered sources have no `..` at their root. The folder picker turns the main list into a folder-only picker with a bottom bar.
-* Network sources: ftp, ftps, sftp (read-only), smb, nfs, WebDAV/davs. (SFTP needs Kodi's separate `vfs.sftp` addon.) Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default; greyed for the read-only schemes), OK, Test, Cancel. Live connection test with state icons. Browser parity plus VFS rename, delete, and new folder (greyed out on read-only sources). Copy, cut, and paste work on writable sources (a server-side move/copy is used when possible) and between local drives and network sources. WebDAV listings retry transient server errors, cache the server's auth challenge (so listings, copies and uploads skip an extra request), support Digest authentication, and keep file names with special characters intact.
+* Network sources: ftp, ftps, sftp (read-only), smb, nfs, WebDAV/davs. (SFTP needs Kodi's separate `vfs.sftp` addon; when it is missing or disabled the source names it instead of a generic error.) Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default; greyed for the read-only schemes), OK, Test, Cancel. Live connection test with state icons. Browser parity plus VFS rename, delete, and new folder (greyed out on read-only sources). Copy, cut, and paste work on writable sources (a server-side move/copy is used when possible) and between local drives and network sources. WebDAV listings retry transient server errors, cache the server's auth challenge (so listings, copies and uploads skip an extra request), support Digest authentication, and keep file names with special characters intact.
 * Blocklist: read-only seed (Windows system plus macOS dotfiles) plus user list minus off-list, sorted. Inline rows with per-row toggle, add via keyboard, remove via X or row menu, optional match-case. Enforced in listing and folder-size scan.
 
 ## Remote, keyboard, shortcut map
@@ -94,7 +94,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * 19 functions: home, menu, settings, back, arrow keys, OK, play/pause (P and Space), stop, rewind, forward, previous, next, volume up/down, mute, power.
 * Keymap generated from a template on every Home load, write-on-change only. OBC codes go to universalremote, the rest to keyboard. Per-window sections for Home, VideoOSD, fullscreen video, shutdown menu, settings, and the photo viewer.
 * Spare and app buttons are locked to noop by default and can be toggled per row with raw code labels. Adding a key moves it exclusively to one function.
-* Space keeps its own dispatcher token so typing stays safe. The on-screen keyboard guard keeps shortcuts out of text input.
+* Space, Backspace, ESC and paste keep their own dispatcher tokens so typing stays safe. The on-screen keyboard guard keeps shortcuts out of text input.
 * Remote tab: per-function headers, read-only defaults, up to 3 user rows with on/off radios, scanner overlay with live code pill, row menu for toggle and remove.
 * Shortcut map in the hamburger menu mirrors the INFO modal (same panel, rows, focus pill, separators, wrap-around, slide-from-bottom). Platform-aware context key (Ctrl+Enter on macOS, Shift+F10 elsewhere).
 

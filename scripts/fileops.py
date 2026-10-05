@@ -80,6 +80,18 @@ def _is_dav(path):
         return False
 
 
+def _net_rescan(folder):
+    """Ask the foldersize daemon to drop its cooldown for a just-changed network
+    folder, so a new/changed entry's size+date are fetched right away instead of
+    waiting out NET_RESCAN_SECS (the daemon only scans the current folder)."""
+    try:
+        win = xbmcgui.Window(10000)
+        win.setProperty("bp.netscan.path", path_enc(folder.rstrip("/")))
+        win.setProperty("bp.netscan.t", str(time.time()))
+    except Exception:
+        pass
+
+
 def _vfs_list(path):
     """xbmcvfs.listdir with retries: a DAV server (CloudMe) answers a listing
     with a transient 502. For a path KNOWN to be a folder it returns
@@ -533,6 +545,8 @@ def rename(path=None):
             os.rename(p, new_path)
         log("rename: %s -> %s" % (redact(p), redact(new_path)))
         _reload_list()
+        if net:
+            _net_rescan(os.path.dirname(p.rstrip("/")))
     except Exception as e:
         log("rename failed: %s" % e)
         xbmcgui.Dialog().notification(skin_name(), safe_label(L(31336) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -623,6 +637,7 @@ def mkdircreate():
                 raise OSError("VFS mkdir failed")
             log("mkdir: %s" % redact(new_path))
             _reload_list()
+            _net_rescan(cur_raw)
         except Exception as e:
             log("mkdir failed: %s" % e)
             xbmcgui.Dialog().notification(skin_name(), safe_label(L(31338) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -703,6 +718,8 @@ def delconfirm():
             os.remove(p)
         log("delete: %s" % redact(p))
         _reload_list()
+        if _net(p):
+            _net_rescan(os.path.dirname(p.rstrip("/")))
     except Exception as e:
         log("delete failed: %s" % e)
         xbmcgui.Dialog().notification(skin_name(), safe_label(L(31337) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -941,6 +958,9 @@ def _paste_vfs(src, dest, mode):
             # daemon refreshes this folder once more a moment later.
             win.setProperty("bp.pasterefresh", str(time.time() + 4.0))
             win.setProperty("bp.pasterefresh.path", path_enc(dest))
+            # The folder may still be on its size/date cooldown; let the new
+            # file get its size+date now instead of after NET_RESCAN_SECS.
+            _net_rescan(dest)
         time.sleep(0.2)
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:

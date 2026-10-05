@@ -868,3 +868,7 @@ msgstr "Error de instalación"
 msgid "Automatically check for updates"
 msgctxt "#31544"
 msgstr "Actualizaciones automáticas"
+
+msgid "The required add-on is not installed or disabled"
+msgctxt "#31545"
+msgstr "El complemento requerido no está instalado o está desactivado"

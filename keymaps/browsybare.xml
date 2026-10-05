@@ -171,6 +171,11 @@
       <key id="61481">RunScript(special://skin/scripts/keyboard.py,hardware,rparen)</key>
       <plus>RunScript(special://skin/scripts/keyboard.py,hardware,plus)</plus>
       <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <!-- Paste the system clipboard into the open on-screen keyboard: Ctrl+V
+           on Windows/Linux, Command+V on macOS (Command -> META, mod "cmd").
+           The dispatcher swallows it while the keyboard is closed. -->
+      <v mod="ctrl">RunScript(special://skin/scripts/keyboard.py,special,paste)</v>
+      <v mod="cmd">RunScript(special://skin/scripts/keyboard.py,special,paste)</v>
       <enter mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</enter>
       <return mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</return>
       <!-- Shift+F10: the Windows/Linux keyboard context-menu standard -->
@@ -178,7 +183,7 @@
       <!--/GEN:typing-->
       <!--GEN:home_keyboard-->
       <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
-      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,esc)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
       <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
@@ -427,6 +432,11 @@
       <key id="61481">RunScript(special://skin/scripts/keyboard.py,hardware,rparen)</key>
       <plus>RunScript(special://skin/scripts/keyboard.py,hardware,plus)</plus>
       <space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>
+      <!-- Paste the system clipboard into the open on-screen keyboard: Ctrl+V
+           on Windows/Linux, Command+V on macOS (Command -> META, mod "cmd").
+           The dispatcher swallows it while the keyboard is closed. -->
+      <v mod="ctrl">RunScript(special://skin/scripts/keyboard.py,special,paste)</v>
+      <v mod="cmd">RunScript(special://skin/scripts/keyboard.py,special,paste)</v>
       <enter mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</enter>
       <return mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</return>
       <!-- Shift+F10: the Windows/Linux keyboard context-menu standard -->
@@ -434,6 +444,14 @@
       <!--/GEN:typing-->
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
       <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
+      <!-- Hardware Backspace/ESC: this window has no navigation gene, so
+           without these Kodi's global <backspace>Back</backspace> /
+           <escape>Back</escape> close the source editor AND the settings
+           dialog. Route them through the dispatcher like Home: Backspace
+           deletes while the keyboard is open, ESC cancels it, and both fall
+           back to the Back behaviour otherwise. -->
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,esc)</escape>
     </keyboard>
     <universalremote>
       <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>
@@ -496,7 +514,7 @@
       <enter mod="ctrl">noop</enter>
       <!--GEN:osd_keyboard-->
       <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
-      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,esc)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
       <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
@@ -657,7 +675,7 @@
       <enter mod="ctrl">noop</enter>
       <!--GEN:fullscreen_keyboard-->
       <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
-      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,esc)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
       <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
@@ -788,7 +806,7 @@
     <keyboard>
       <!--GEN:photo_keyboard-->
       <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
-      <escape>RunScript(special://skin/scripts/keyboard.py,special,back)</escape>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,esc)</escape>
       <browser_back>RunScript(special://skin/scripts/keyboard.py,special,back)</browser_back>
       <enter>Select</enter>
       <return>Select</return>

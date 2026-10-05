@@ -444,6 +444,48 @@ def _backspace():
             _set(t[:c - 1] + t[c:], c - 1)
 
 
+def _clipboard_text():
+    """System clipboard text. Kodi's Python API has no clipboard access, so this
+    shells out to the platform tool; Android/TV has no system clipboard, so the
+    calls fail and "" is returned (the paste key is then a no-op)."""
+    import platform
+    import subprocess
+    system = platform.system()
+    if system == "Darwin":
+        cmds = [["/usr/bin/pbpaste"], ["pbpaste"]]
+    elif system == "Windows":
+        cmds = [["powershell", "-NoProfile", "-Command", "Get-Clipboard"]]
+    else:
+        cmds = [["wl-paste", "-n"], ["xclip", "-selection", "clipboard", "-o"],
+                ["xsel", "-b"]]
+    for cmd in cmds:
+        try:
+            res = subprocess.run(cmd, capture_output=True, timeout=2)
+        except Exception:
+            continue
+        if res.returncode == 0:
+            return res.stdout.decode("utf-8", "replace")
+    return ""
+
+
+def _paste_clipboard():
+    """Insert the system clipboard into the field: the keyboard is single-line,
+    so line breaks/tabs fold to a space and other control characters are
+    dropped."""
+    raw = _clipboard_text()[:50]
+    out = []
+    for ch in raw:
+        if ch in "\r\n\t":
+            out.append(" ")
+        elif ch >= " ":
+            out.append(ch)
+    text = "".join(out).strip()
+    if text:
+        _insert(text)
+    else:
+        _log("keyboard: paste (clipboard empty)")
+
+
 def _move(delta):
     with _edit_lock():
         _set(_text(), _cursor() + delta)
@@ -743,6 +785,10 @@ def special(tok):
                 _log("keyboard: space transport disabled")
             else:
                 xbmc.executebuiltin("Action(pause)")
+    elif tok == "paste":
+        # Paste key: insert the system clipboard into the field.
+        if _kb_open():
+            _paste_clipboard()
     elif tok == "del":
         # On-screen backspace key: delete only. An empty field must NOT close
         # the keyboard (that is the Cancel key / hardware Back / ESC).
@@ -755,6 +801,14 @@ def special(tok):
         if _kb_open():
             if _cursor() > 0:
                 _backspace()
+        else:
+            special("back")
+    elif tok == "esc":
+        # Hardware ESC: cancel the on-screen keyboard. Unlike Back it must NOT
+        # delete (Backspace is the delete key) and must never fall through to
+        # the core, which would close the dialog below the keyboard.
+        if _kb_open():
+            close()
         else:
             special("back")
     elif tok == "back":

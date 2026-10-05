@@ -1168,6 +1168,8 @@ def net_parent(path):
     return "%s://%s/%s" % (head, host, sub.rsplit("/", 1)[0])
 
 NETSRC_ROWS = 10
+# Editor fields that make up a network source; the browsable URL is derived.
+NETSRC_FIELD_KEYS = ("scheme", "server", "port", "path", "user", "pass")
 
 
 def _netsrc_path():
@@ -1175,24 +1177,21 @@ def _netsrc_path():
 
 
 def netsrc_load():
-    """Stored network sources ([{label, path, writeaccess, fields?}], order
-    preserved) or []. The browsable `path` is derived live from `fields` when
-    present; a legacy entry without fields keeps its stored path."""
+    """Stored network sources ([{label, path, writeaccess, fields}], order
+    preserved) or []. Only the editor `fields` are persisted; the browsable
+    `path` is derived from them on every load."""
     data = _read_json(_netsrc_path(), [])
     if not isinstance(data, list):
         return []
     out = []
     for s in data:
-        if isinstance(s, dict) and s.get("label"):
-            f = s.get("fields") if isinstance(s.get("fields"), dict) else None
-            e = {"label": str(s["label"]),
-                 "path": netsrc_path_from_fields(f) if f else str(s.get("path") or ""),
-                 "writeaccess": _netsrc_writeaccess(s)}
-            if f:
-                e["fields"] = {k: str(v or "") for k, v in f.items()
-                               if k in ("scheme", "server", "port",
-                                        "path", "user", "pass")}
-            out.append(e)
+        if not (isinstance(s, dict) and s.get("label")):
+            continue
+        f = _netsrc_fields(s.get("fields")) or {k: "" for k in NETSRC_FIELD_KEYS}
+        out.append({"label": str(s["label"]),
+                    "path": netsrc_path_from_fields(f),
+                    "writeaccess": _netsrc_writeaccess(s),
+                    "fields": f})
     return out
 
 
@@ -1251,19 +1250,17 @@ def rstrip_slash(path):
 
 
 def vfs_dir(path):
-    """A directory path for xbmcvfs.listdir. Some VFS addons (notably vfs.sftp)
-    build a child path by appending the name to the folder STRING: without the
-    slash "VAR" + "page.mkv" becomes "VARpage.mkv" (wrong listing name and a
-    failed Stat), so those get a trailing slash. WebDAV is left un-slashed: its
-    listing self-reference (used to detect a partial 502 answer) depends on the
-    exact URL form, and an added slash made the listing come back empty."""
+    """A directory path for xbmcvfs.listdir.
+
+    Only vfs.sftp needs a trailing slash: it builds a child path by appending
+    the name to the folder STRING, so without it "VAR" + "page.mkv" becomes
+    "VARpage.mkv" (wrong name + a failed Stat). Kodi's other VFS backends
+    (smb/nfs/ftp/dav) break or behave differently with the added slash, so they
+    get the path unchanged (the pre-existing known-good form)."""
     p = path or ""
     if not p or p.endswith("/"):
         return p
-    low = p.lower()
-    if low.startswith(("dav://", "davs://")):
-        return p
-    return p + "/"
+    return p + "/" if p.lower().startswith("sftp://") else p
 
 
 def netsrc_url(scheme, server, port, path, user, passwd):
@@ -1312,62 +1309,102 @@ def _netsrc_writeaccess(s):
     return False
 
 
-def _netsrc_entry(label, path, fields, writeaccess=False):
-    """Entry dict. The editor `fields` are the source of truth; the browsable
-    `path` is derived from them on load and stored only for legacy/path-only
-    entries. `writeaccess` defaults to False (read-only)."""
-    entry = {"label": label, "writeaccess": bool(writeaccess)}
-    if fields:
-        clean = {k: (v or "") for k, v in fields.items()
-                 if k in ("scheme", "server", "port", "path", "user", "pass")}
-        if clean:
-            entry["fields"] = clean
-    if "fields" not in entry and path:
-        entry["path"] = path
-    return entry
+def _netsrc_fields(f):
+    """Normalised editor fields (all six keys, str) or None when there are none."""
+    if not isinstance(f, dict) or not any(f.get(k) for k in NETSRC_FIELD_KEYS):
+        return None
+    return {k: str(f.get(k) or "") for k in NETSRC_FIELD_KEYS}
 
 
-def netsrc_add(label, path, fields=None, writeaccess=False):
-    """Append a network source. Label required; path optional (validated when
-    present). Duplicate non-empty paths rejected. Visible by default.
-    Read-only by default (writes must be enabled)."""
-    path = rstrip_slash((path or "").strip())
+def netsrc_parse_url(url):
+    """Editor fields from a network URL (legacy path-only entries). user/pass are
+    percent-DECODED, matching netsrc_url's encoding, so they round-trip."""
+    p = url or ""
+    scheme = "ftp"
+    if "://" in p:
+        scheme, p = p.split("://", 1)
+    scheme = (scheme or "ftp").lower()
+    creds = ""
+    if "@" in p:
+        creds, p = p.rsplit("@", 1)
+    user = passwd = ""
+    if creds:
+        if ":" in creds:
+            user, passwd = creds.split(":", 1)
+        else:
+            user = creds
+    hostport, _, sub = p.partition("/")
+    port = ""
+    if ":" in hostport:
+        hostport, port = hostport.rsplit(":", 1)
+    return {"scheme": scheme, "server": hostport, "port": port, "path": sub,
+            "user": url_unquote(user), "pass": url_unquote(passwd)}
+
+
+def _netsrc_write(entries):
+    """Persist the clean form: ONLY {label, writeaccess, fields}. The browsable
+    `path` is never stored; it is derived from the fields on load. Never raises
+    (a read-only install must not break the sources list)."""
+    clean = []
+    for e in entries:
+        f = _netsrc_fields(e.get("fields")) or {k: "" for k in NETSRC_FIELD_KEYS}
+        clean.append({"label": str(e.get("label") or ""),
+                      "writeaccess": _netsrc_writeaccess(e),
+                      "fields": f})
+    try:
+        _write_json(_netsrc_path(), clean)
+    except Exception:
+        pass
+
+
+def netsrc_add(label, path=None, fields=None, writeaccess=False):
+    """Append a network source. Label required. `fields` (editor values) are the
+    source of truth; a bare `path` is parsed into fields. The assembled path is
+    validated when non-empty; duplicate non-empty paths rejected. Read-only by
+    default (writes must be enabled)."""
     label = (label or "").strip()
     if not label:
         return False
-    if path and not netsrc_valid(path):
-        return False
+    f = _netsrc_fields(fields)
+    if f is None:
+        p = rstrip_slash((path or "").strip())
+        if p and not netsrc_valid(p):
+            return False
+        f = netsrc_parse_url(p)
+    derived = netsrc_path_from_fields(f)
     cur = netsrc_load()
-    if path and any((e.get("path") or "").lower() == path.lower() for e in cur):
+    if derived and any((e.get("path") or "").lower() == derived.lower() for e in cur):
         return False
-    cur.append(_netsrc_entry(label, path, fields, writeaccess))
-    from common import write_json as _write_json
-    _write_json(_netsrc_path(), cur)
+    cur.append({"label": label, "writeaccess": bool(writeaccess), "fields": f})
+    _netsrc_write(cur)
     return True
 
 
-def netsrc_replace(idx, label, path, fields=None, writeaccess=False):
+def netsrc_replace(idx, label, path=None, fields=None, writeaccess=False):
     """Replace the 1-based entry. Same rules as netsrc_add (this entry excluded
     from the duplicate check)."""
     try:
         idx = int(idx)
     except (TypeError, ValueError):
         return False
-    path = rstrip_slash((path or "").strip())
     label = (label or "").strip()
     if not label:
         return False
-    if path and not netsrc_valid(path):
-        return False
+    f = _netsrc_fields(fields)
+    if f is None:
+        p = rstrip_slash((path or "").strip())
+        if p and not netsrc_valid(p):
+            return False
+        f = netsrc_parse_url(p)
+    derived = netsrc_path_from_fields(f)
     cur = netsrc_load()
     if not (1 <= idx <= len(cur)):
         return False
-    if path and any((e.get("path") or "").lower() == path.lower()
-                    for j, e in enumerate(cur) if j != idx - 1):
+    if derived and any((e.get("path") or "").lower() == derived.lower()
+                       for j, e in enumerate(cur) if j != idx - 1):
         return False
-    cur[idx - 1] = _netsrc_entry(label, path, fields, writeaccess)
-    from common import write_json as _write_json
-    _write_json(_netsrc_path(), cur)
+    cur[idx - 1] = {"label": label, "writeaccess": bool(writeaccess), "fields": f}
+    _netsrc_write(cur)
     return True
 
 
@@ -1380,8 +1417,7 @@ def netsrc_remove(idx):
     cur = netsrc_load()
     if 1 <= idx <= len(cur):
         del cur[idx - 1]
-        from common import write_json as _write_json
-        _write_json(_netsrc_path(), cur)
+        _netsrc_write(cur)
         return True
     return False
 

@@ -868,3 +868,7 @@ msgstr "Install failed"
 msgid "Automatically check for updates"
 msgctxt "#31544"
 msgstr "Automatically check for updates"
+
+msgid "The required add-on is not installed or disabled"
+msgctxt "#31545"
+msgstr "The required add-on is not installed or disabled"

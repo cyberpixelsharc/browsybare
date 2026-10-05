@@ -104,6 +104,9 @@ _KEY_ACTION = {
     # Hardware Backspace: delete-only while the on-screen keyboard is open
     # (never closes it), Back behaviour otherwise -- see keyboard.special("bsp").
     "backspace": "RunScript(special://skin/scripts/keyboard.py,special,bsp)",
+    # Hardware ESC: cancel the on-screen keyboard (never delete, never close the
+    # window below), Back behaviour otherwise -- see keyboard.special("esc").
+    "escape": "RunScript(special://skin/scripts/keyboard.py,special,esc)",
 }
 
 
@@ -579,6 +582,11 @@ TYPING_LINES = [
     '<key id="61481">RunScript(special://skin/scripts/keyboard.py,hardware,rparen)</key>',
     '<plus>RunScript(special://skin/scripts/keyboard.py,hardware,plus)</plus>',
     '<space>RunScript(special://skin/scripts/keyboard.py,special,space)</space>',
+    '<!-- Paste the system clipboard into the open on-screen keyboard: Ctrl+V',
+    '     on Windows/Linux, Command+V on macOS (Command -> META, mod "cmd").',
+    '     The dispatcher swallows it while the keyboard is closed. -->',
+    '<v mod="ctrl">RunScript(special://skin/scripts/keyboard.py,special,paste)</v>',
+    '<v mod="cmd">RunScript(special://skin/scripts/keyboard.py,special,paste)</v>',
     '<enter mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</enter>',
     '<return mod="ctrl">RunScript(special://skin/scripts/keyboard.py,hardware,c)</return>',
     '<!-- Shift+F10: the Windows/Linux keyboard context-menu standard -->',

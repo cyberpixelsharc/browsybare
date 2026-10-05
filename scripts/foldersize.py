@@ -21,7 +21,8 @@ RUNNING = "bp.foldersize.running"
 INITIAL_TIMEOUT = 1.0
 EXACT_TIMEOUT = 30.0  # second pass, generous but still bounded
 FAST_DU_TIMEOUT = 2.0
-# Network: cap the stats per folder pass (each is a server request)
+# Network: cap the NEW stats per folder pass (each is a server request);
+# larger folders continue on the next pass instead of waiting a cooldown.
 NET_SCAN_MAX = 60
 
 # Shared blacklist logic (canonical matcher in blacklist.py).
@@ -227,6 +228,9 @@ def _vfs_stat(path, is_dir=False):
 
 # Per-folder cooldown for network scans (seconds); daemon memory only.
 _NET_COOLDOWN = {}
+# Last bp.netscan.t seen: a file op asks us to drop a folder's cooldown so a
+# just-created/renamed entry gets its size+date without waiting the cooldown.
+_NETSCAN_SEEN = ""
 NET_RESCAN_SECS = 120
 # Effective blacklist patterns, reloaded at most every 5s.
 _PATTERNS_CACHE = None
@@ -243,7 +247,14 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
         cutoff = now - NET_RESCAN_SECS
         for k in [k for k, t in _NET_COOLDOWN.items() if t < cutoff]:
             _NET_COOLDOWN.pop(k, None)
-    _NET_COOLDOWN[cur] = now
+    # Non-blocking idle precheck: never listdir nor arm the cooldown while the
+    # user is navigating, or a single aborted pass would starve the folder for
+    # the whole cooldown window (sizes/dates missing for ~2 min).
+    try:
+        if not xbmc.getCondVisibility("System.IdleTime(1)"):
+            return
+    except Exception:
+        pass
     try:
         res = xbmcvfs.listdir(sources.vfs_dir(cur))
     except Exception:
@@ -260,6 +271,8 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
             entries = [(n, d) for (n, d) in entries if n != tail]
     changed = False
     sized = dated = failed = 0
+    done = True
+    scanned = 0
     # WebDAV: one PROPFIND hands out sizes AND dates for the whole folder.
     # The listing tries it first; this is the long-timeout fallback for misses.
     if cur.lower().startswith(("dav://", "davs://")):
@@ -282,7 +295,7 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
                     entry["tried"] = True
                 cache[cache_key(key.rstrip("/"))] = entry
             changed = True
-    for name, is_dir in entries[:NET_SCAN_MAX]:
+    for name, is_dir in entries:
         if monitor.abortRequested() or cur_path(win) != cur:
             return
         disp = sources.url_unquote(name) if sources.is_network_path(cur) else name
@@ -297,9 +310,15 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
         # flag keeps the daemon from re-requesting it every poll.
         if cached and "size" in cached and (not is_dir or cached.get("tried")):
             continue
+        # Cap only the NEW stats per pass (each is a server request); leave the
+        # folder un-cooldowned so the next pass continues instead of waiting.
+        if scanned >= NET_SCAN_MAX:
+            done = False
+            break
         if not idle_gate(monitor, win, 1, cur):
             return
         st = _vfs_stat(child, is_dir)
+        scanned += 1
         if st is None:
             failed += 1
             continue
@@ -316,6 +335,10 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
         else:
             cache[ckey] = {"size": size, "mtime": mtime}
         changed = True
+    # Arm the cooldown only after a full pass; an incomplete pass retries as
+    # soon as the UI is idle again.
+    if done:
+        _NET_COOLDOWN[cur] = now
     if sized or dated or failed:
         log("netstat: %s: %d sized, %d dated, %d failed" % (redact(cur), sized, dated, failed))
     if changed:
@@ -390,11 +413,21 @@ def main():
                 case_sensitive = False
             # Patterns only change with the folder/settings: reload at most
             # every few seconds (four file reads each tick otherwise).
-            global _PATTERNS_CACHE, _PATTERNS_AT
+            global _PATTERNS_CACHE, _PATTERNS_AT, _NETSCAN_SEEN
             if _PATTERNS_CACHE is None or time.time() - _PATTERNS_AT > 5.0:
                 _PATTERNS_CACHE = load_active()
                 _PATTERNS_AT = time.time()
             patterns = _PATTERNS_CACHE
+
+            # A file operation (paste/rename/delete/mkdir) on a network folder
+            # asks us to drop that folder's cooldown, so a new entry's size+date
+            # are fetched right away instead of after NET_RESCAN_SECS.
+            req = win.getProperty("bp.netscan.t") or ""
+            if req and req != _NETSCAN_SEEN:
+                _NETSCAN_SEEN = req
+                reqp = path_dec(win.getProperty("bp.netscan.path") or "").rstrip("/")
+                if reqp:
+                    _NET_COOLDOWN.pop(reqp, None)
 
             if (netsize_on and cur and sources.is_network_path(cur)
                     and not _player_active(win)):

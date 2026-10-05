@@ -113,6 +113,14 @@
       <!--/GEN:typing-->
       <browser_home>RunScript(special://skin/scripts/keyboard.py,special,home)</browser_home>
       <homepage>RunScript(special://skin/scripts/keyboard.py,special,home)</homepage>
+      <!-- Hardware Backspace/ESC: this window has no navigation gene, so
+           without these Kodi's global <backspace>Back</backspace> /
+           <escape>Back</escape> close the source editor AND the settings
+           dialog. Route them through the dispatcher like Home: Backspace
+           deletes while the keyboard is open, ESC cancels it, and both fall
+           back to the Back behaviour otherwise. -->
+      <backspace>RunScript(special://skin/scripts/keyboard.py,special,bsp)</backspace>
+      <escape>RunScript(special://skin/scripts/keyboard.py,special,esc)</escape>
     </keyboard>
     <universalremote>
       <obc218>RunScript(special://skin/scripts/keyboard.py,special,home)</obc218>

@@ -961,37 +961,33 @@ def netro_toggle():
     log("netsource: write %s" % ("off" if cur == "1" else "on"))
 
 
-def _netsrc_notify(string_id, error=True):
+def _netsrc_notify(string_id, error=True, value=""):
     try:
+        msg = xbmc.getLocalizedString(string_id)
+        if value:
+            msg = "%s (%s)" % (msg, value)
         xbmcgui.Dialog().notification(
             xbmc.getLocalizedString(31448) or "Browsybare",
-            xbmc.getLocalizedString(string_id),
+            safe_label(msg),
             xbmcgui.NOTIFICATION_ERROR if error else xbmcgui.NOTIFICATION_INFO, 4000)
     except Exception:
         pass
 
 
-def _parse_neturl(path):
-    """Split a network URL into (scheme, user, passwd, host, port, subpath)."""
-    p = path or ""
-    scheme = "ftp"
-    if "://" in p:
-        scheme, p = p.split("://", 1)
-    scheme = (scheme or "ftp").lower()
-    creds = ""
-    if "@" in p:
-        creds, p = p.rsplit("@", 1)
-    user = passwd = ""
-    if creds:
-        if ":" in creds:
-            user, passwd = creds.split(":", 1)
-        else:
-            user = creds
-    hostport, _, sub = p.partition("/")
-    port = ""
-    if ":" in hostport:
-        hostport, port = hostport.rsplit(":", 1)
-    return scheme, user, passwd, hostport, port, sub
+# Schemes whose Kodi VFS handler is a separate add-on that must be installed.
+_VFS_ADDON = {"sftp": "vfs.sftp"}
+
+
+def _missing_vfs_addon(scheme):
+    """The add-on id `scheme` needs but which is missing/disabled, or ""."""
+    addon = _VFS_ADDON.get((scheme or "").split("://", 1)[0].strip().lower())
+    if addon:
+        try:
+            if not xbmc.getCondVisibility("System.AddonIsEnabled(%s)" % addon):
+                return addon
+        except Exception:
+            pass
+    return ""
 
 
 def netsrcnew(idx=None):
@@ -1008,17 +1004,14 @@ def netsrcnew(idx=None):
     e = entries[edit - 1] if edit else None
     scheme, user, passwd, server, port, sub = ("ftp", "", "", "", "", "")
     if e:
+        # The stored editor fields are the source of truth and are kept verbatim.
         f = e.get("fields") or {}
-        if f:
-            # Verbatim fields win over re-parsing the path (keeps "https://").
-            scheme = f.get("scheme") or "ftp"
-            user = f.get("user") or ""
-            passwd = f.get("pass") or ""
-            server = f.get("server") or ""
-            port = f.get("port") or ""
-            sub = f.get("path") or ""
-        else:
-            scheme, user, passwd, server, port, sub = _parse_neturl(e.get("path") or "")
+        scheme = f.get("scheme") or "ftp"
+        user = f.get("user") or ""
+        passwd = f.get("pass") or ""
+        server = f.get("server") or ""
+        port = f.get("port") or ""
+        sub = f.get("path") or ""
     win.setProperty("bp.netsrc.edit", str(edit) if edit else "")
     win.setProperty("bp.netsrc.name", e["label"] if e else "")
     win.setProperty("bp.netsrc.proto", scheme.upper())
@@ -1131,7 +1124,12 @@ def netsrctest():
     # OK saves. Empty/malformed target simply fails.
     url = sources.netsrc_url(scheme, server, port, raw_path, user, passwd) if server else ""
     ok = False
-    if url:
+    missing = _missing_vfs_addon(scheme)
+    if missing:
+        # The scheme's VFS add-on is missing/disabled: the VFS probe cannot
+        # connect, so name the add-on instead of a generic failure.
+        pass
+    elif url:
         try:
             import xbmcvfs
             res = xbmcvfs.listdir(sources.vfs_dir(url))
@@ -1143,8 +1141,12 @@ def netsrctest():
         except Exception:
             ok = False
     win.setProperty("bp.netsrc.test", "ok" if ok else "fail")
-    _netsrc_notify(31463 if ok else 31464, error=not ok)
-    log("netsource: test %s -> %s" % (redact(url) if url else "(no address)", "ok" if ok else "fail"))
+    if missing:
+        _netsrc_notify(31545, error=True, value=missing)
+    else:
+        _netsrc_notify(31463 if ok else 31464, error=not ok)
+    log("netsource: test %s -> %s" % (redact(url) if url else "(no address)",
+                                      missing or ("ok" if ok else "fail")))
 
 
 def netsrcclose():

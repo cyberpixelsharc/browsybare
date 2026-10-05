@@ -274,6 +274,26 @@ def _localized(i):
         return ""
 
 
+# Schemes whose Kodi VFS handler is a separate add-on that must be installed.
+_VFS_ADDON = {"sftp": "vfs.sftp"}
+
+
+def _missing_vfs_addon(path):
+    """The add-on id a scheme needs but which is not installed, or ""."""
+    low = (path or "").lower()
+    for scheme, addon in _VFS_ADDON.items():
+        if low.startswith(scheme + "://"):
+            try:
+                # AddonIsEnabled is false for a missing OR disabled add-on (a
+                # merely-installed-but-disabled add-on still answers
+                # System.HasAddon true).
+                if not xbmc.getCondVisibility("System.AddonIsEnabled(%s)" % addon):
+                    return addon
+            except Exception:
+                pass
+    return ""
+
+
 def _notify_net_error(path, err):
     """Top-right notification for a failed network listing, with a per-path
     cooldown so repeated listings do not spam."""
@@ -414,6 +434,10 @@ def list_network(handle, path, picker_active=False):
             except Exception as e:
                 err = str(e) or "error"
 
+    missing = _missing_vfs_addon(path)
+    if missing and err:
+        # e.g. sftp without the vfs.sftp add-on: "unreachable" is misleading.
+        err = "%s (%s)" % (_localized(31545), missing)
     if err and not path.endswith("://"):
         _notify_net_error(path, err)
 
