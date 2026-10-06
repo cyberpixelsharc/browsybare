@@ -3,8 +3,11 @@
 
 Exercises a network source end to end -- create a folder, write a file, list it,
 check its size, read it back, create a subfolder, copy, rename, move and delete
--- and logs a PASS/FAIL summary. Everything happens inside a temporary
-"_bp-selftest" folder that is cleaned up again.
+-- and logs a PASS/FAIL summary. A second pass repeats the round-trip with
+umlauts and special characters in the names (stressing the transport's name
+encoding: WebDAV percent-encodes child names, the other transports take them
+literally). Everything happens inside a temporary "_bp-selftest" folder that is
+cleaned up again.
 
 Run it against a stored source (by label or 1-based slot) or a raw URL:
 
@@ -25,6 +28,14 @@ import sources
 import fileops
 
 TESTDIR = "_bp-selftest"
+
+# Special characters / umlauts for the second pass: stress the transport's name
+# encoding end to end. Illegal-on-Windows characters (":*?<>|), ";" and "?" are
+# avoided on purpose -- Kodi's own FTP read path truncates a name there (a known
+# VFS limitation), which is not what this test is about.
+SPECIAL_DIR = "Ü-Ordner & Prüfung (äöüß)"
+SPECIAL_FILE = "Über & Prüf 100% äöüß.txt"
+SPECIAL_COPY = "Kopie äöü & + (äöüß).txt"
 
 
 def _log(msg):
@@ -57,10 +68,39 @@ def _names(folder):
     return []
 
 
-def _mkdir(parent, url):
+def _child(parent, name):
+    """Child URL in the parent transport's name form (WebDAV encodes it)."""
+    return parent.rstrip("/") + "/" + sources.net_child_name(name, parent)
+
+
+def _has(folder, name):
+    """Does `folder` list a child with the logical name `name`? A WebDAV listing
+    may carry the percent-encoded form, so also compare decoded."""
+    ns = _names(folder)
+    if name in ns:
+        return True
+    if sources.is_dav(folder):
+        if sources.net_child_name(name, folder) in ns:
+            return True
+        return name in [sources.url_unquote(n) for n in ns]
+    return False
+
+
+def _listed_url(folder, logical):
+    """The verbatim child URL a listing reports for `logical`. A WebDAV listing
+    keeps the server href form -- exactly the form the app hands to Kodi for a
+    file read/playback, so it is the form the test must read with too."""
+    for n in _names(folder):
+        if n == logical or sources.url_unquote(n) == logical:
+            return folder.rstrip("/") + "/" + n
+    return _child(folder, logical)
+
+
+def _mkdir(parent, url, name=None):
     """Create one folder, then verify it by listing the parent (Kodi's VFS
     mkdir return value is unreliable for sftp)."""
-    name = url.rstrip("/").rsplit("/", 1)[-1]
+    if name is None:
+        name = url.rstrip("/").rsplit("/", 1)[-1]
     if sources.is_ftp(url):
         sources.ftp_mkdir(url)
     else:
@@ -68,7 +108,7 @@ def _mkdir(parent, url):
             xbmcvfs.mkdir(url)
         except Exception:
             pass
-    return name in _names(parent)
+    return _has(parent, name)
 
 
 def _rename(src, dst):
@@ -81,6 +121,8 @@ def _rename(src, dst):
 
 
 def _read(path, limit=4096):
+    """Read a network file via the VFS; b'' on an empty read, None when
+    unreadable."""
     try:
         f = xbmcvfs.File(path)
         data = f.readBytes(limit)
@@ -98,6 +140,12 @@ def run(target):
         return False
     base = url.rstrip("/")
     root = base + "/" + TESTDIR
+    if url.lower().startswith("sftp://") and not sources.host_reachable(url):
+        # vfs.sftp dereferences a null session on an unreachable host and
+        # SEGFAULTS the whole process (verified: deleteFile after the server
+        # stopped). Never touch the VFS then -- bail out on the TCP probe.
+        _log("FAIL: sftp host unreachable (Kodi's vfs.sftp would crash)")
+        return False
     results = []
 
     def rec(name, ok, extra=""):
@@ -119,7 +167,7 @@ def run(target):
         rec("mkdir test folder", _mkdir(base, root))
         rec("write file (copy local -> source)",
             fileops._copy_leaf(tmp, root + "/a.txt", {"total": 1, "done": 0}))
-        rec("list shows a.txt", "a.txt" in _names(root), ", ".join(_names(root)[:6]))
+        rec("list shows a.txt", _has(root, "a.txt"), ", ".join(_names(root)[:6]))
         size = fileops._vfs_size(root + "/a.txt")
         rec("size matches", size == len(payload), "%s vs %s" % (size, len(payload)))
         data = _read(root + "/a.txt")
@@ -128,15 +176,38 @@ def run(target):
         rec("mkdir subfolder", _mkdir(root, root + "/sub"))
         rec("copy a.txt -> b.txt",
             fileops._copy_leaf(root + "/a.txt", root + "/b.txt", {"total": 1, "done": 0})
-            and "b.txt" in _names(root))
+            and _has(root, "b.txt"))
         rec("rename b.txt -> c.txt",
             _rename(root + "/b.txt", root + "/c.txt")
-            and "c.txt" in _names(root) and "b.txt" not in _names(root))
+            and _has(root, "c.txt") and not _has(root, "b.txt"))
         rec("move c.txt -> sub/",
             _rename(root + "/c.txt", root + "/sub/c.txt")
-            and "c.txt" in _names(root + "/sub") and "c.txt" not in _names(root))
+            and _has(root + "/sub", "c.txt") and not _has(root, "c.txt"))
+        # Second pass: umlauts and special characters in the names.
+        sdir = _child(root, SPECIAL_DIR)
+        sfile = _child(sdir, SPECIAL_FILE)
+        sfile2 = _child(sdir, SPECIAL_COPY)
+        rec("mkdir special-char folder", _mkdir(root, sdir, SPECIAL_DIR))
+        rec("write special-char file",
+            fileops._copy_leaf(tmp, sfile, {"total": 1, "done": 0}))
+        rec("list shows special-char file", _has(sdir, SPECIAL_FILE),
+            ", ".join(_names(sdir)[:6]))
+        rec("special-char size matches",
+            fileops._vfs_size(sfile) == len(payload))
+        # Read back / copy with the whole path in the LISTING href form -- the
+        # form the app browses/plays/copies a WebDAV child with. (A
+        # quote()-encoded DAV folder path, as the writes use, reads back EMPTY:
+        # Kodi's DAV open wants the server href form, verified live.)
+        sdir_href = _listed_url(root, SPECIAL_DIR)
+        sfile_href = _listed_url(sdir_href, SPECIAL_FILE)
+        sdata = _read(sfile_href)
+        rec("special-char read back matches", sdata == payload,
+            repr(bytes(sdata))[:40] if sdata is not None else "unreadable")
+        rec("copy special-char file",
+            fileops._copy_leaf(sfile_href, sfile2, {"total": 1, "done": 0})
+            and _has(sdir, SPECIAL_COPY))
         rec("delete test folder",
-            fileops._vfs_delete(root) and TESTDIR not in _names(base))
+            fileops._vfs_delete(root) and not _has(base, TESTDIR))
     finally:
         try:
             os.remove(tmp)

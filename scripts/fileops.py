@@ -82,6 +82,17 @@ def _is_ftp(path):
     return sources.is_ftp(path)
 
 
+def _net_dead(path):
+    """True when a network path's host does not accept a connection. Kodi's
+    vfs.sftp SEGFAULTS on deleteFile/rmdir (and other mutations) against a dead
+    host, so mutating ops must bail out BEFORE touching the VFS. Cached (see
+    sources.net_reachable), so a recursive delete probes at most once per TTL."""
+    try:
+        return bool(_net(path)) and not sources.net_reachable(path)
+    except Exception:
+        return False
+
+
 def _net_rescan(folder):
     """Ask the foldersize daemon to drop its cooldown for a just-changed network
     folder, so a new/changed entry's size+date are fetched right away instead of
@@ -182,6 +193,8 @@ def _vfs_rmtree(path):
     it to avoid infinite recursion. A falsey delete/rmdir is only a failure when
     the target still exists (a vanished entry / no-op backend must not error)."""
     base = path.rstrip("/")
+    if _net_dead(base):
+        return False
     dirs, files = [], []
     got = _vfs_list(base)
     if got is not None:
@@ -218,6 +231,8 @@ def _vfs_delete_file(path):
     """Delete ONE network file. WebDAV uses our own HTTP DELETE (Kodi's
     CDAVFile::Delete is unreliable on some servers, e.g. CloudMe answers 502);
     everything else uses the VFS. Returns True on success."""
+    if _net_dead(path):
+        return False
     if _is_ftp(path):
         return sources.ftp_delete_file(path)
     if path.lower().startswith(("dav://", "davs://")):
@@ -414,6 +429,8 @@ def _copy_leaf(src, dst, state):
     source's exact size counts as done -- repeating a failed paste converges
     instead of failing on 'exists'. The last failure reason lands in
     state['reason'] for the caller's error report."""
+    if _net_dead(src) or _net_dead(dst):
+        return _leaf_failed(state, "host unreachable")
     webdav = _is_dav(src) and _is_dav(dst)
     deadline = time.time() + _COPY_BUDGET
     reason = "not attempted"
@@ -624,6 +641,8 @@ def rename(path=None):
         xbmcgui.Dialog().notification(skin_name(), L(31334), xbmcgui.NOTIFICATION_ERROR, 3000)
         return
     try:
+        if net and _net_dead(p):
+            raise OSError("host unreachable")
         if net and _is_ftp(p):
             if not sources.ftp_rename(p, new_path):
                 raise OSError("FTP rename failed")
@@ -719,6 +738,8 @@ def mkdircreate():
             xbmcgui.Dialog().notification(skin_name(), L(31335), xbmcgui.NOTIFICATION_ERROR, 3000)
             return
         try:
+            if _net_dead(new_path):
+                raise OSError("host unreachable")
             # mkdir, NOT mkdirs: the recursive variant does not know VFS
             # protocols and fails silently for davs://. ftp/ftps use our own
             # ftplib MKD (Kodi's FTP write path is broken).

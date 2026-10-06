@@ -546,6 +546,28 @@ def drive(idx):
 
 
 
+def loadcancel():
+    """Back/ESC while the list is loading (bp.listload): abort the pending fetch
+    and return to the folder we came from. An unreachable network source would
+    otherwise hold the spinner until Kodi's VFS timeout."""
+    win = xbmcgui.Window(10000)
+    if win.getProperty("bp.listload") != "1":
+        return
+    win.clearProperty("bp.listload")
+    win.clearProperty("bp.listload.t")
+    win.clearProperty("bp.listload.ready")
+    prev = path_dec(win.getProperty("bp.prev.path") or "")
+    if prev:
+        win.clearProperty("bp.prev.path")
+        log("loadcancel: back to %s" % redact(prev))
+        set_current(prev)
+        # set_current would have captured the abandoned path as the new prev.
+        win.clearProperty("bp.prev.path")
+    else:
+        log("loadcancel: no previous view, list stays on the current path")
+
+
+
 def search_refresh():
     # URL-label change alone is an unreliable reload trigger, so force a
     # Container.Refresh; new content -> cursor back to top.
@@ -1150,11 +1172,22 @@ def netsrctest():
 
 
 def netsrcclose():
-    """Close the network-source editor modal, focus back to the + button."""
+    """Close the network-source editor modal: focus back to the edited source's
+    row, or the + button when adding."""
+    win = xbmcgui.Window(10000)
+    try:
+        edit = int(win.getProperty("bp.netsrc.edit") or 0)
+    except (TypeError, ValueError):
+        edit = 0
     _netsrc_clear_editor()
-    time.sleep(0.25)
-    xbmc.executebuiltin("SetFocus(273)")
-    log("netsource: editor closed")
+    target = (320 + edit) if 1 <= edit <= sources.NETSRC_ROWS else 273
+    # Re-assert focus until it sticks: the closing modal reassigns it.
+    for _ in range(8):
+        time.sleep(0.15)
+        xbmc.executebuiltin("SetFocus(%d)" % target)
+        if xbmc.getCondVisibility("Control.HasFocus(%d)" % target):
+            break
+    log("netsource: editor closed (focus %d)" % target)
 
 
 def netsrc_remove(idx):
@@ -3299,6 +3332,8 @@ if __name__ == "__main__":
             search_refresh()
         elif cmd == "root":
             root()
+        elif cmd == "loadcancel":
+            loadcancel()
         elif cmd == "goto":
             goto(sys.argv[2] if len(sys.argv) > 2 else "")
         elif cmd == "open":

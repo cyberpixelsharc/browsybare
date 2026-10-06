@@ -1552,6 +1552,30 @@ def host_reachable(path, timeout=2.0):
         return False
 
 
+_HOST_CACHE = {}
+
+
+def net_reachable(path, ttl=5.0, timeout=2.0):
+    """host_reachable() with a short per-host cache -- a pre-action guard runs
+    before every VFS mutation, and a recursive delete must not TCP-probe once
+    per child."""
+    key = None
+    try:
+        f = netsrc_parse_url(path)
+        key = (f.get("scheme") or "", f.get("server") or "", str(f.get("port") or ""))
+    except Exception:
+        key = None
+    now = time.time()
+    if key is not None:
+        hit = _HOST_CACHE.get(key)
+        if hit and hit[0] > now:
+            return hit[1]
+    ok = host_reachable(path, timeout)
+    if key is not None:
+        _HOST_CACHE[key] = (now + ttl, ok)
+    return ok
+
+
 def rstrip_slash(path):
     """Strip trailing "/" but never eat a scheme's "//": a bare "ftp://" is a
     valid half-filled entry and must survive rstrip("/")."""

@@ -365,6 +365,12 @@ def list_network(handle, path, picker_active=False):
     # unreachable immediately instead of probing the VFS (long connect timeout).
     if not path or path.endswith("://"):
         err = "unreachable"
+    elif not sources.net_reachable(path):
+        # Wrong network / dead host: Kodi's VFS connect can hold the listing (and
+        # its spinner) for a long time, so a quick TCP probe to the host:port
+        # fails fast instead of hanging on the VFS timeout.
+        path = sources.rstrip_slash(path)
+        err = "unreachable"
     else:
         path = sources.rstrip_slash(path)
         is_dav = path.lower().startswith(("dav://", "davs://"))

@@ -222,6 +222,12 @@ def set_current(path):
     # really changes, else no reload clears the veil (daemon has a timeout).
     old = sources.rstrip_slash(path_dec(win.getProperty("bp.path") or ""))
     if path != old:
+        # Remember where we came from: Back/ESC cancels a stuck load and returns
+        # there (main.loadcancel). Empty old = no previous view to fall back to.
+        if old:
+            win.setProperty("bp.prev.path", path_enc(old))
+        else:
+            win.clearProperty("bp.prev.path")
         win.setProperty("bp.listload", "1")
         win.setProperty("bp.listload.t", repr(time.time()))
         win.clearProperty("bp.listload.ready")

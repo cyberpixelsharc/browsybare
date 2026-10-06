@@ -812,7 +812,12 @@ def special(tok):
         else:
             special("back")
     elif tok == "back":
-        if _kb_open():
+        if not _kb_open() and win.getProperty("bp.listload") == "1":
+            # A network source is loading (possibly an unreachable one): let
+            # Back/ESC abort it instead of waiting out the VFS timeout.
+            _log("keyboard: hardware back -> cancel list load")
+            xbmc.executebuiltin("RunScript(special://skin/scripts/main.py,loadcancel)")
+        elif _kb_open():
             if _cursor() == 0:
                 close()
             else:

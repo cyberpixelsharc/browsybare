@@ -64,7 +64,7 @@ def _show_notice(title, body, focus=None):
             win.setProperty("bp.notice.%d" % i,
                             lines[i - 1] if i <= len(lines) else "")
         win.setProperty("bp.notice.focus", focus or "862")
-        xbmc.executebuiltin("RunScript(special://skin/scripts/main.py,notice)")
+        xbmc.executebuiltin("RunScript(%s,notice)" % _script_path("main.py"))
     except Exception as e:
         log("boot: notice open failed: %s" % e)
 
@@ -240,9 +240,24 @@ def step(name, fn):
         log("boot: %s failed: %s" % (name, e))
 
 
+def _script_path(name):
+    """Absolute path to one of our scripts, independent of the ACTIVE skin.
+    During the base-layer merge the current skin is briefly Estuary (which has
+    no scripts/main.py), so a special://skin RunScript silently fails then --
+    and a boot-time trigger that lands in that window is lost."""
+    try:
+        import xbmcaddon
+        base = xbmcaddon.Addon("browsybare").getAddonInfo("path") or ""
+        if base:
+            return base + "scripts/" + name
+    except Exception:
+        pass
+    return "special://skin/scripts/" + name
+
+
 def start_daemon(name):
     try:
-        xbmc.executebuiltin("RunScript(special://skin/scripts/%s)" % name)
+        xbmc.executebuiltin("RunScript(%s)" % _script_path(name))
         log("boot: %s started" % name)
     except Exception as e:
         log("boot: %s start failed: %s" % (name, e))
@@ -621,7 +636,7 @@ def reload_when_ready(force=False):
             # flashes the old Home); the reloaded Home reveals itself.
             try:
                 xbmc.executebuiltin(
-                    "AlarmClock(bp_ready,RunScript(special://skin/scripts/boot.py,ready),00:02,silent)")
+                    "AlarmClock(bp_ready,RunScript(%s,ready),00:02,silent)" % _script_path("boot.py"))
                 log("boot: reload in flight, veil kept + ready fallback armed")
             except Exception as e:
                 log("boot: ready fallback failed: %s" % e)
@@ -655,7 +670,7 @@ def _maybe_update_autocheck():
             return
         win.setProperty("bp.update.autocheck.done", "1")
         xbmc.executebuiltin(
-            "RunScript(special://skin/scripts/main.py,updateautocheck)")
+            "RunScript(%s,updateautocheck)" % _script_path("main.py"))
         log("boot: update autocheck scheduled")
     except Exception as e:
         log("boot: autocheck failed: %s" % e)
