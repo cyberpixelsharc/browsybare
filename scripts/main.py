@@ -3281,6 +3281,9 @@ if __name__ == "__main__":
                 pass
         if cmd == "sync":
             _run_sync()
+        elif cmd == "selftest":
+            import selftest
+            selftest.run(sys.argv[2] if len(sys.argv) > 2 else "")
         elif cmd == "drives":
             drives()
         elif cmd == "nav":

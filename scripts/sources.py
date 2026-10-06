@@ -1088,7 +1088,8 @@ class _UploadCancelled(Exception):
 
 def _ftp_connect(url, timeout=30):
     """(ftp, remote_path) logged in for an ftp/ftps URL, or (None, ""). ftps uses
-    explicit TLS (AUTH TLS), the mode a plain FTP port offers."""
+    explicit TLS (AUTH TLS) WITH certificate verification, like Kodi's own
+    ftps:// -- an untrusted/self-signed cert must fail, never silently connect."""
     f = netsrc_parse_url(url)
     if f.get("scheme") not in ("ftp", "ftps") or not f.get("server"):
         return None, ""
@@ -1101,7 +1102,11 @@ def _ftp_connect(url, timeout=30):
     except Exception:
         port = 21
     try:
-        ftp = ftplib.FTP_TLS(timeout=timeout) if f["scheme"] == "ftps" else ftplib.FTP(timeout=timeout)
+        if f["scheme"] == "ftps":
+            import ssl
+            ftp = ftplib.FTP_TLS(context=ssl.create_default_context(), timeout=timeout)
+        else:
+            ftp = ftplib.FTP(timeout=timeout)
         ftp.connect(f["server"], port, timeout=timeout)
         ftp.login(f.get("user") or "anonymous", f.get("pass") or "")
         if f["scheme"] == "ftps":
@@ -1521,6 +1526,30 @@ def netsrc_host(path):
         return rest.split("/")[0].split(":")[0]
     except Exception:
         return ""
+
+
+def host_reachable(path, timeout=2.0):
+    """Quick TCP-connect probe to a network URL's host:port (scheme default when
+    no port is set). True when the port accepts a connection. Needed where the
+    VFS reports an unreachable host as an EMPTY listing instead of an error
+    (vfs.sftp on the wrong network), which we must not show as an empty folder."""
+    try:
+        import socket
+        f = netsrc_parse_url(path)
+        host = (f.get("server") or "").strip()
+        if not host:
+            return False
+        try:
+            port = int(f.get("port") or 0)
+        except Exception:
+            port = 0
+        if not port:
+            port = {"sftp": 22, "ftp": 21, "ftps": 21, "smb": 445,
+                    "nfs": 2049, "dav": 80, "davs": 443}.get(f.get("scheme"), 22)
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except Exception:
+        return False
 
 
 def rstrip_slash(path):

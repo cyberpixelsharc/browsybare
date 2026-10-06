@@ -819,16 +819,39 @@ def _windows_version_name(build, display_version=""):
     return ("%s %s" % (name, disp)).strip() if disp else name
 
 
-def _windows_os_line():
-    build = 0
+def _windows_build():
+    """Build number from the registry (CurrentBuildNumber, the most reliable
+    source -- winreg reports the DisplayVersion too), falling back to
+    `sys.getwindowsversion()`, then `platform.win32_ver()`. 0 when unknown."""
     try:
-        build = int(sys.getwindowsversion().build)
+        import winreg
+        with winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"SOFTWARE\Microsoft\Windows NT\CurrentVersion") as k:
+            for val in ("CurrentBuildNumber", "CurrentBuild"):
+                try:
+                    n = int(winreg.QueryValueEx(k, val)[0])
+                    if n:
+                        return n
+                except Exception:
+                    continue
     except Exception:
-        try:
-            part = (platform.win32_ver()[1] or "").rsplit(".", 1)[-1]
-            build = int(part) if part.isdigit() else 0
-        except Exception:
-            build = 0
+        pass
+    try:
+        v = sys.getwindowsversion()
+        n = int(getattr(v, "build", 0) or 0)
+        if n:
+            return n
+    except Exception:
+        pass
+    try:
+        part = (platform.win32_ver()[1] or "").rsplit(".", 1)[-1]
+        return int(part) if part.isdigit() else 0
+    except Exception:
+        return 0
+
+
+def _windows_os_line():
     disp = ""
     try:
         import winreg
@@ -838,7 +861,7 @@ def _windows_os_line():
             disp = str(winreg.QueryValueEx(k, "DisplayVersion")[0] or "")
     except Exception:
         disp = ""
-    return _windows_version_name(build, disp)
+    return _windows_version_name(_windows_build(), disp)
 
 
 def _read_build_props():
@@ -926,6 +949,17 @@ def _kodi_os_version():
     return re.sub(r"\s*\(kernel:.*\)\s*$", "", s).strip()
 
 
+def _os_release_name(vals):
+    """Compact display name from an os-release dict: "NAME VERSION_ID" (or NAME
+    VERSION), else PRETTY_NAME, else "Linux". Kept short on purpose --
+    PRETTY_NAME can be long (e.g. CoreELEC), which the About line does not want."""
+    name = (vals.get("NAME") or "").strip()
+    ver = (vals.get("VERSION_ID") or "").strip() or (vals.get("VERSION") or "").strip()
+    if name:
+        return ("%s %s" % (name, ver)).strip()
+    return (vals.get("PRETTY_NAME") or "").strip() or "Linux"
+
+
 def _linux_os_line():
     """Distribution from os-release. A sandbox (Flatpak/Snap) reports the
     RUNTIME's at /etc; the host's is at /run/host/os-release (Flatpak) or
@@ -937,10 +971,7 @@ def _linux_os_line():
         vals = _read_os_release(cand)
         if vals:
             break
-    pretty = vals.get("PRETTY_NAME", "").strip()
-    if pretty:
-        return pretty
-    return (vals.get("NAME", "") + " " + vals.get("VERSION_ID", "")).strip()
+    return _os_release_name(vals)
 
 
 def _android_os_line():

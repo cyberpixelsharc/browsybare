@@ -447,10 +447,18 @@ def list_network(handle, path, picker_active=False):
                     err = "unreachable"
             except Exception as e:
                 err = str(e) or "error"
+    # vfs.sftp returns an EMPTY listing for an unreachable host (wrong network)
+    # with NO error, so a dead connection looks like an empty folder; a quick TCP
+    # probe to the host:port tells them apart.
+    if (not err and not dirs and not files and dav_entries is None
+            and path.lower().startswith("sftp://")):
+        if not sources.host_reachable(path):
+            err = "unreachable"
 
     missing = _missing_vfs_addon(path)
-    if missing and err:
-        # e.g. sftp without the vfs.sftp add-on: "unreachable" is misleading.
+    if missing:
+        # The scheme's VFS add-on is missing or disabled: Kodi then reports
+        # nothing (an EMPTY listing on some platforms), so always name it.
         err = "%s (%s)" % (_localized(31545), missing)
     if err and not path.endswith("://"):
         _notify_net_error(path, err)
@@ -652,6 +660,19 @@ def list_network(handle, path, picker_active=False):
 
 def main():
     handle = int(sys.argv[1]) if len(sys.argv) > 1 else -1
+    # DEV: source self-test hook -- run scripts/selftest.py for a target:
+    #   plugin://browsybare/list?selftest=<target>   (see dev/source-selftest.sh)
+    import re as _re
+    import urllib.parse as _up
+    _query = sys.argv[0] + (sys.argv[2] if len(sys.argv) > 2 else "")
+    _m = _re.search(r"[?&]selftest=([^&]+)", _query)
+    if _m:
+        try:
+            import selftest as _st
+            _st.run(_up.unquote(_m.group(1)))
+        except Exception as _e:
+            log("selftest hook crashed: %s" % _e)
+        return
     items = []
     dotdot = None
     raw = path_dec(xbmcgui.Window(10000).getProperty("bp.path") or "")
