@@ -470,10 +470,13 @@ def network_sources():
 NET_SCHEMES = ("ftp://", "ftps://", "smb://", "nfs://",
                "dav://", "davs://", "sftp://")
 
-# Read-only Kodi VFS schemes: CCurlFile (ftp/ftps) has no Delete/Rename and
-# CFTPDirectory no Create/Remove; vfs.sftp declares no write support (it opens
-# files O_RDONLY). The context menu greys those rows.
-RO_SCHEMES = ("ftp://", "ftps://", "sftp://")
+# No scheme is inherently read-only any more: vfs.sftp 21.0.2 declares
+# supportWrite (browsing/write verified), and ftp/ftps writes go through our own
+# ftplib client (Kodi's own FTP write path leaves an empty/64 KiB file).
+# Writability is decided per source by its own "write access" flag.
+RO_SCHEMES = ()
+# Schemes the skin writes ITSELF (Kodi's VFS write is unusable for them).
+FTP_SCHEMES = ("ftp://", "ftps://")
 
 
 def is_network_path(path):
@@ -482,6 +485,31 @@ def is_network_path(path):
         return bool(path) and path.lower().startswith(NET_SCHEMES)
     except Exception:
         return False
+
+
+def is_ftp(path):
+    """True for ftp/ftps URLs (the schemes the skin writes itself via ftplib)."""
+    try:
+        return (path or "").strip().lower().startswith(FTP_SCHEMES)
+    except Exception:
+        return False
+
+
+def is_dav(path):
+    """True for WebDAV-style URLs (dav/davs only), not general HTTP URLs."""
+    try:
+        return (path or "").lower().split("://", 1)[0] in ("dav", "davs")
+    except Exception:
+        return False
+
+
+def net_child_name(name, parent_path):
+    """Child name for a Kodi VFS URL. WebDAV is URL-based and does NOT re-encode
+    a path, so its names must be percent-encoded; the other transports
+    (sftp/smb/nfs/ftp) take the path LITERALLY, so their names stay RAW -- a
+    "%20" there would be stored in the file name itself (verified)."""
+    n = name or ""
+    return quote(n, safe="") if is_dav(parent_path) else n
 
 
 def is_readonly(path):
@@ -870,15 +898,54 @@ def _local_source(src_path):
     return None, "source download failed"
 
 
+def _open_upload_source(src_path):
+    """(handle, kind, tmp) for the upload body: a readable handle, the kind
+    ('vfs' = readBytes, 'file' = read) and the temp path to clean up ("" when
+    none). Returns (None, "", reason) on failure. A NETWORK source is streamed
+    through `xbmcvfs.File.readBytes` (binary; `read()` would decode as text and
+    raise on binary content); only when readBytes is unavailable is it pulled to
+    a temp file first (also the local-file fallback)."""
+    if is_network_path(src_path):
+        try:
+            f = xbmcvfs.File(src_path)
+        except Exception:
+            f = None
+        if f is not None and hasattr(f, "readBytes"):
+            return f, "vfs", ""
+        try:
+            if f is not None:
+                f.close()
+        except Exception:
+            pass
+        local, tmp = _local_source(src_path)
+        if local is None:
+            return None, "", tmp or "source unreadable"
+        try:
+            return open(local, "rb"), "file", tmp
+        except Exception as e:
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
+            return None, "", "%s: %s" % (type(e).__name__, e)
+    try:
+        return open(src_path, "rb"), "file", ""
+    except Exception as e:
+        return None, "", "%s: %s" % (type(e).__name__, e)
+
+
+# Upload body chunk (1 MiB): fewer Python round trips than a small chunk.
+_UPLOAD_CHUNK = 1048576
+
+
 def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=None):
     """Upload one file to a WebDAV URL with our own streaming PUT.
 
     Kodi's VFS write to DAV fails (curl cannot rewind the upload body after the
     401 challenge), so a local->network upload is impossible through
-    `xbmcvfs.copy`. We fetch the challenge first, then PUT with the body in
-    chunks -- no memory copy, no rewind needed. A network `src_path` is pulled
-    to a temp file first (Kodi's `xbmcvfs.File.read` decodes as text and raises
-    on binary content). `on_progress(sent, total)` runs while streaming,
+    `xbmcvfs.copy`. We fetch the challenge first, then stream the body in chunks
+    straight from the source (no download-then-upload temp round trip; see
+    `_open_upload_source`). `on_progress(sent, total)` runs while streaming,
     `cancelled()` (optional) aborts. Returns (True, "") or (False, reason)."""
     try:
         import http.client
@@ -890,13 +957,13 @@ def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=
     dst = _dav_origin(dst_url)
     if dst is None:
         return False, "unsupported"
-    src_local, tmp = _local_source(src_path)
-    if src_local is None:
+    handle, kind, tmp = _open_upload_source(src_path)
+    if handle is None:
         return False, tmp or "source unreadable"
     try:
         scheme, host, port, netloc, path, username, password = dst
         rpath = _dav_req_path(path)
-        total = _src_size(src_local) or 0
+        total = _src_size(src_path) or 0
         # Auth: reuse the cached challenge (no extra round trip); otherwise
         # probe unauthenticated (Depth-0 PROPFIND, a few tries -- a flaky server
         # answers 5xx) and cache the result. Fall back to PREEMPTIVE Basic so a
@@ -937,26 +1004,31 @@ def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=
         try:
             for attempt in range(2):
                 sent = 0
+                # Re-send the whole body from the start on the 401 retry.
+                try:
+                    handle.seek(0)
+                except Exception:
+                    pass
                 conn.putrequest("PUT", rpath)
                 conn.putheader("Content-Length", str(total))
                 conn.putheader("Content-Type", "application/octet-stream")
                 if auth:
                     conn.putheader("Authorization", auth)
                 conn.endheaders()
-                with open(src_local, "rb") as f:
-                    while True:
-                        if cancelled is not None and cancelled():
-                            return False, "cancelled"
-                        chunk = f.read(262144)
-                        if not chunk:
-                            break
-                        conn.send(chunk)
-                        sent += len(chunk)
-                        if on_progress is not None:
-                            try:
-                                on_progress(sent, total)
-                            except Exception:
-                                pass
+                while True:
+                    if cancelled is not None and cancelled():
+                        return False, "cancelled"
+                    chunk = (handle.readBytes(_UPLOAD_CHUNK) if kind == "vfs"
+                             else handle.read(_UPLOAD_CHUNK))
+                    if not chunk:
+                        break
+                    conn.send(chunk)
+                    sent += len(chunk)
+                    if on_progress is not None:
+                        try:
+                            on_progress(sent, total)
+                        except Exception:
+                            pass
                 resp = conn.getresponse()
                 status = int(getattr(resp, "status", 0) or 0)
                 ch = (resp.headers.get("WWW-Authenticate", "")
@@ -993,11 +1065,222 @@ def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=
             except Exception:
                 pass
     finally:
+        try:
+            handle.close()
+        except Exception:
+            pass
         if tmp:
             try:
                 os.remove(tmp)
             except OSError:
                 pass
+
+
+# ------------------------------------------------------------- FTP writes
+# Kodi's own FTP write path is broken (xbmcvfs.File("w")/xbmcvfs.copy leave an
+# empty or 64 KiB file), so ftp/ftps writes go through Python's ftplib instead
+# -- the same "write it ourselves" approach as the WebDAV PUT. Reads/listing
+# keep using Kodi's VFS (they work).
+
+class _UploadCancelled(Exception):
+    """Raised from the reader to abort a running ftplib transfer."""
+
+
+def _ftp_connect(url, timeout=30):
+    """(ftp, remote_path) logged in for an ftp/ftps URL, or (None, ""). ftps uses
+    explicit TLS (AUTH TLS), the mode a plain FTP port offers."""
+    f = netsrc_parse_url(url)
+    if f.get("scheme") not in ("ftp", "ftps") or not f.get("server"):
+        return None, ""
+    try:
+        import ftplib
+    except Exception:
+        return None, ""
+    try:
+        port = int(f.get("port") or 21)
+    except Exception:
+        port = 21
+    try:
+        ftp = ftplib.FTP_TLS(timeout=timeout) if f["scheme"] == "ftps" else ftplib.FTP(timeout=timeout)
+        ftp.connect(f["server"], port, timeout=timeout)
+        ftp.login(f.get("user") or "anonymous", f.get("pass") or "")
+        if f["scheme"] == "ftps":
+            ftp.prot_p()
+        return ftp, (f.get("path") or "")
+    except Exception:
+        return None, ""
+
+
+class _UploadReader:
+    """File-like `read()` over an upload source for ftplib.storbinary: a NETWORK
+    source is read via `xbmcvfs.File.readBytes` (binary; `read()` would decode as
+    text), a local file with a normal handle. Reports progress and honours a
+    cancel flag (raising `_UploadCancelled`)."""
+
+    def __init__(self, handle, kind, total, on_progress=None, cancelled=None):
+        self._h = handle
+        self._kind = kind
+        self._total = total
+        self._on_progress = on_progress
+        self._cancelled = cancelled
+        self._sent = 0
+
+    def read(self, size=-1):
+        if self._cancelled is not None and self._cancelled():
+            raise _UploadCancelled()
+        n = size if size and size > 0 else 65536
+        chunk = self._h.readBytes(n) if self._kind == "vfs" else self._h.read(n)
+        self._sent += len(chunk)
+        if chunk and self._on_progress is not None:
+            try:
+                self._on_progress(self._sent, self._total)
+            except Exception:
+                pass
+        return chunk
+
+    def close(self):
+        try:
+            self._h.close()
+        except Exception:
+            pass
+
+
+def ftp_upload_file(src_path, dst_url, on_progress=None, cancelled=None):
+    """Upload one file to an ftp/ftps URL with ftplib (STOR). Returns
+    (True, "") or (False, reason); reason "cancelled" on a cancel."""
+    ftp, remote = _ftp_connect(dst_url)
+    if ftp is None:
+        return False, "connect"
+    reader = None
+    try:
+        if is_network_path(src_path):
+            reader = _UploadReader(xbmcvfs.File(src_path), "vfs",
+                                   _src_size(src_path) or 0, on_progress, cancelled)
+        else:
+            reader = _UploadReader(open(src_path, "rb"), "file",
+                                   _src_size(src_path) or 0, on_progress, cancelled)
+        ftp.storbinary("STOR " + remote, reader, blocksize=262144)
+        return True, ""
+    except _UploadCancelled:
+        return False, "cancelled"
+    except Exception as e:
+        return False, "%s: %s" % (type(e).__name__, e)
+    finally:
+        if reader is not None:
+            reader.close()
+        try:
+            ftp.quit()
+        except Exception:
+            try:
+                ftp.close()
+            except Exception:
+                pass
+
+
+def _ftp_mtime(s):
+    """Epoch seconds from an MLSD `modify` stamp ("YYYYMMDDHHMMSS", UTC), or 0."""
+    try:
+        import calendar
+        import time as _t
+        return int(calendar.timegm(_t.strptime(s, "%Y%m%d%H%M%S")))
+    except Exception:
+        return 0
+
+
+def ftp_listdir(url):
+    """(dirs, files, details) for an ftp/ftps URL via MLSD, or (None, ...) on
+    failure. Kodi's own FTP listing truncates a child name at "?" and ";" (its
+    URL option/query separators), so "a?b.txt" comes back as "a" -- MLSD returns
+    the true names plus `type`/`size`/`modify`. `details` maps name ->
+    (size, mtime_epoch, is_dir) for the size/date columns (Kodi cannot stat such
+    names either)."""
+    ftp, remote = _ftp_connect(url)
+    if ftp is None:
+        return None, None, None
+    dirs, files, details = [], [], {}
+    try:
+        for name, facts in ftp.mlsd(remote or "."):
+            if name in (".", ".."):
+                continue
+            is_dir = (facts.get("type") or "").lower() in ("dir", "cdir", "pdir")
+            try:
+                size = int(facts.get("size") or 0)
+            except Exception:
+                size = 0
+            details[name] = (size, _ftp_mtime(facts.get("modify")), is_dir)
+            (dirs if is_dir else files).append(name)
+        return dirs, files, details
+    except Exception:
+        return None, None, None   # MLSD unsupported -> caller falls back to Kodi's VFS
+    finally:
+        try:
+            ftp.quit()
+        except Exception:
+            pass
+
+
+def ftp_size(url):
+    """Size of one ftp/ftps entry via its parent's MLSD listing, or None. Kodi's
+    FTP Stat is unreliable for "?"/";" names (the listing truncates them)."""
+    parent = net_parent(url)
+    name = url.rstrip("/").rsplit("/", 1)[-1]
+    if not parent or not name:
+        return None
+    r3 = ftp_listdir(parent)
+    entry = (r3[2] or {}).get(name) if r3[2] else None
+    return entry[0] if entry else None
+
+
+def ftp_delete_file(url, is_dir=False):
+    """Delete a file (DELE) or an empty folder (RMD) over FTP. True on success."""
+    ftp, remote = _ftp_connect(url)
+    if ftp is None:
+        return False
+    try:
+        (ftp.rmd if is_dir else ftp.delete)(remote)
+        return True
+    except Exception:
+        return False
+    finally:
+        try:
+            ftp.quit()
+        except Exception:
+            pass
+
+
+def ftp_mkdir(url):
+    """Create a folder over FTP (MKD). True on success."""
+    ftp, remote = _ftp_connect(url)
+    if ftp is None:
+        return False
+    try:
+        ftp.mkd(remote)
+        return True
+    except Exception:
+        return False
+    finally:
+        try:
+            ftp.quit()
+        except Exception:
+            pass
+
+
+def ftp_rename(src_url, dst_url):
+    """Rename/move over FTP (RNFR/RNTO). True on success."""
+    ftp, src_remote = _ftp_connect(src_url)
+    if ftp is None:
+        return False
+    dst_remote = netsrc_parse_url(dst_url).get("path") or ""
+    try:
+        ftp.rename(src_remote, dst_remote)
+        return True
+    except Exception:
+        return False
+    finally:
+        try:
+            ftp.quit()
+        except Exception:
+            pass
 
 
 def dav_details(url, timeout=8, attempts=2):

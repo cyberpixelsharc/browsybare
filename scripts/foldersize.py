@@ -239,6 +239,10 @@ _PATTERNS_AT = 0.0
 
 def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_sensitive):
     """Cache size + mtime for the entries of the current NETWORK folder: a VFS stat is a server request, so stat per row would stall the listing. Only FILES get a size; folders get their date."""
+    if sources.is_ftp(cur):
+        # list_network gets FTP sizes/dates straight from its own MLSD listing
+        # (Kodi's FTP listing truncates "?"/";" names and cannot stat them).
+        return
     now = time.time()
     if now - _NET_COOLDOWN.get(cur, 0) < NET_RESCAN_SECS:
         return
@@ -298,7 +302,7 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
     for name, is_dir in entries:
         if monitor.abortRequested() or cur_path(win) != cur:
             return
-        disp = sources.url_unquote(name) if sources.is_network_path(cur) else name
+        disp = sources.url_unquote(name) if sources.is_dav(cur) else name
         if disp.startswith(".") and not show_hidden:
             continue
         if blocked(disp, patterns, case_sensitive):

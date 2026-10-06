@@ -359,6 +359,7 @@ def list_network(handle, path, picker_active=False):
     is_dav = False
     dav_entries = None
     details = {}
+    ftp_details = None
     path = (path or "").strip()
     # "no path" and "scheme only" ("ftp://") are half-filled entries: report
     # unreachable immediately instead of probing the VFS (long connect timeout).
@@ -391,10 +392,20 @@ def list_network(handle, path, picker_active=False):
             # Kodi's vfs.sftp (and some others) build child paths by appending the
             # name to the folder STRING: list the slash form (see sources.vfs_dir).
             ls_path = sources.vfs_dir(path)
+            ftp_src = sources.is_ftp(path)
             while True:
                 attempt += 1
                 try:
-                    res = xbmcvfs.listdir(ls_path)
+                    # FTP: our own MLSD listing -- Kodi's FTP listing truncates a
+                    # child name at "?"/";" (its URL option/query separators) and
+                    # cannot stat them; MLSD gives the true names + sizes/dates.
+                    res = None
+                    if ftp_src:
+                        r3 = sources.ftp_listdir(path)
+                        if r3[0] is not None:
+                            res, ftp_details = (r3[0], r3[1]), r3[2]
+                    if res is None:
+                        res = xbmcvfs.listdir(ls_path)
                 except Exception as e:
                     res = None
                     err = str(e) or "error"
@@ -427,7 +438,10 @@ def list_network(handle, path, picker_active=False):
         # listing already carried the collection itself (PROPFIND self-ref, just
         # stripped), so an empty DAV result IS an existing empty folder; its
         # exists() probe is unreliable (CloudMe empty folders read unreachable).
-        if not is_dav:
+        # Skip the exists() probe where Kodi's Stat is unreliable: a DAV listing
+        # already carried the collection, and vfs.sftp returns False even for an
+        # EXISTING empty folder (verified), so a successful listdir is the proof.
+        if not is_dav and not path.lower().startswith("sftp://"):
             try:
                 if not xbmcvfs.exists(path):
                     err = "unreachable"
@@ -440,6 +454,11 @@ def list_network(handle, path, picker_active=False):
         err = "%s (%s)" % (_localized(31545), missing)
     if err and not path.endswith("://"):
         _notify_net_error(path, err)
+    # FTP: the MLSD answer already carries sizes/dates for the whole folder
+    # (keyed by the child URL, like the WebDAV PROPFIND details).
+    if ftp_details and not details:
+        base = path.rstrip("/")
+        details = {base + "/" + n: v for n, v in ftp_details.items()}
 
     query = sys.argv[0] + (sys.argv[2] if len(sys.argv) > 2 else "")
     show_hidden = search.hidden_from_url(query)

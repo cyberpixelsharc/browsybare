@@ -57,6 +57,7 @@ def stubs_pending(root):
 OUR_XML = {
     "Home.xml",
     "DialogConfirm.xml",
+    "DialogOK.xml",
     "DialogBusy.xml",
     "DialogContextMenu.xml",
     "IncludesPowerMenu.xml",
@@ -803,46 +804,191 @@ def sync():
 
 # ---------------------------------------------------------------- branding
 
+def _windows_version_name(build, display_version=""):
+    """Windows 10 vs 11 from the build number: Windows 11 still reports release
+    "10" / version "10.0.<build>", only the build tells them apart (>= 22000 =
+    11). The friendly release name ("23H2") comes from the registry, like
+    Kodi's CSysInfo."""
+    if build >= 22000:
+        name = "Windows 11"
+    elif build >= 10240:
+        name = "Windows 10"
+    else:
+        name = "Windows"
+    disp = (display_version or "").strip()
+    return ("%s %s" % (name, disp)).strip() if disp else name
+
+
+def _windows_os_line():
+    build = 0
+    try:
+        build = int(sys.getwindowsversion().build)
+    except Exception:
+        try:
+            part = (platform.win32_ver()[1] or "").rsplit(".", 1)[-1]
+            build = int(part) if part.isdigit() else 0
+        except Exception:
+            build = 0
+    disp = ""
+    try:
+        import winreg
+        with winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"SOFTWARE\Microsoft\Windows NT\CurrentVersion") as k:
+            disp = str(winreg.QueryValueEx(k, "DisplayVersion")[0] or "")
+    except Exception:
+        disp = ""
+    return _windows_version_name(build, disp)
+
+
+def _read_build_props():
+    """ro.* properties from the readable build.prop files (first file wins).
+    Modern Android may keep the release in /system/system or /vendor, not in
+    /system/build.prop."""
+    props = {}
+    for path in ("/system/build.prop", "/system/system/build.prop",
+                 "/vendor/build.prop", "/product/build.prop", "/odm/build.prop"):
+        try:
+            with open(path, encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        props.setdefault(k.strip(), v.strip())
+        except Exception:
+            continue
+    return props
+
+
+def _read_os_release(path):
+    """Parse an os-release file into a dict ("" on failure)."""
+    vals = {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    vals[k.strip()] = v.strip().strip('"')
+    except Exception:
+        pass
+    return vals
+
+
+def _getprop(key):
+    """A single Android property via the `getprop` binary. Best-effort: the app
+    sandbox may not allow spawning it, so failures return ""."""
+    import subprocess
+    for exe in ("/system/bin/getprop", "getprop"):
+        try:
+            res = subprocess.run([exe, key], capture_output=True, timeout=2)
+            if res.returncode == 0:
+                return res.stdout.decode("utf-8", "replace").strip()
+        except Exception:
+            continue
+    return ""
+
+
+def _fireos_name(props):
+    """Fire OS version. Fire OS carries its own version -- deriving it from the
+    Android release is unreliable, which is why the about line showed a bare
+    "Fire OS" -- in ro.build.version.name ("Fire OS 8.1.0.0 (PS7623/3027)") or
+    ro.build.version.fireos ("8.0")."""
+    name = re.sub(r"\s*\(.*\)\s*$", "", (props.get("ro.build.version.name") or "").strip())
+    if name:
+        return name
+    fireos = (props.get("ro.build.version.fireos") or "").strip()
+    if fireos:
+        return "Fire OS %s" % fireos
+    rel = (props.get("ro.build.version.release") or "").strip()
+    generation = {"7.1": "6", "9": "7", "11": "8", "12": "8"}.get(rel, "")
+    if generation:
+        return "Fire OS %s" % generation
+    return ("Fire OS %s" % rel).strip() if rel else "Fire OS"
+
+
+def _cond(name):
+    """A Kodi boolean condition (False outside Kodi / on older builds)."""
+    try:
+        return bool(xbmc.getCondVisibility(name))
+    except Exception:
+        return False
+
+
+def _kodi_os_version():
+    """Kodi's own OS string (System.OSVersionInfo) with the "(kernel: ...)" part
+    stripped. The label can be empty right after boot, so it is only used where
+    we cannot read the version ourselves (iOS/tvOS)."""
+    try:
+        s = xbmc.getInfoLabel("System.OSVersionInfo") or ""
+    except Exception:
+        s = ""
+    return re.sub(r"\s*\(kernel:.*\)\s*$", "", s).strip()
+
+
+def _linux_os_line():
+    """Distribution from os-release. A sandbox (Flatpak/Snap) reports the
+    RUNTIME's at /etc; the host's is at /run/host/os-release (Flatpak) or
+    /var/lib/snapd/hostfs/etc/os-release (Snap), so prefer those."""
+    vals = {}
+    for cand in ("/run/host/os-release",
+                 "/var/lib/snapd/hostfs/etc/os-release",
+                 "/etc/os-release"):
+        vals = _read_os_release(cand)
+        if vals:
+            break
+    pretty = vals.get("PRETTY_NAME", "").strip()
+    if pretty:
+        return pretty
+    return (vals.get("NAME", "") + " " + vals.get("VERSION_ID", "")).strip()
+
+
+def _android_os_line():
+    props = _read_build_props()
+    if props.get("ro.product.manufacturer", "").lower() == "amazon":
+        return _fireos_name(props)
+    # Android devices keep their release in different build.prop files (or
+    # nowhere readable); Kodi itself cannot detect it either and falls back to
+    # the API level, so do the same as a last resort.
+    rel = (props.get("ro.build.version.release") or "").strip() or _getprop("ro.build.version.release")
+    if rel:
+        return "Android %s" % rel
+    sdk = (props.get("ro.build.version.sdk") or "").strip() or _getprop("ro.build.version.sdk")
+    return ("Android API %s" % sdk).strip() if sdk else "Android"
+
+
 def sys_os_line():
-    """OS name for the about footer, mirroring Kodi's GetOsPrettyName (pure
-    python: the System.OSVersionInfo label is racy)."""
+    """OS name for the about footer, mirroring Kodi's GetOsPrettyName.
+
+    Kodi's compile-time System.Platform.* conditions pick the platform (reliable
+    across every Kodi build, unlike the racy System.OSVersionInfo label); the
+    version is read per platform. Falls back to sys.platform when the conditions
+    are unavailable (offline tooling)."""
+    if _cond("System.Platform.TVOS"):
+        return _kodi_os_version() or "tvOS"
+    if _cond("System.Platform.IOS"):
+        return _kodi_os_version() or "iOS"
+    if _cond("System.Platform.OSX"):
+        return "macOS %s" % (platform.mac_ver()[0] or "?")
+    if _cond("System.Platform.UWP") or _cond("System.Platform.Windows"):
+        return _windows_os_line()
+    if _cond("System.Platform.Android"):
+        return _android_os_line()
+    if _cond("System.Platform.WebOS"):
+        return _linux_os_line() or "webOS"
+    if _cond("System.Platform.Linux"):
+        return _linux_os_line() or "Linux"
     if sys.platform == "darwin":
         return "macOS %s" % (platform.mac_ver()[0] or "?")
     if sys.platform == "win32":
-        return "Windows %s" % (platform.win32_ver()[1] or "?")
+        return _windows_os_line()
     if sys.platform.startswith("linux"):
         try:
             import sources as _sources
             android = _sources._is_android()
         except Exception:
             android = False
-        if android:
-            props = {}
-            try:
-                with open("/system/build.prop", encoding="utf-8", errors="replace") as f:
-                    for line in f:
-                        if "=" in line:
-                            k, v = line.split("=", 1)
-                            props[k.strip()] = v.strip()
-            except Exception:
-                pass
-            if props.get("ro.product.manufacturer", "").lower() == "amazon":
-                # Fire OS maps the underlying Android release
-                # (6 -> 7.1, 7 -> 9, 8 -> 11).
-                generation = {"7.1": "6", "9": "7", "11": "8"}.get(
-                    props.get("ro.build.version.release", ""), "")
-                return ("Fire OS %s" % generation).strip()
-            return ("Android %s" % props.get("ro.build.version.release", "")).strip()
-        vals = {}
-        try:
-            with open("/etc/os-release", encoding="utf-8") as f:
-                for line in f:
-                    if "=" in line:
-                        k, v = line.split("=", 1)
-                        vals[k] = v.strip().strip('"')
-        except Exception:
-            pass
-        return (vals.get("NAME", "Linux") + " " + vals.get("VERSION_ID", "")).strip()
+        return _android_os_line() if android else (_linux_os_line() or "Linux")
     return sys.platform
 
 

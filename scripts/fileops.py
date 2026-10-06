@@ -74,10 +74,12 @@ def _net(path):
 
 def _is_dav(path):
     """True for WebDAV-style URLs (dav/davs only), not general HTTP URLs."""
-    try:
-        return (path or "").lower().split("://", 1)[0] in ("dav", "davs")
-    except Exception:
-        return False
+    return sources.is_dav(path)
+
+
+def _is_ftp(path):
+    """True for ftp/ftps URLs (writes go through our own ftplib client)."""
+    return sources.is_ftp(path)
 
 
 def _net_rescan(folder):
@@ -98,6 +100,12 @@ def _vfs_list(path):
     (dirs, files), or None when it keeps failing. A DAV answer that lacks the
     collection's own self-reference is a partial (502) response -- retried,
     never mistaken for an empty folder."""
+    if sources.is_ftp(path):
+        # Our own MLSD listing: Kodi's FTP listing truncates a "?"/";" name, so a
+        # child lookup (e.g. _exists for the context menu) would miss it.
+        r3 = sources.ftp_listdir(path)
+        if r3[0] is not None:
+            return list(r3[0]), list(r3[1])
     is_dav = path.lower().startswith(("dav://", "davs://"))
     tail = path.rstrip("/").rsplit("/", 1)[-1] if is_dav else ""
     deadline = time.time() + 3.0
@@ -187,10 +195,13 @@ def _vfs_rmtree(path):
     for d in dirs:
         if not _vfs_rmtree(base + "/" + d):
             ok = False
-    try:
-        done = bool(xbmcvfs.rmdir(base))
-    except Exception:
-        done = False
+    if _is_ftp(base):
+        done = sources.ftp_delete_file(base, is_dir=True)
+    else:
+        try:
+            done = bool(xbmcvfs.rmdir(base))
+        except Exception:
+            done = False
     if not done and _vfs_exists(base):
         ok = False
     return ok
@@ -207,6 +218,8 @@ def _vfs_delete_file(path):
     """Delete ONE network file. WebDAV uses our own HTTP DELETE (Kodi's
     CDAVFile::Delete is unreliable on some servers, e.g. CloudMe answers 502);
     everything else uses the VFS. Returns True on success."""
+    if _is_ftp(path):
+        return sources.ftp_delete_file(path)
     if path.lower().startswith(("dav://", "davs://")):
         try:
             ok, _reason = sources.dav_delete_file(path)
@@ -253,6 +266,11 @@ def _vfs_count_children(path, got):
 
 def _vfs_size(path):
     """Exact size for a file URL/path, or None when the stat is unavailable."""
+    if sources.is_ftp(path):
+        # Kodi's FTP Stat is unreliable for "?"/";" names; MLSD carries the size.
+        s = sources.ftp_size(path)
+        if s is not None:
+            return s
     for attempt in range(3):
         try:
             stat = xbmcvfs.Stat(path)
@@ -282,7 +300,7 @@ def _copy_transient(reason):
     marks = ("status-5", "500", "502", "503", "504", "timeout", "timed out",
              "urlerror", "connection", "remotedisconnected", "reset by peer",
              "temporarily", "try again", "unverified", "stream failed",
-             "download failed")
+             "download failed", "ssl", "eof")
     r = (reason or "").lower()
     return any(m in r for m in marks)
 
@@ -345,6 +363,45 @@ def _leaf_progress(state):
         frac = (sent * 100 // size) if size else 0
         _prog_set((state.get("done", 0) * 100 + frac) // total)
     return cb
+
+
+# Chunk size for our own VFS copy loop (1 MiB).
+_STREAM_CHUNK = 1048576
+
+
+def _stream_copy(src, dst, state):
+    """Chunked copy through Kodi's Python bindings. Reads the source (a NETWORK
+    path via `readBytes` -- binary, since `read()` decodes as text and raises on
+    binary content -- a local file via a normal handle) and writes the
+    destination with `xbmcvfs.File(dst, "w").write(bytes)`. Used for NETWORK
+    destinations because Kodi's own `xbmcvfs.copy` is a no-op on the SMB write
+    path (it just returns False). Advances the progress bar; True on success."""
+    total = _vfs_size(src) or 0
+    src_net = _net(src)
+    f = None
+    out = None
+    try:
+        f = xbmcvfs.File(src) if src_net else open(src, "rb")
+        out = xbmcvfs.File(dst, "w")
+        progress = _leaf_progress(state)
+        sent = 0
+        while True:
+            if _prog_cancelled():
+                raise _ProgCancelled()
+            chunk = f.readBytes(_STREAM_CHUNK) if src_net else f.read(_STREAM_CHUNK)
+            if not chunk:
+                break
+            out.write(chunk)
+            sent += len(chunk)
+            progress(sent, total)
+        return True
+    finally:
+        for h in (out, f):
+            try:
+                if h:
+                    h.close()
+            except Exception:
+                pass
 
 
 def _copy_leaf(src, dst, state):
@@ -419,14 +476,42 @@ def _copy_leaf(src, dst, state):
             log("upload %s, retrying: %s" % (reason, redact(dst)))
             time.sleep(1.0)
         return _leaf_failed(state, reason)
-    # Phase 2b: streamed copy through Kodi (non-DAV target). At most two attempts.
+    if _is_ftp(dst):
+        # Phase 2a': ftp/ftps destination -> our own ftplib upload (Kodi's FTP
+        # write path is broken: it leaves an empty / 64 KiB file). Two attempts.
+        for attempt in range(2):
+            if _prog_cancelled():
+                raise _ProgCancelled()
+            ok, reason = sources.ftp_upload_file(
+                src, dst, on_progress=_leaf_progress(state),
+                cancelled=_prog_cancelled)
+            if reason == "cancelled":
+                raise _ProgCancelled()
+            if ok:
+                if _verify_vfs_copy(src, dst, True):
+                    return _leaf_done(state)
+                reason = "upload unverified"
+            if (not _copy_transient(reason) or time.time() >= deadline
+                    or attempt >= 1):
+                break
+            log("ftp upload %s, retrying: %s" % (reason, redact(dst)))
+            time.sleep(1.0)
+        return _leaf_failed(state, reason)
+    # Phase 2b: VFS copy (target is neither DAV nor ftp/ftps). At most two
+    # attempts. Kodi's own copy works for SFTP (vfs.sftp) and local targets; on
+    # the SMB/NFS write path it is a no-op (returns False), so fall back to our
+    # own chunked loop there.
     for attempt in range(2):
         if _prog_cancelled():
             raise _ProgCancelled()
         try:
             ok = bool(xbmcvfs.copy(src, dst))
+            if not ok and _net(dst):
+                ok = _stream_copy(src, dst, state)
             if not ok:
                 reason = "stream failed"
+        except _ProgCancelled:
+            raise
         except Exception as err:
             ok, reason = False, "%s: %s" % (type(err).__name__, err)
         if ok and _verify_vfs_copy(src, dst, True):
@@ -441,13 +526,14 @@ def _copy_leaf(src, dst, state):
     return _leaf_failed(state, reason)
 
 
-def _xport_name(name, src_net, dst_net):
-    """Child name for the target of a cross-transport copy. A raw local name is
-    percent-encoded for a network target; an href-encoded network name is
-    decoded for a local target. Same transport keeps the name unchanged."""
-    if src_net == dst_net:
-        return name
-    return quote(name, safe="") if dst_net else unquote(name)
+def _xport_name(name, src, dst):
+    """Child name for the copy target, in the DESTINATION's transport form. A
+    WebDAV target wants the URL-encoded href form, the other VFS transports the
+    RAW name (they take the path literally). A WebDAV SOURCE name arrives
+    href-encoded, so decode it for a non-WebDAV target."""
+    if _is_dav(dst):
+        return name if _is_dav(src) else quote(name, safe="")
+    return unquote(name) if _is_dav(src) else name
 
 
 def _copy_dir(src, dst, got, state):
@@ -455,8 +541,6 @@ def _copy_dir(src, dst, got, state):
     Child names are transformed when the source and target transports differ."""
     dirs = _strip_self(src, got[0])
     files = got[1]
-    src_net = _net(src)
-    dst_net = _net(dst)
     try:
         xbmcvfs.mkdir(dst)
     except Exception:
@@ -465,13 +549,13 @@ def _copy_dir(src, dst, got, state):
     for n in files:
         if _prog_cancelled():
             raise _ProgCancelled()
-        dn = _xport_name(n, src_net, dst_net)
+        dn = _xport_name(n, src, dst)
         if not _copy_leaf(src.rstrip("/") + "/" + n, dst.rstrip("/") + "/" + dn, state):
             ok = False
     for n in dirs:
         csrc = src.rstrip("/") + "/" + n
         cgot = _vfs_list(csrc)
-        dn = _xport_name(n, src_net, dst_net)
+        dn = _xport_name(n, src, dst)
         if cgot is None or not _copy_dir(csrc, dst.rstrip("/") + "/" + dn, cgot, state):
             ok = False
     return ok
@@ -533,13 +617,17 @@ def rename(path=None):
     if "/" in new_name or "\\" in new_name:
         xbmcgui.Dialog().notification(skin_name(), L(31331), xbmcgui.NOTIFICATION_ERROR, 3000)
         return
-    target_name = quote(new_name, safe="") if net else new_name
+    target_name = (sources.net_child_name(new_name, os.path.dirname(p.rstrip("/")))
+                   if net else new_name)
     new_path = os.path.join(os.path.dirname(p.rstrip("/")), target_name)
     if _exists(new_path):
         xbmcgui.Dialog().notification(skin_name(), L(31334), xbmcgui.NOTIFICATION_ERROR, 3000)
         return
     try:
-        if net:
+        if net and _is_ftp(p):
+            if not sources.ftp_rename(p, new_path):
+                raise OSError("FTP rename failed")
+        elif net:
             xbmcvfs.rename(p, new_path)
         else:
             os.rename(p, new_path)
@@ -626,14 +714,17 @@ def mkdircreate():
     cur_raw = path_dec(win.getProperty("bp.path") or "").rstrip("/")
     net = _net(cur_raw)
     if net:
-        new_path = cur_raw + "/" + quote(name, safe="")
+        new_path = cur_raw + "/" + sources.net_child_name(name, cur_raw)
         if _exists(new_path):
             xbmcgui.Dialog().notification(skin_name(), L(31335), xbmcgui.NOTIFICATION_ERROR, 3000)
             return
         try:
             # mkdir, NOT mkdirs: the recursive variant does not know VFS
-            # protocols and fails silently for davs://. Returns False on failure.
-            if not xbmcvfs.mkdir(new_path):
+            # protocols and fails silently for davs://. ftp/ftps use our own
+            # ftplib MKD (Kodi's FTP write path is broken).
+            ok = (sources.ftp_mkdir(new_path) if _is_ftp(new_path)
+                  else xbmcvfs.mkdir(new_path))
+            if not ok:
                 raise OSError("VFS mkdir failed")
             log("mkdir: %s" % redact(new_path))
             _reload_list()
@@ -921,8 +1012,7 @@ def _paste_vfs(src, dest, mode):
     VFS copy (+ delete for a move); child names are transformed per target
     transport (see _xport_name)."""
     win = xbmcgui.Window(10000)
-    name = _xport_name(os.path.basename(src.rstrip("/")) or "?",
-                       _net(src), _net(dest))
+    name = _xport_name(os.path.basename(src.rstrip("/")) or "?", src, dest)
     target = dest + "/" + name
     title = L(31417)
     src_b = src.rstrip("/")

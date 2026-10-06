@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Confirm dialog: dark panel (control ids mandated). Ours permanently, never replaced by sync. Opaque accent focus (store may be empty). -->
+<!-- OK dialog (Kodi's CGUIDialogOK, e.g. the playback-error box): Estuary ships
+     no DialogOK.xml, so Kodi falls back to a bare panel with NO dim. Ours gives
+     the same dark panel + a full-screen veil, like our other dialogs. Control
+     ids are mandated by CGUIDialogBoxBase: heading 1, textbox 9, buttons
+     10/11/12, progress 20. Ours permanently, never replaced by sync. -->
 <window>
 	<controls>
 		<!-- Full-screen dim behind the panel (a Kodi dialog window is full-screen). -->

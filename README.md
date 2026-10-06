@@ -19,7 +19,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * List-load veil on every drive/folder switch so the previous listing never lingers.
 * Search: folder-scoped substring filter with query pill and virtual/hardware keyboard support. Navigation resets the query.
 * Sorting: name, size, date, each ascending/descending. Folders-first can be disabled. Hidden files, zebra stripes, and network details are optional.
-* Folder sizes: background scan with quick approximation first, then exact values. Network sizes via VFS stat, WebDAV via PROPFIND.
+* Folder sizes: background scan with quick approximation first, then exact values. Network sizes via VFS stat, WebDAV via PROPFIND, FTP via its MLSD listing.
 * File operations: rename, copy, cut, paste, delete, new folder, cancel. Clipboard with overwrite and self-move protection. Delete uses a confirm overlay. Rename and new folder use our on-screen keyboard. Percent-encoded paths are decoded at the command edge.
 * Hamburger menu: skin name (opens About with OS, Kodi version, resolution, skin version), Shortcuts, Settings, System (base layer), Quit (power menu). Each row carries a matching icon and the panel matches the drive dropdown width.
 * Power menu and shutdown timer are generated from the installed Estuary dialog, with safe confirm overlays for destructive actions.
@@ -81,13 +81,16 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Some rubric headers have an eraser button with a confirm modal and deterministic defaults.
 * Transient overlay properties are cleared on Home load. Ghost overlays cannot survive a reload.
 
-## Sources and blocklist
+## Sources
 
 * Local drives from the mount table with real labels at any depth. Network and directory sources merge in as quasi-drives. On Android the shared storage is the home source and only real removable volumes (SD/USB) appear as drives.
 * Hiding is opt-out by identity, so new sticks stay visible. Unplugged directory sources show a hint.
 * Entered sources have no `..` at their root. The folder picker turns the main list into a folder-only picker with a bottom bar.
-* Network sources: ftp, ftps, sftp (read-only), smb, nfs, WebDAV/davs. (SFTP needs Kodi's separate `vfs.sftp` addon; when it is missing or disabled the source names it instead of a generic error.) Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default; greyed for the read-only schemes), OK, Test, Cancel. Live connection test with state icons. Browser parity plus VFS rename, delete, and new folder (greyed out on read-only sources). Copy, cut, and paste work on writable sources (a server-side move/copy is used when possible) and between local drives and network sources. WebDAV listings retry transient server errors, cache the server's auth challenge (so listings, copies and uploads skip an extra request), support Digest authentication, and keep file names with special characters intact.
-* Blocklist: read-only seed (Windows system plus macOS dotfiles) plus user list minus off-list, sorted. Inline rows with per-row toggle, add via keyboard, remove via X or row menu, optional match-case. Enforced in listing and folder-size scan.
+* Network sources: ftp, ftps, sftp, smb, nfs, WebDAV/davs. (SFTP needs Kodi's separate `vfs.sftp` addon; when it is missing or disabled the source names it instead of a generic error. Address an SFTP source by IP/hostname, not `localhost`.) Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default, per source), OK, Test, Cancel. Live connection test with state icons. Browser parity plus rename, delete, and new folder (on writable sources). Copy, cut, and paste work on writable sources and between local drives and network sources; a server-side move/copy is used where the protocol supports it, and writes to FTP/FTPS are performed by the skin itself (Kodi's own FTP write path is broken). WebDAV listings retry transient server errors, cache the server's auth challenge (so listings, copies and uploads skip an extra request), support Digest authentication, and keep file names with special characters intact. FTP/FTPS listings use the skin's own request, so names with `?` or `;` stay complete and carry size and date (Kodi's own FTP listing truncates them; note that Kodi itself still cannot *play* an FTP file with `?`/`;` in its name -- use SMB/SFTP/WebDAV or rename it). Network child names are percent-encoded only for WebDAV; the other protocols take them literally.
+
+## Blocklist
+
+* Read-only seed (Windows system plus macOS dotfiles) plus user list minus off-list, sorted. Inline rows with per-row toggle, add via keyboard, remove via X or row menu, optional match-case. Enforced in listing and folder-size scan.
 
 ## Remote, keyboard, shortcut map
 
