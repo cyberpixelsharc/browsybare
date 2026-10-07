@@ -360,6 +360,7 @@ def list_network(handle, path, picker_active=False):
     dav_entries = None
     details = {}
     ftp_details = None
+    ftp_ok = False   # OUR ftp/ftps listing (MLSD or LIST) succeeded
     path = (path or "").strip()
     # "no path" and "scheme only" ("ftp://") are half-filled entries: report
     # unreachable immediately instead of probing the VFS (long connect timeout).
@@ -410,6 +411,7 @@ def list_network(handle, path, picker_active=False):
                         r3 = sources.ftp_listdir(path)
                         if r3[0] is not None:
                             res, ftp_details = (r3[0], r3[1]), r3[2]
+                            ftp_ok = True
                     if res is None:
                         res = xbmcvfs.listdir(ls_path)
                 except Exception as e:
@@ -445,9 +447,16 @@ def list_network(handle, path, picker_active=False):
         # stripped), so an empty DAV result IS an existing empty folder; its
         # exists() probe is unreliable (CloudMe empty folders read unreachable).
         # Skip the exists() probe where Kodi's Stat is unreliable: a DAV listing
-        # already carried the collection, and vfs.sftp returns False even for an
-        # EXISTING empty folder (verified), so a successful listdir is the proof.
-        if not is_dav and not path.lower().startswith("sftp://"):
+        # already carried the collection, vfs.sftp returns False even for an
+        # EXISTING empty folder (verified), and Kodi's FTP Stat does the same. An
+        # empty ftp/ftps answer is a real empty folder ONLY when OUR client
+        # listed it (MLSD/LIST, `ftp_ok`): if our client failed (e.g. an FTPS
+        # certificate error) and Kodi's VFS answered an empty tuple, the folder is
+        # not proven to exist -- the probe then reports unreachable instead of a
+        # fake empty folder. For ftp/ftps the earlier TCP probe already ruled out
+        # a dead host.
+        ftp_proven = sources.is_ftp(path) and ftp_ok
+        if not is_dav and not ftp_proven and not path.lower().startswith("sftp://"):
             try:
                 if not xbmcvfs.exists(path):
                     err = "unreachable"

@@ -553,15 +553,30 @@ def _xport_name(name, src, dst):
     return unquote(name) if _is_dav(src) else name
 
 
+def _make_dir(dst):
+    """Create a directory at a VFS/local destination. FTP goes through our own
+    ftplib MKD -- Kodi's FTP mkdir is unsupported (it logs "Create - Error" and
+    returns False). True when the directory exists afterwards, so a pre-existing
+    directory counts as success while a real failure (read-only server) reaches
+    the caller and stops a move from deleting its source."""
+    if _is_ftp(dst):
+        if sources.ftp_mkdir(dst):
+            return True
+        return _exists(dst)
+    try:
+        xbmcvfs.mkdir(dst)
+    except Exception:
+        pass
+    return _exists(dst)
+
+
 def _copy_dir(src, dst, got, state):
     """Copy a directory whose listing is `got` (child kinds already known).
     Child names are transformed when the source and target transports differ."""
     dirs = _strip_self(src, got[0])
     files = got[1]
-    try:
-        xbmcvfs.mkdir(dst)
-    except Exception:
-        pass
+    if not _make_dir(dst):
+        return False
     ok = True
     for n in files:
         if _prog_cancelled():
@@ -1050,11 +1065,18 @@ def _paste_vfs(src, dest, mode):
                 moved = bool(xbmcvfs.rename(src, target))  # server-side MOVE
             except Exception:
                 moved = False
+            if moved and not _exists(target):
+                moved = False   # the backend claimed a move it did not do
         if not moved:
             state = {"total": _vfs_count(src), "done": 0, "reason": ""}
             if not _vfs_copy(src, target, state):
                 raise OSError(state.get("reason") or "copy failed")
             if mode == "move":
+                # Never delete the source unless the copy is verifiably at the
+                # target: a false "success" (e.g. a folder copy whose mkdir was
+                # swallowed) must not turn a move into data loss.
+                if not _exists(target):
+                    raise OSError("copy unverified")
                 _vfs_delete(src)
         _prog_set(100)
         log("clipboard paste (%s): %s -> %s" % (mode, redact(src), redact(target)))

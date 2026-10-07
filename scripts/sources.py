@@ -595,8 +595,12 @@ def _dav_origin(url):
         if not host or not parsed.path.startswith("/"):
             return None
         port = parsed.port or (443 if scheme == "https" else 80)
+        default_port = 443 if scheme == "https" else 80
         bracketed = "[%s]" % host if ":" in host else host
-        netloc = bracketed + (":%d" % parsed.port if parsed.port else "")
+        # Omit the scheme's DEFAULT port: Shadow Drive's front end answers 503
+        # to any request whose URL carries an explicit ":443" (verified), and
+        # https://host:443 is equivalent to https://host anyway.
+        netloc = bracketed + (":%d" % port if port != default_port else "")
         path = parsed.path + ("?" + parsed.query if parsed.query else "")
         username = unquote(parsed.username) if parsed.username is not None else None
         password = unquote(parsed.password or "")
@@ -1192,31 +1196,90 @@ def _ftp_mtime(s):
         return 0
 
 
+_LIST_MONTHS = {"jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+                "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12}
+
+
+def _ftp_parse_list(line):
+    """(name, is_dir, size, mtime) from one Unix `LIST` line, or None for a line
+    that is not a standard entry. Used for FTP servers WITHOUT MLSD (the
+    FRITZ!Box answers `500 MLSD`). Only the first 8 fields are split off, so a
+    name containing spaces survives. The time column is server-local: a bare
+    time means this year, a year means Jan 1 00:00 of that year (date-only
+    precision is fine for the listing)."""
+    parts = line.split(None, 8)
+    if len(parts) < 9:
+        return None
+    perms, _links, _owner, _group, size, mon, day, when, name = parts
+    if not perms or perms[0] not in ("-", "d", "l"):
+        return None
+    is_dir = perms[0] == "d"
+    try:
+        size = int(size)
+    except Exception:
+        size = 0
+    mtime = 0
+    try:
+        import time as _t
+        month = _LIST_MONTHS.get(mon[:3].lower(), 0)
+        if month:
+            if ":" in when:
+                hh, mm = when.split(":")[:2]
+                year = _t.localtime().tm_year
+            else:
+                hh, mm, year = "0", "0", when
+            mtime = int(_t.mktime((int(year), month, int(day), int(hh),
+                                   int(mm), 0, 0, 0, -1)))
+    except Exception:
+        mtime = 0
+    return name, is_dir, size, mtime
+
+
 def ftp_listdir(url):
-    """(dirs, files, details) for an ftp/ftps URL via MLSD, or (None, ...) on
-    failure. Kodi's own FTP listing truncates a child name at "?" and ";" (its
-    URL option/query separators), so "a?b.txt" comes back as "a" -- MLSD returns
-    the true names plus `type`/`size`/`modify`. `details` maps name ->
-    (size, mtime_epoch, is_dir) for the size/date columns (Kodi cannot stat such
-    names either)."""
+    """(dirs, files, details) for an ftp/ftps URL, or (None, ...) on failure.
+    Prefers MLSD (true names + type/size/modify); when the server has no MLSD
+    (the FRITZ!Box answers `500 MLSD`) it falls back to the Unix `LIST` output,
+    which also carries size and date. Kodi's own FTP listing truncates a child
+    name at "?" and ";" (its URL option/query separators) and carries no
+    size/date, so it is never used here. `details` maps name ->
+    (size, mtime_epoch, is_dir)."""
     ftp, remote = _ftp_connect(url)
     if ftp is None:
         return None, None, None
     dirs, files, details = [], [], {}
     try:
-        for name, facts in ftp.mlsd(remote or "."):
+        try:
+            for name, facts in ftp.mlsd(remote or "."):
+                if name in (".", ".."):
+                    continue
+                is_dir = (facts.get("type") or "").lower() in ("dir", "cdir", "pdir")
+                try:
+                    size = int(facts.get("size") or 0)
+                except Exception:
+                    size = 0
+                details[name] = (size, _ftp_mtime(facts.get("modify")), is_dir)
+                (dirs if is_dir else files).append(name)
+            return dirs, files, details
+        except Exception:
+            pass
+        # No MLSD: parse LIST. Clear a partial MLSD answer first.
+        dirs, files, details = [], [], {}
+        lines = []
+        ftp.retrlines("LIST " + (remote or "."), lines.append)
+        for line in lines:
+            parsed = _ftp_parse_list(line)
+            if not parsed:
+                continue
+            name, is_dir, size, mtime = parsed
             if name in (".", ".."):
                 continue
-            is_dir = (facts.get("type") or "").lower() in ("dir", "cdir", "pdir")
-            try:
-                size = int(facts.get("size") or 0)
-            except Exception:
-                size = 0
-            details[name] = (size, _ftp_mtime(facts.get("modify")), is_dir)
+            details[name] = (size, mtime, is_dir)
             (dirs if is_dir else files).append(name)
+        if not dirs and not files and lines:
+            return None, None, None   # unparsable LIST format -> Kodi's VFS
         return dirs, files, details
     except Exception:
-        return None, None, None   # MLSD unsupported -> caller falls back to Kodi's VFS
+        return None, None, None   # listing unavailable -> caller uses Kodi's VFS
     finally:
         try:
             ftp.quit()
@@ -1310,14 +1373,17 @@ def dav_details(url, timeout=8, attempts=2):
         host = u.hostname or ""
         if not host:
             return {}
-        netloc = host + (":%d" % u.port if u.port else "")
+        # Omit the scheme's DEFAULT port: Shadow Drive's front end answers 503
+        # to any request URL that carries an explicit ":443" (verified).
+        default_port = 443 if u.scheme == "https" else 80
+        port = u.port or default_port
+        netloc = host + (":%d" % port if port != default_port else "")
         path = u.path or "/"
         if not path.endswith("/"):
             path += "/"
         request_url = "%s://%s%s" % (u.scheme, netloc, _dav_req_path(path))
         username = unquote(u.username) if u.username is not None else None
         password = unquote(u.password or "")
-        port = u.port or (443 if u.scheme == "https" else 80)
         # Reuse the cached challenge (skip the extra unauthenticated PROPFIND).
         auth_header = ""
         cached = _dav_cached_challenge(u.scheme, host, port)

@@ -2549,7 +2549,7 @@ def _version_tuple(text):
 
 
 UPDATE_SEARCH_HOLD = 2.0  # keep "Searching for update" visible at least this long
-UPDATE_PHASE_HOLD = 1.0  # and each download/install phase label too
+UPDATE_PHASE_HOLD = 2.0  # and each download/save phase label too
 
 
 def _hold(t0, secs):
@@ -2709,12 +2709,22 @@ def updatebutton():
         update_check()
 
 
+def _confirm_reset_progress(win):
+    """Drop a stale update progress bar before opening the confirm -- Window(10000)
+    properties survive a skin reload, so a leftover bar would show too early."""
+    win.clearProperty("bp.confirm.progress")
+    win.clearProperty("bp.confirm.update")
+    for i in range(1, 11):
+        win.clearProperty("bp.confirm.f%d" % i)
+
+
 def update_confirm():
     """Ask before downloading + installing the newer release (own confirm modal,
     focus on No). Yes runs `updateinstall` via the generic confirm handler."""
     win = xbmcgui.Window(10000)
     ver = win.getProperty("bp.update.ver") or ""
     win.clearProperty("bp.confirm.op")
+    _confirm_reset_progress(win)
     win.setProperty("bp.confirm.title", xbmc.getLocalizedString(31535))
     line = xbmc.getLocalizedString(31536)
     try:
@@ -2722,9 +2732,8 @@ def update_confirm():
     except Exception:
         line = "%s %s" % (line, ver)
     win.setProperty("bp.confirm.line", line)
-    win.setProperty("bp.confirm.cmd.1",
-                    "RunScript(special://skin/scripts/main.py,updateinstall)")
-    win.setProperty("bp.confirm.cmds", "1")
+    # powerrun runs the update INLINE and keeps this modal open (progress bar).
+    win.setProperty("bp.confirm.update", "1")
     win.setProperty("bp.confirm.from", xbmc.getInfoLabel("System.CurrentControlId"))
     win.setProperty("bp.confirm", "open")
     # Bounded retry: the overlay's `<visible>` may not be re-evaluated yet.
@@ -2739,10 +2748,11 @@ def update_confirm():
     log("update: install confirm")
 
 
-def _download_to(url, target):
+def _download_to(url, target, on_progress=None):
     """Stream `url` to `target`; (True, "") on a non-empty file, else
     (False, reason). A plain local path or `file://` URL (the dev override) is
-    copied directly. Removes a partial file on any error."""
+    copied directly. `on_progress(done, total)` is called per chunk (total 0 when
+    unknown). Removes a partial file on any error."""
     import shutil
     import urllib.request
     try:
@@ -2753,12 +2763,20 @@ def _download_to(url, target):
             return ok, ("" if ok else "empty file")
         req = urllib.request.Request(url, headers={"User-Agent": "Browsybare"})
         with urllib.request.urlopen(req, timeout=120) as r:
+            try:
+                total = int(r.headers.get("Content-Length") or 0)
+            except Exception:
+                total = 0
+            done = 0
             with open(target, "wb") as f:
                 while True:
                     chunk = r.read(65536)
                     if not chunk:
                         break
                     f.write(chunk)
+                    done += len(chunk)
+                    if on_progress:
+                        on_progress(done, total)
         ok = os.path.getsize(target) > 0
         return ok, ("" if ok else "empty file")
     except Exception as e:
@@ -2885,32 +2903,83 @@ def _install_zip(zip_path, dest_root, ver=None):
     return True, ""
 
 
+def _upd_status(win, sid, value=None):
+    """Update status text: the confirm modal's line when the update modal is up
+    (bp.confirm.update), else the About pill label."""
+    text = xbmc.getLocalizedString(sid)
+    if value is not None:
+        try:
+            text = text % value
+        except Exception:
+            text = "%s %s" % (text, value)
+    if win.getProperty("bp.confirm.update") == "1":
+        win.setProperty("bp.confirm.line", text)
+    else:
+        win.setProperty("bp.update.text", text)
+
+
+def _upd_bar(win, pct):
+    """Light the confirm modal's 10-segment progress bar (0-100)."""
+    filled = int(max(0, min(100, int(pct))) // 10)
+    for i in range(1, 11):
+        win.setProperty("bp.confirm.f%d" % i, "1" if i <= filled else "")
+
+
+def _update_fail(win, sid, reason):
+    """Report an update failure: a notification always, plus the confirm modal
+    line (buttons back) when the update modal is up."""
+    msg = "%s: %s" % (xbmc.getLocalizedString(sid), reason)
+    _notify_update(msg)
+    if win.getProperty("bp.confirm.update") == "1":
+        win.setProperty("bp.confirm.line", msg)
+        win.clearProperty("bp.confirm.progress")
+        win.clearProperty("bp.confirm.update")
+        for _ in range(8):
+            xbmc.executebuiltin("SetFocus(956)")
+            try:
+                if xbmc.getCondVisibility("Control.HasFocus(956)"):
+                    break
+            except Exception:
+                break
+            time.sleep(0.15)
+    else:
+        _update_result(win, sid)
+
+
 def update_install():
     """Download the newer release zip into Kodi's temp folder, then copy it over
     this addon folder and reload the skin -- the whole update runs in-skin, so it
     works wherever Kodi can write (`special://temp`): no manual "Install from
-    zip" and no Downloads folder a sandboxed Kodi cannot see."""
+    zip" and no Downloads folder a sandboxed Kodi cannot see. When launched from
+    the update confirm (bp.confirm.update) the confirm modal stays open and shows
+    the phase text + progress bar instead of the About pill."""
     win = xbmcgui.Window(10000)
     url = win.getProperty("bp.update.url")
     ver = win.getProperty("bp.update.ver") or "latest"
-    _update_text(win, 31532, ver)  # "Version %s is being downloaded"
+    _upd_status(win, 31532, ver)  # "Version %s is being downloaded"
+    _upd_bar(win, 0)
     t0 = time.time()
     tmp = _temp_dir()
     zip_path = os.path.join(tmp, "browsybare-%s.zip" % ver) if tmp else ""
+
+    def _prog(done, total):
+        if total:
+            _upd_bar(win, done * 100 // total)
+
     if not url:
         ok, reason = False, "no download URL"
     elif not tmp:
         ok, reason = False, "no writable temp folder"
     else:
-        ok, reason = _download_to(url, zip_path)
+        ok, reason = _download_to(url, zip_path, on_progress=_prog)
     _hold(t0, UPDATE_PHASE_HOLD)
     for p in ("bp.update.state", "bp.update.ver", "bp.update.url"):
         win.clearProperty(p)
     if not ok:
-        _notify_update("%s: %s" % (xbmc.getLocalizedString(31534), reason))
-        _update_result(win, 31534)  # "Download failed"
+        _update_fail(win, 31534, reason)  # "Download failed"
         return
-    _update_text(win, 31541, ver)  # "Version %s is being installed"
+    _upd_status(win, 31541, ver)  # "Version %s is being installed"
+    _upd_bar(win, 100)
     t1 = time.time()
     good, err = _install_zip(zip_path, skin_root(), ver)
     _hold(t1, UPDATE_PHASE_HOLD)
@@ -2920,11 +2989,10 @@ def update_install():
         pass
     if not good:
         log("update install failed: %s" % (err or "?"))
-        _notify_update("%s: %s" % (xbmc.getLocalizedString(31543), err or "?"))
-        _update_result(win, 31543)  # "Install failed"
+        _update_fail(win, 31543, err or "?")  # "Install failed"
         return
     log("update install: %s copied into the addon folder" % ver)
-    _update_text(win, 31542, ver)  # "Version %s installed"
+    _upd_status(win, 31542, ver)  # "Version %s installed"
     # New files are on disk; let Kodi re-read them. UpdateLocalAddons refreshes
     # the addons db; ReloadSkin re-reads the skin XML (the reloaded Home boot
     # then re-merges the Estuary base layer). The label shows briefly first.
@@ -2934,7 +3002,17 @@ def update_install():
         pass
     time.sleep(2)
     try:
+        # ReloadSkin does NOT clear Window(10000) properties, so drop the whole
+        # update confirm (it would otherwise reappear on the reloaded Home).
         win.clearProperty("bp.about")
+        win.clearProperty("bp.confirm")
+        win.clearProperty("bp.confirm.progress")
+        win.clearProperty("bp.confirm.update")
+        win.clearProperty("bp.confirm.title")
+        win.clearProperty("bp.confirm.line")
+        win.clearProperty("bp.confirm.from")
+        for i in range(1, 11):
+            win.clearProperty("bp.confirm.f%d" % i)
         xbmc.executebuiltin("ReloadSkin()")
     except Exception as e:
         log("update install: reload failed: %s" % e)
@@ -3093,6 +3171,7 @@ def powerconfirm():
     """Open the confirm overlay before a destructive OS action (powerrun runs
     it on Yes); focus starts on No."""
     win = xbmcgui.Window(10000)
+    _confirm_reset_progress(win)
     op = win.getProperty("bp.confirm.op") or "Powerdown"
     for i in range(1, 8):
         win.clearProperty("bp.confirm.cmd.%d" % i)
@@ -3109,6 +3188,7 @@ def powergeneric():
     """Open the confirm overlay for an unknown menu entry (row already set
     title/line/cmd.N); powerrun executes the raw builtins."""
     win = xbmcgui.Window(10000)
+    _confirm_reset_progress(win)
     win.clearProperty("bp.confirm.op")
     win.setProperty("bp.confirm.line", xbmc.getLocalizedString(31403))
     win.setProperty("bp.confirm.from", xbmc.getInfoLabel("System.CurrentControlId"))
@@ -3120,6 +3200,12 @@ def powergeneric():
 def powerrun():
     """Yes-handler: run the specific op (handshake) or the row's raw builtins."""
     win = xbmcgui.Window(10000)
+    # Update confirm: run the update inline and keep the modal open as a progress
+    # modal (the buttons hide; update_install drives the bar + status text).
+    if win.getProperty("bp.confirm.update") == "1":
+        win.setProperty("bp.confirm.progress", "1")
+        update_install()
+        return
     op = win.getProperty("bp.confirm.op")
     from_ctl = win.getProperty("bp.confirm.from")
     try:
@@ -3138,6 +3224,7 @@ def powerrun():
     win.clearProperty("bp.confirm.cmds")
     for i in range(1, 8):
         win.clearProperty("bp.confirm.cmd.%d" % i)
+    _confirm_reset_progress(win)
     if op:
         power(op)
     else:
@@ -3156,16 +3243,29 @@ def powerrun():
 
 def powercancel():
     """Cancel-handler: close and return focus to the opener row (if the menu is
-    still open) or the file list."""
+    still open) or the file list. Blocked while an update is running."""
     win = xbmcgui.Window(10000)
+    if win.getProperty("bp.confirm.progress") == "1":
+        return
     back = win.getProperty("bp.confirm.from")
     win.clearProperty("bp.confirm")
     win.clearProperty("bp.confirm.from")
+    _confirm_reset_progress(win)
     time.sleep(0.2)
     if win.getProperty("bp.power") == "open" and back.isdigit():
         xbmc.executebuiltin("SetFocus(%s)" % back)
     else:
         xbmc.executebuiltin("SetFocus(33)")
+
+
+def poweroutside():
+    """Click outside / Back on the confirm backdrop: cancel, EXCEPT for the update
+    modal (which stays until Yes/No so it cannot be dismissed by accident)."""
+    win = xbmcgui.Window(10000)
+    if (win.getProperty("bp.confirm.progress") == "1"
+            or win.getProperty("bp.confirm.update") == "1"):
+        return
+    powercancel()
 
 
 def noticeopen():
@@ -3548,6 +3648,8 @@ if __name__ == "__main__":
             powergeneric()
         elif cmd == "powercancel":
             powercancel()
+        elif cmd == "poweroutside":
+            poweroutside()
         elif cmd == "notice":
             noticeopen()
         elif cmd == "noticeclose":

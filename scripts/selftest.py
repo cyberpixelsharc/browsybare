@@ -2,8 +2,9 @@
 """On-demand source self-test (diagnostic).
 
 Exercises a network source end to end -- create a folder, write a file, list it,
-check its size, read it back, create a subfolder, copy, rename, move and delete
--- and logs a PASS/FAIL summary. A second pass repeats the round-trip with
+check its size, read it back, create a subfolder, copy a file, copy a folder
+(empty and with a file), paste-move a folder, rename, move and delete -- and logs
+a PASS/FAIL summary. A second pass repeats the round-trip with
 umlauts and special characters in the names (stressing the transport's name
 encoding: WebDAV percent-encodes child names, the other transports take them
 literally). Everything happens inside a temporary "_bp-selftest" folder that is
@@ -183,6 +184,24 @@ def run(target):
         rec("move c.txt -> sub/",
             _rename(root + "/c.txt", root + "/sub/c.txt")
             and _has(root + "/sub", "c.txt") and not _has(root, "c.txt"))
+        # Folder copy (the move/paste primitive). An EMPTY folder is the trap: a
+        # swallowed mkdir used to report success, so a move then deleted its
+        # source -- the copy must really create the target directory.
+        rec("mkdir empty folder", _mkdir(root, root + "/empty"))
+        rec("copy empty folder (empty -> empty2)",
+            fileops._vfs_copy(root + "/empty", root + "/empty2", {"total": 0, "done": 0})
+            and _has(root, "empty2"))
+        rec("copy folder with file (sub -> sub2)",
+            fileops._vfs_copy(root + "/sub", root + "/sub2", {"total": 1, "done": 0})
+            and _has(root + "/sub2", "c.txt"))
+        # The exact cut/paste path: _paste_vfs moves a folder (FTP rename is
+        # unsupported, so it copies + deletes). The folder must end up AT the
+        # target and must not be lost -- this is the case that once deleted the
+        # source after a swallowed mkdir.
+        fileops._paste_vfs(root + "/sub2", root + "/sub", "move")
+        rec("paste-move folder (sub2 -> sub/)",
+            _has(root + "/sub", "sub2") and _has(root + "/sub/sub2", "c.txt")
+            and not _has(root, "sub2"))
         # Second pass: umlauts and special characters in the names.
         sdir = _child(root, SPECIAL_DIR)
         sfile = _child(sdir, SPECIAL_FILE)

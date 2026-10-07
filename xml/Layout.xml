@@ -1827,7 +1827,7 @@
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.state)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.ver)</onclick>
 					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.update.url)</onclick>
-					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetFocus(86)</onclick>
+					<onclick condition="!String.IsEqual(Window(10000).Property(bp.about),open)">SetFocus(89)</onclick>
 					<onclick condition="String.IsEqual(Window(10000).Property(bp.about),open)">ClearProperty(bp.about)</onclick>
 					<onback>ClearProperty(bp.menu)</onback>
 					<onback>SetFocus(32)</onback>
@@ -2781,13 +2781,13 @@
 					<ondown>860</ondown>
 				</control>
 				<control type="group">
-					<left>580</left><centertop>50%</centertop><height>476</height>
+					<left>580</left><centertop>50%</centertop><height>380</height>
 					<control type="image">
-						<left>0</left><top>0</top><width>760</width><height>476</height>
+						<left>0</left><top>0</top><width>760</width><height>380</height>
 						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					<control type="button" id="861">
-						<left>0</left><top>0</top><width>760</width><height>476</height>
+						<left>0</left><top>0</top><width>760</width><height>380</height>
 						<texturefocus /><texturenofocus />
 						<onclick>noop</onclick>
 						<onback>RunScript(special://skin/scripts/main.py,noticeclose)</onback>
@@ -2808,7 +2808,7 @@
 					</control>
 					
 					<control type="grouplist" id="863">
-						<left>34</left><top>84</top><width>692</width><height>276</height>
+						<left>34</left><top>80</top><width>692</width><height>180</height>
 						<orientation>vertical</orientation>
 						<itemgap>6</itemgap>
 						<pagecontrol>864</pagecontrol>
@@ -2825,7 +2825,7 @@
 						<include content="NoticeRow"><param name="idx">10</param><param name="pidx">9</param><param name="nidx">11</param><param name="rid">879</param><param name="previd">878</param><param name="nextid">879</param></include>
 					</control>
 					<control type="scrollbar" id="864">
-						<left>732</left><top>84</top><width>8</width><height>276</height>
+						<left>732</left><top>80</top><width>8</width><height>180</height>
 						<texturesliderbackground>drawn/blank.png</texturesliderbackground>
 						<texturesliderbar border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbar>
 						<texturesliderbarfocus border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbarfocus>
@@ -2833,7 +2833,7 @@
 						<orientation>vertical</orientation>
 					</control>
 					<control type="button" id="862">
-						<left>270</left><top>390</top><width>220</width><height>64</height>
+						<left>270</left><top>288</top><width>220</width><height>64</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
@@ -2877,19 +2877,19 @@
 					<onclick>SetFocus(32)</onclick>
 					<onback>ClearProperty(bp.about)</onback>
 					<onback>SetFocus(32)</onback>
-					<onleft>89</onleft>
+					<onleft>84</onleft>
 					<onright>84</onright>
 					<onup>84</onup>
 					<ondown>89</ondown>
 				</control>
 				<control type="group">
 					<left>420</left>
-					<centertop>50%</centertop><height>850</height>
+					<centertop>50%</centertop><height>858</height>
 					<control type="image">
 						<left>0</left>
 						<top>0</top>
 						<width>1080</width>
-						<height>850</height>
+						<height>858</height>
 						<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
 					</control>
 					
@@ -2897,7 +2897,7 @@
 						<left>0</left>
 						<top>0</top>
 						<width>1080</width>
-						<height>850</height>
+						<height>858</height>
 						<texturefocus />
 						<texturenofocus />
 						<onclick>noop</onclick>
@@ -2918,48 +2918,52 @@
 					</control>
 					<control type="label">
 						<left>60</left>
-						<top>198</top>
+						<top>190</top>
 						<width>960</width>
 						<height>50</height>
 						<font>font36_title</font>
 						<align>center</align>
+						<aligny>center</aligny>
 						<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.name)]</label>
 					</control>
 					<control type="label">
 						<left>60</left>
-						<top>264</top>
+						<top>260</top>
 						<width>960</width>
-						<height>30</height>
+						<height>32</height>
 						<font>font13</font>
 						<align>center</align>
+						<aligny>center</aligny>
 						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.summary)]</label>
 					</control>
 					<control type="label">
 						<left>60</left>
-						<top>326</top>
+						<top>312</top>
 						<width>960</width>
 						<height>30</height>
 						<font>font20_title</font>
 						<align>center</align>
+						<aligny>center</aligny>
 						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$LOCALIZE[31313] $INFO[Window(10000).Property(bp.version)]</label>
 					</control>
 					<control type="label">
 						<left>60</left>
-						<top>376</top>
+						<top>426</top>
 						<width>960</width>
-						<height>240</height>
+						<height>230</height>
 						<font>font13</font>
 						<align>center</align>
+						<aligny>center</aligny>
 						<wrapmultiline>true</wrapmultiline>
 						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.description)]</label>
 					</control>
 					<control type="button" id="89">
-						<left>65</left>
-						<top>633</top>
+						<left>305</left>
+						<top>676</top>
 						<width>470</width>
 						<height>44</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
@@ -2971,16 +2975,16 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>github.com/cyberpixelsharc/browsybare</label>
 						<onclick>RunScript(special://skin/scripts/main.py,openlink)</onclick>
-						<onup>89</onup>
-						<ondown>89</ondown>
-						<onleft>84</onleft>
-						<onright>84</onright>
+						<onup>84</onup>
+						<ondown>84</ondown>
+						<onleft>89</onleft>
+						<onright>89</onright>
 						<onback>ClearProperty(bp.about)</onback>
 						<onback>SetFocus(32)</onback>
 					</control>
 					<control type="button" id="84">
-						<left>545</left>
-						<top>633</top>
+						<left>305</left>
+						<top>362</top>
 						<width>470</width>
 						<height>44</height>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
@@ -2992,31 +2996,33 @@
 						<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 						<label>$INFO[Window(10000).Property(bp.update.text)]</label>
 						<onclick>RunScript(special://skin/scripts/main.py,updatebutton)</onclick>
-						<onup>84</onup>
-						<ondown>84</ondown>
-						<onleft>89</onleft>
-						<onright>89</onright>
+						<onup>89</onup>
+						<ondown>89</ondown>
+						<onleft>84</onleft>
+						<onright>84</onright>
 						<onback>ClearProperty(bp.about)</onback>
 						<onback>SetFocus(32)</onback>
 					</control>
 					<control type="label">
 						<left>60</left>
-						<top>700</top>
+						<top>740</top>
 						<width>960</width>
-						<height>30</height>
+						<height>32</height>
 						<font>font13</font>
 						<align>center</align>
-						<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
+						<aligny>center</aligny>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>© 2026 Browsybare contributors</label>
 					</control>
 					
 					<control type="label">
 						<left>60</left>
-						<top>780</top>
+						<top>792</top>
 						<width>960</width>
 						<height>30</height>
 						<font>font20_title</font>
 						<align>center</align>
+						<aligny>center</aligny>
 						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.sys.os)] | Kodi $INFO[System.BuildVersionShort] | $INFO[System.ScreenWidth]x$INFO[System.ScreenHeight]$INFO[Window(10000).Property(bp.sys.hz),@]</label>
 					</control>
@@ -3031,8 +3037,8 @@
 					<left>0</left><top>0</top><width>1920</width><bottom>0</bottom>
 					<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
 					<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
-					<onclick>RunScript(special://skin/scripts/main.py,powercancel)</onclick>
-					<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+					<onclick>RunScript(special://skin/scripts/main.py,poweroutside)</onclick>
+					<onback>RunScript(special://skin/scripts/main.py,poweroutside)</onback>
 					<onleft>954</onleft>
 					<onright>954</onright>
 					<onup>954</onup>
@@ -3048,7 +3054,7 @@
 						<left>0</left><top>0</top><width>560</width><height>280</height>
 						<texturefocus /><texturenofocus />
 						<onclick>noop</onclick>
-						<onback>RunScript(special://skin/scripts/main.py,powercancel)</onback>
+						<onback>RunScript(special://skin/scripts/main.py,poweroutside)</onback>
 						<onleft>956</onleft>
 						<onright>955</onright>
 						<onup>956</onup>
@@ -3071,8 +3077,66 @@
 						<font>font13</font><textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
 						<label>$INFO[Window(10000).Property(bp.confirm.line)]</label>
 						</control>
+					<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.confirm.progress),1)</visible>
+						<control type="image">
+							<left>60</left><top>200</top><width>440</width><height>11</height>
+							<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f1),1)</visible>
+							<left>60</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f2),1)</visible>
+							<left>104</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f3),1)</visible>
+							<left>148</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f4),1)</visible>
+							<left>192</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f5),1)</visible>
+							<left>236</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f6),1)</visible>
+							<left>280</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f7),1)</visible>
+							<left>324</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f8),1)</visible>
+							<left>368</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f9),1)</visible>
+							<left>412</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+						<control type="image">
+							<visible>String.IsEqual(Window(10000).Property(bp.confirm.f10),1)</visible>
+							<left>456</left><top>200</top><width>42</width><height>11</height>
+							<texture colordiffuse="$INFO[Skin.String(accent)]">drawn/fill.png</texture>
+						</control>
+					</control>
 					<control type="button" id="955">
 						<left>72</left><top>198</top><width>200</width><height>60</height>
+						<visible>!String.IsEqual(Window(10000).Property(bp.confirm.progress),1)</visible>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
@@ -3088,6 +3152,7 @@
 					</control>
 					<control type="button" id="956">
 						<left>288</left><top>198</top><width>200</width><height>60</height>
+						<visible>!String.IsEqual(Window(10000).Property(bp.confirm.progress),1)</visible>
 						<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
 						<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 						<font>font13</font><align>center</align><aligny>center</aligny>
@@ -3583,7 +3648,7 @@
 				<control type="label">
 					<left>22</left><top>0</top><width>648</width><height>88</height>
 					<font>font13</font><textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
-					<align>left</align><aligny>center</aligny>
+					<align>center</align><aligny>center</aligny>
 					<wrapmultiline>true</wrapmultiline>
 					<visible>!Control.HasFocus($PARAM[rid])</visible>
 					<label>$INFO[Window(10000).Property(bp.notice.$PARAM[idx])]</label>
@@ -3591,7 +3656,7 @@
 				<control type="label">
 					<left>22</left><top>0</top><width>648</width><height>88</height>
 					<font>font13</font><textcolor>$INFO[Skin.String(accent)]</textcolor>
-					<align>left</align><aligny>center</aligny>
+					<align>center</align><aligny>center</aligny>
 					<wrapmultiline>true</wrapmultiline>
 					<visible>Control.HasFocus($PARAM[rid])</visible>
 					<label>$INFO[Window(10000).Property(bp.notice.$PARAM[idx])]</label>

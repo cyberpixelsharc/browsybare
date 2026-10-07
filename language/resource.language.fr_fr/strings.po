@@ -853,17 +853,17 @@ msgid "Searching for update"
 msgctxt "#31540"
 msgstr "Recherche d'une mise à jour"
 
-msgid "Installing version %s"
+msgid "Saving version %s"
 msgctxt "#31541"
-msgstr "Installation de la version %s"
+msgstr "Enregistrement de la version %s"
 
-msgid "Version %s installed"
+msgid "Version %s saved and extracted"
 msgctxt "#31542"
-msgstr "Version %s installée"
+msgstr "Version %s enregistrée et décompressée"
 
-msgid "Install failed"
+msgid "Saving failed"
 msgctxt "#31543"
-msgstr "Échec de l'installation"
+msgstr "Échec de l'enregistrement"
 
 msgid "Automatically check for updates"
 msgctxt "#31544"

@@ -64,6 +64,9 @@
 	<onload>ClearProperty(bp.notice)</onload>
 	<onload>ClearProperty(bp.notice.title)</onload>
 	<onload>ClearProperty(bp.notice.line)</onload>
+	<onload>ClearProperty(bp.confirm)</onload>
+	<onload>ClearProperty(bp.confirm.progress)</onload>
+	<onload>ClearProperty(bp.confirm.update)</onload>
 	<onload>ClearProperty(bp.kb)</onload>
 	<onload>ClearProperty(bp.aload)</onload>
 	<onload>ClearProperty(bp.aload.t)</onload>
