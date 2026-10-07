@@ -755,6 +755,72 @@ def dav_copy_file(src_url, dst_url, timeout=60):
     return False, last
 
 
+def dav_rename_file(src_url, dst_url, timeout=30):
+    """Rename/move one file or folder on a WebDAV server with our own HTTP MOVE.
+    Kodi's `xbmcvfs.rename` re-encodes a `%XX` in the Destination, so a name
+    containing e.g. "@" fails; we build the Destination ourselves. Tries the
+    standard absolute URI before the CloudMe-compatible path form."""
+    try:
+        import ssl
+        import urllib.error
+        import urllib.request
+    except Exception:
+        return False, "unsupported"
+    try:
+        src = _dav_origin(src_url)
+        dst = _dav_origin(dst_url)
+    except Exception:
+        return False, "unsupported"
+    if src is None or dst is None:
+        return False, "unsupported"
+    if src[:3] != dst[:3] or src[5:] != dst[5:]:
+        return False, "unsupported"
+    scheme, host, port, netloc, src_path, username, password = src
+    rsrc = _dav_req_path(src_path)
+    rdst = _dav_req_path(dst[4])
+    absolute_destination = "%s://%s%s" % (scheme, netloc, rdst)
+    cached = _dav_cached_challenge(scheme, host, port)
+    pre_auth = (_dav_auth_header("MOVE", rsrc, username, password, cached)
+                if (username is not None and cached) else "")
+    for destination in (absolute_destination, rdst):
+        auth_header = pre_auth
+        challenges = 0
+        last = ""
+        while True:
+            try:
+                req = urllib.request.Request(
+                    "%s://%s%s" % (scheme, netloc, rsrc), method="MOVE")
+                req.add_header("Destination", destination)
+                req.add_header("Overwrite", "F")
+                if auth_header:
+                    req.add_header("Authorization", auth_header)
+                with urllib.request.urlopen(req, timeout=timeout,
+                                            context=ssl.create_default_context()) as resp:
+                    status = getattr(resp, "status", 0) or 0
+                    if status in (200, 201, 204):
+                        return True, ""
+                    last = "status-%s" % status
+            except urllib.error.HTTPError as err:
+                if err.code == 401 and username is not None and challenges < 1:
+                    challenge = (err.headers.get("WWW-Authenticate", "")
+                                 if err.headers else "") or ""
+                    _dav_store_challenge(scheme, host, port, challenge)
+                    new_auth = _dav_auth_header("MOVE", rsrc, username,
+                                                password, challenge)
+                    if new_auth and new_auth != auth_header:
+                        auth_header = new_auth
+                        challenges += 1
+                        continue
+                    return False, "auth"
+                if err.code == 412:
+                    return False, "exists"
+                last = "status-%s" % err.code
+            except Exception as err:
+                last = "%s: %s" % (type(err).__name__, err)
+            break
+    return False, last
+
+
 def dav_delete_file(url, timeout=30):
     """Delete one file on a WebDAV server with our own HTTP DELETE. Kodi's
     CDAVFile::Delete is unreliable on some servers (e.g. CloudMe answers 502 /
@@ -942,6 +1008,32 @@ def _open_upload_source(src_path):
 _UPLOAD_CHUNK = 1048576
 
 
+def _spool_source(handle, kind):
+    """Copy an upload source into a temp file when its size is unknown (an
+    unstatable source, e.g. vfs.sftp, would otherwise send `Content-Length: 0`
+    with a non-empty body). Returns (path, "") or (None, reason)."""
+    import tempfile
+    try:
+        fd, path = tempfile.mkstemp(prefix="browsybare-up-", suffix=".bin")
+    except Exception as e:
+        return None, "%s: %s" % (type(e).__name__, e)
+    try:
+        with os.fdopen(fd, "wb") as out:
+            while True:
+                chunk = (handle.readBytes(_UPLOAD_CHUNK) if kind == "vfs"
+                         else handle.read(_UPLOAD_CHUNK))
+                if not chunk:
+                    break
+                out.write(chunk)
+        return path, ""
+    except Exception as e:
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+        return None, "%s: %s" % (type(e).__name__, e)
+
+
 def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=None):
     """Upload one file to a WebDAV URL with our own streaming PUT.
 
@@ -968,6 +1060,20 @@ def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=
         scheme, host, port, netloc, path, username, password = dst
         rpath = _dav_req_path(path)
         total = _src_size(src_path) or 0
+        if total <= 0:
+            # Unknown size (vfs.sftp): spool to a temp file so the PUT carries a
+            # real Content-Length instead of 0 with a non-empty body.
+            spath, sreason = _spool_source(handle, kind)
+            if spath is None:
+                return False, sreason
+            try:
+                handle.close()
+            except Exception:
+                pass
+            handle = open(spath, "rb")
+            kind = "file"
+            tmp = spath
+            total = _src_size(spath) or 0
         # Auth: reuse the cached challenge (no extra round trip); otherwise
         # probe unauthenticated (Depth-0 PROPFIND, a few tries -- a flaky server
         # answers 5xx) and cache the result. Fall back to PREEMPTIVE Basic so a
@@ -991,8 +1097,11 @@ def dav_upload_file(src_path, dst_url, timeout=300, on_progress=None, cancelled=
                 except Exception:
                     pass
             _dav_store_challenge(scheme, host, port, challenge)
+        # Preemptive Basic only over TLS: on a cleartext dav:// origin it would
+        # disclose the credentials; there the 401 handshake in the PUT loop
+        # answers the real challenge instead.
         auth = _dav_auth_header("PUT", rpath, username, password,
-                                challenge or "Basic")
+                                challenge or ("Basic" if scheme == "https" else ""))
 
         def new_conn():
             if scheme == "https":
@@ -1105,6 +1214,7 @@ def _ftp_connect(url, timeout=30):
         port = int(f.get("port") or 21)
     except Exception:
         port = 21
+    ftp = None
     try:
         if f["scheme"] == "ftps":
             import ssl
@@ -1115,8 +1225,21 @@ def _ftp_connect(url, timeout=30):
         ftp.login(f.get("user") or "anonymous", f.get("pass") or "")
         if f["scheme"] == "ftps":
             ftp.prot_p()
-        return ftp, (f.get("path") or "")
+        remote = f.get("path") or ""
+        # A raw CR/LF in a path would inject an extra FTP command.
+        if "\r" in remote or "\n" in remote:
+            try:
+                ftp.close()
+            except Exception:
+                pass
+            return None, ""
+        return ftp, remote
     except Exception:
+        if ftp is not None:
+            try:
+                ftp.close()
+            except Exception:
+                pass
         return None, ""
 
 
@@ -1284,7 +1407,10 @@ def ftp_listdir(url):
         try:
             ftp.quit()
         except Exception:
-            pass
+            try:
+                ftp.close()
+            except Exception:
+                pass
 
 
 def ftp_size(url):
@@ -1313,7 +1439,10 @@ def ftp_delete_file(url, is_dir=False):
         try:
             ftp.quit()
         except Exception:
-            pass
+            try:
+                ftp.close()
+            except Exception:
+                pass
 
 
 def ftp_mkdir(url):
@@ -1330,7 +1459,10 @@ def ftp_mkdir(url):
         try:
             ftp.quit()
         except Exception:
-            pass
+            try:
+                ftp.close()
+            except Exception:
+                pass
 
 
 def ftp_rename(src_url, dst_url):
@@ -1339,6 +1471,12 @@ def ftp_rename(src_url, dst_url):
     if ftp is None:
         return False
     dst_remote = netsrc_parse_url(dst_url).get("path") or ""
+    if "\r" in dst_remote or "\n" in dst_remote:
+        try:
+            ftp.close()
+        except Exception:
+            pass
+        return False
     try:
         ftp.rename(src_remote, dst_remote)
         return True
@@ -1348,7 +1486,10 @@ def ftp_rename(src_url, dst_url):
         try:
             ftp.quit()
         except Exception:
-            pass
+            try:
+                ftp.close()
+            except Exception:
+                pass
 
 
 def dav_details(url, timeout=8, attempts=2):
@@ -1377,18 +1518,20 @@ def dav_details(url, timeout=8, attempts=2):
         # to any request URL that carries an explicit ":443" (verified).
         default_port = 443 if u.scheme == "https" else 80
         port = u.port or default_port
-        netloc = host + (":%d" % port if port != default_port else "")
+        host_disp = "[%s]" % host if ":" in host else host
+        netloc = host_disp + (":%d" % port if port != default_port else "")
         path = u.path or "/"
         if not path.endswith("/"):
             path += "/"
-        request_url = "%s://%s%s" % (u.scheme, netloc, _dav_req_path(path))
+        req_path = _dav_req_path(path)
+        request_url = "%s://%s%s" % (u.scheme, netloc, req_path)
         username = unquote(u.username) if u.username is not None else None
         password = unquote(u.password or "")
         # Reuse the cached challenge (skip the extra unauthenticated PROPFIND).
         auth_header = ""
         cached = _dav_cached_challenge(u.scheme, host, port)
         if username is not None and cached:
-            auth_header = _dav_auth_header("PROPFIND", path, username, password, cached)
+            auth_header = _dav_auth_header("PROPFIND", req_path, username, password, cached)
         body = None
         last = ""
         handshake = 0
@@ -1414,7 +1557,7 @@ def dav_details(url, timeout=8, attempts=2):
                     challenge = (e.headers.get("WWW-Authenticate", "")
                                  if e.headers else "") or ""
                     _dav_store_challenge(u.scheme, host, port, challenge)
-                    new_auth = _dav_auth_header("PROPFIND", path, username,
+                    new_auth = _dav_auth_header("PROPFIND", req_path, username,
                                                 password, challenge)
                     if new_auth and new_auth != auth_header:
                         auth_header = new_auth
@@ -1638,6 +1781,11 @@ def net_reachable(path, ttl=5.0, timeout=2.0):
             return hit[1]
     ok = host_reachable(path, timeout)
     if key is not None:
+        if len(_HOST_CACHE) >= 256:
+            for k in [k for k, v in _HOST_CACHE.items() if v[0] <= now]:
+                _HOST_CACHE.pop(k, None)
+            if len(_HOST_CACHE) >= 256:
+                _HOST_CACHE.clear()
         _HOST_CACHE[key] = (now + ttl, ok)
     return ok
 
@@ -1726,16 +1874,20 @@ def netsrc_parse_url(url):
     if "://" in p:
         scheme, p = p.split("://", 1)
     scheme = (scheme or "ftp").lower()
+    # Userinfo lives only in the authority (up to the first "/"): an "@" in a
+    # child NAME (non-DAV names stay raw) must not be read as the credential
+    # separator, which would swap host and path.
+    authority, _, sub = p.partition("/")
     creds = ""
-    if "@" in p:
-        creds, p = p.rsplit("@", 1)
+    if "@" in authority:
+        creds, authority = authority.rsplit("@", 1)
     user = passwd = ""
     if creds:
         if ":" in creds:
             user, passwd = creds.split(":", 1)
         else:
             user = creds
-    hostport, _, sub = p.partition("/")
+    hostport = authority
     port = ""
     if ":" in hostport:
         hostport, port = hostport.rsplit(":", 1)

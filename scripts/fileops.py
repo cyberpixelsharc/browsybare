@@ -138,8 +138,12 @@ def _vfs_list(path):
 def _strip_self(path, dirs):
     """Drop the WebDAV self-reference: Kodi lists the collection itself as a
     child named like the folder. Remove ONE occurrence only -- a real child may
-    legitimately share the folder's name (e.g. Movies3/Movies3)."""
+    legitimately share the folder's name (e.g. Movies3/Movies3). Only WebDAV
+    echoes the collection; FTP/SFTP/SMB/NFS do not, so their same-named child
+    must stay (otherwise it looks missing / is skipped by copy and rmtree)."""
     dirs = list(dirs)
+    if not sources.is_dav(path):
+        return dirs
     tail = path.rstrip("/").rsplit("/", 1)[-1]
     if tail and tail in dirs:
         dirs.remove(tail)
@@ -221,6 +225,18 @@ def _vfs_rmtree(path):
 
 
 def _vfs_exists(path):
+    """Existence check for the delete/rmdir verification. Kodi's
+    `xbmcvfs.exists()` is false for a DAV collection (it probes the collection
+    URL), so a network path is matched against its PARENT listing; a listing
+    failure is treated as "still there" so a real failure is reported."""
+    if _net(path):
+        base = path.rstrip("/")
+        parent, _sep, name = base.rpartition("/")
+        if parent and name:
+            got = _vfs_list(parent)
+            if got is not None:
+                return name in _strip_self(parent, got[0]) or name in got[1]
+            return True
     try:
         return bool(xbmcvfs.exists(path))
     except Exception:
@@ -559,6 +575,8 @@ def _make_dir(dst):
     returns False). True when the directory exists afterwards, so a pre-existing
     directory counts as success while a real failure (read-only server) reaches
     the caller and stops a move from deleting its source."""
+    if _net_dead(dst):
+        return False
     if _is_ftp(dst):
         if sources.ftp_mkdir(dst):
             return True
@@ -661,6 +679,12 @@ def rename(path=None):
         if net and _is_ftp(p):
             if not sources.ftp_rename(p, new_path):
                 raise OSError("FTP rename failed")
+        elif net and _is_dav(p):
+            # Our own MOVE: Kodi's xbmcvfs.rename mangles a percent-encoded
+            # Destination (a name with "@" or other reserved chars fails).
+            ok, reason = sources.dav_rename_file(p, new_path)
+            if not ok:
+                raise OSError(reason or "rename failed")
         elif net:
             xbmcvfs.rename(p, new_path)
         else:
@@ -1058,15 +1082,14 @@ def _paste_vfs(src, dest, mode):
         _prog_error(L(31419))
         return
     _prog_open(title)
+    committed = False   # source gone / move authoritative -> never delete target
     try:
         moved = False
-        if mode == "move":
+        if mode == "move" and not _net_dead(src):
             try:
                 moved = bool(xbmcvfs.rename(src, target))  # server-side MOVE
             except Exception:
                 moved = False
-            if moved and not _exists(target):
-                moved = False   # the backend claimed a move it did not do
         if not moved:
             state = {"total": _vfs_count(src), "done": 0, "reason": ""}
             if not _vfs_copy(src, target, state):
@@ -1077,7 +1100,14 @@ def _paste_vfs(src, dest, mode):
                 # swallowed) must not turn a move into data loss.
                 if not _exists(target):
                     raise OSError("copy unverified")
-                _vfs_delete(src)
+                committed = True
+                if not _vfs_delete(src):
+                    log("move: source not deleted: %s" % redact(src))
+        else:
+            # A True server-side MOVE already removed the source; trust it and
+            # never fall back to copy+delete (a false _exists on a collection
+            # would otherwise delete the only copy).
+            committed = True
         _prog_set(100)
         log("clipboard paste (%s): %s -> %s" % (mode, redact(src), redact(target)))
         win.clearProperty("bp.clip.path")
@@ -1098,20 +1128,23 @@ def _paste_vfs(src, dest, mode):
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:
         log("vfs paste cancelled: %s -> %s" % (redact(src), redact(target)))
-        try:
-            _vfs_delete(target)
-        except Exception:
-            pass
+        if not committed:
+            try:
+                _vfs_delete(target)
+            except Exception:
+                pass
         _prog_close()
     except Exception as e:
         log("vfs paste failed: %s" % e)
         # Remove the partial copy: it would make the next paste fail on the
-        # exists-check. The source is untouched.
-        try:
-            if not _vfs_delete(target):
-                log("vfs paste cleanup failed: %s" % redact(target))
-        except Exception:
-            pass
+        # exists-check. The source is untouched -- unless the move already
+        # committed (source deleted), in which case target is the only copy.
+        if not committed:
+            try:
+                if not _vfs_delete(target):
+                    log("vfs paste cleanup failed: %s" % redact(target))
+            except Exception:
+                pass
         _prog_error(safe_label(L(31422) % e))
 
 
@@ -1156,6 +1189,7 @@ def clip_paste():
         return
     _prog_open(title)
     state = {"total": _tree_size(src), "done": 0}
+    committed = False   # source gone / target complete -> never delete target
     try:
         if mode == "move":
             try:
@@ -1164,9 +1198,11 @@ def clip_paste():
                 same_dev = False
             if same_dev:
                 os.rename(src, target)  # instant (no copy)
+                committed = True
                 _prog_set(100)
             else:
                 _copy_tree(src, target, state)
+                committed = True   # target complete -> the source delete may follow
                 if os.path.isdir(target) and not os.path.islink(target):
                     _rmtree(src)
                 else:
@@ -1187,27 +1223,30 @@ def clip_paste():
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:
         log("clipboard paste cancelled: %s -> %s" % (redact(src), redact(target)))
-        # Remove the partial copy (a move only deletes the source after a full copy).
-        try:
-            if os.path.isdir(target) and not os.path.islink(target):
-                _rmtree(target)
-            elif os.path.exists(target):
-                os.remove(target)
-        except OSError:
-            pass
+        # Remove the partial copy (a move only deletes the source after a full
+        # copy); once committed, target is the only copy.
+        if not committed:
+            try:
+                if os.path.isdir(target) and not os.path.islink(target):
+                    _rmtree(target)
+                elif os.path.exists(target):
+                    os.remove(target)
+            except OSError:
+                pass
         _prog_close()
         return
     except Exception as e:
         log("paste failed: %s" % e)
         # Remove the partial copy: it would make the next paste fail on the
-        # exists-check. The source is untouched.
-        try:
-            if os.path.isdir(target) and not os.path.islink(target):
-                _rmtree(target)
-            elif os.path.exists(target):
-                os.remove(target)
-        except OSError:
-            pass
+        # exists-check. The source is untouched -- unless the move committed.
+        if not committed:
+            try:
+                if os.path.isdir(target) and not os.path.islink(target):
+                    _rmtree(target)
+                elif os.path.exists(target):
+                    os.remove(target)
+            except OSError:
+                pass
         _prog_error(safe_label(L(31422) % e))
 
 

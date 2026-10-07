@@ -45,7 +45,7 @@ def _le32(b, o=0):
 
 
 def _lang(v):
-    """15-bit packed ISO-639-2/T language code -> 'de'/'en'/... ('' for und)."""
+    """15-bit packed ISO-639-2/T language code -> 3-letter code ('eng', 'deu', ...) ('' for und)."""
     if not v:
         return ""
     s = "".join(chr(((v >> sh) & 0x1F) + 0x60) for sh in (10, 5, 0))
@@ -106,7 +106,7 @@ def _text(f, start, end):
     if not r:
         return ""
     f.seek(r[0])
-    raw = f.read(r[1] - r[0])
+    raw = f.read(min(r[1] - r[0], COVER_BYTES + 64))
     if len(raw) < 8:  # 4 bytes type + 4 bytes locale, then the value
         return ""
     return raw[8:].decode("utf-8", "replace").strip("\x00").strip()
@@ -926,7 +926,11 @@ def _read_mp3(path):
                     sz = _synchsafe(fh[4:8]) if ver >= 4 else _u32(fh, 4)
                     if sz <= 0 or f.tell() + sz > end:
                         break
-                    frames[fh[:4]] = f.read(sz)
+                    start = f.tell()
+                    take = sz if sz <= COVER_BYTES + 64 else COVER_BYTES + 64
+                    frames[fh[:4]] = f.read(take)
+                    if take < sz:
+                        f.seek(start + sz)   # skip a crafted oversized frame
             for fid, data in frames.items():
                 dst = _ID3_MAP.get(fid)
                 val = _id3_text(data) if dst else ""
@@ -2213,10 +2217,13 @@ def _mp4_pictures(path):
                 for dtyp, dbody, dend in _children(f, body, box_end):
                     if dtyp != b"data":
                         continue
+                    # data box: 4 bytes type + 4 bytes locale, then the image.
+                    # Cap BEFORE reading: a crafted box must not allocate the file.
+                    if dend - dbody <= 8 or dend - dbody - 8 > COVER_BYTES:
+                        continue
                     f.seek(dbody)
                     raw = f.read(dend - dbody)
-                    # data box: 4 bytes type + 4 bytes locale, then the image
-                    if len(raw) > 8 and len(raw) - 8 <= COVER_BYTES:
+                    if len(raw) > 8:
                         blob = raw[8:]
                         if _pic_ext(blob):
                             pics.append(blob)
@@ -2610,7 +2617,7 @@ def read_info(path):
         return _read_asf(path)
     if head[:3] == b"ID3":
         return _read_aac(path) if ext == ".aac" else _read_mp3(path)
-    if head[:1] == b"\xff" and (head[1] & 0xF0) == 0xF0:
+    if len(head) >= 2 and head[0] == 0xFF and (head[1] & 0xF0) == 0xF0:
         return _read_aac(path) if ext == ".aac" else _read_mp3(path)
     if head[:4] == b"fLaC":
         return _read_flac(path)

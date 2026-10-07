@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="browsybare" name="Browsybare"   version="0.3.22" provider-name="cyberpixelsharc">
+<addon id="browsybare" name="Browsybare"   version="0.3.23" provider-name="cyberpixelsharc">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0"/>
 		<import addon="xbmc.python" version="3.0.0"/>

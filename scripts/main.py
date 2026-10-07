@@ -2528,9 +2528,19 @@ def keysopen():
 
 def openlink():
     """Open the project page in the system browser (About modal link)."""
+    url = "https://github.com/cyberpixelsharc/browsybare"
+    # Android/TV: Python's webbrowser has no browser command to run, so it fails
+    # ("no browser found"). Kodi's Android VIEW intent opens the system browser.
+    try:
+        if xbmc.getCondVisibility("System.Platform.Android"):
+            xbmc.executebuiltin(
+                'StartAndroidActivity("","android.intent.action.VIEW","","%s")' % url)
+            return
+    except Exception:
+        pass
     import webbrowser
     try:
-        if webbrowser.open("https://github.com/cyberpixelsharc/browsybare"):
+        if webbrowser.open(url):
             return
     except Exception:
         pass
@@ -2682,7 +2692,8 @@ def update_autocheck():
     if xbmc.getCondVisibility("Player.HasVideo | Player.HasAudio"):
         return
     for p in ("bp.confirm", "bp.notice", "bp.info", "bp.keys", "bp.resume",
-              "bp.del", "bp.rowmenu", "bp.srcq", "bp.settings"):
+              "bp.del", "bp.rowmenu", "bp.srcq", "bp.settings",
+              "bp.power", "bp.about", "bp.bl", "bp.timer", "bp.rscan"):
         if win.getProperty(p):
             return
     dev = _dev_update()
@@ -2842,10 +2853,18 @@ def _install_zip(zip_path, dest_root, ver=None):
     backup = os.path.join(tmp, "browsybare-backup")
     try:
         names = zf.namelist()
-        tops = {n.split("/")[0] for n in names if n and not n.startswith("/")}
+        stage_real = os.path.realpath(stage)
+        # Zip names use "/", but a "\" is also a separator on Windows: normalize
+        # before the traversal/layout checks so "browsybare/..\\..\\x" cannot
+        # escape the stage.
+        tops = {n.replace("\\", "/").split("/")[0]
+                for n in names if n and not n.startswith(("/", "\\"))}
         if tops != {"browsybare"}:
             return False, "unexpected zip layout"
         raw = zf.read("browsybare/addon.xml").decode("utf-8", "replace")
+        # ElementTree is not entity-expansion hardened; reject a DOCTYPE.
+        if "<!DOCTYPE" in raw or "<!ENTITY" in raw:
+            return False, "unsafe addon.xml"
         el = ET.fromstring(raw)
         if el.get("id") != "browsybare":
             return False, "wrong addon id: %r" % el.get("id")
@@ -2855,10 +2874,12 @@ def _install_zip(zip_path, dest_root, ver=None):
         shutil.rmtree(stage, ignore_errors=True)
         os.makedirs(stage, exist_ok=True)
         for n in names:
-            parts = [p for p in n.split("/") if p not in ("", ".")]
+            parts = [p for p in n.replace("\\", "/").split("/") if p not in ("", ".")]
             if ".." in parts:
                 return False, "unsafe zip path"
             out = os.path.join(stage, *parts)
+            if not os.path.realpath(out).startswith(stage_real + os.sep):
+                return False, "unsafe zip path"
             if n.endswith("/"):
                 os.makedirs(out, exist_ok=True)
                 continue
@@ -2934,6 +2955,8 @@ def _update_fail(win, sid, reason):
         win.setProperty("bp.confirm.line", msg)
         win.clearProperty("bp.confirm.progress")
         win.clearProperty("bp.confirm.update")
+        for i in range(1, 11):
+            win.clearProperty("bp.confirm.f%d" % i)
         for _ in range(8):
             xbmc.executebuiltin("SetFocus(956)")
             try:
@@ -2960,7 +2983,8 @@ def update_install():
     _upd_bar(win, 0)
     t0 = time.time()
     tmp = _temp_dir()
-    zip_path = os.path.join(tmp, "browsybare-%s.zip" % ver) if tmp else ""
+    safe_ver = re.sub(r"[^A-Za-z0-9._-]", "_", ver)   # a tag may contain "/"
+    zip_path = os.path.join(tmp, "browsybare-%s.zip" % safe_ver) if tmp else ""
 
     def _prog(done, total):
         if total:

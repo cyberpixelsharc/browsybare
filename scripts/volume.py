@@ -99,7 +99,11 @@ def init():
     cur = _kodi_percent()
     if cur is None:
         return
-    apply(from_kodi(cur))
+    # Adopt the stored volume; do NOT drive it. apply() would call
+    # SetVolume(to_kodi(from_kodi(cur))), which drifts (and mutes 1-3%) on every
+    # boot because the curve round-trip is not exact.
+    _publish(from_kodi(cur))
+    _win().setProperty("bp.vol.kodi", str(cur))
 
 
 def resync(cur=None):

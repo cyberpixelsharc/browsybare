@@ -251,6 +251,8 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
         cutoff = now - NET_RESCAN_SECS
         for k in [k for k, t in _NET_COOLDOWN.items() if t < cutoff]:
             _NET_COOLDOWN.pop(k, None)
+        while len(_NET_COOLDOWN) > 64:
+            _NET_COOLDOWN.pop(min(_NET_COOLDOWN, key=_NET_COOLDOWN.get), None)
     # Non-blocking idle precheck: never listdir nor arm the cooldown while the
     # user is navigating, or a single aborted pass would starve the folder for
     # the whole cooldown window (sizes/dates missing for ~2 min).
@@ -335,7 +337,10 @@ def _scan_network_files(cur, cache, win, monitor, show_hidden, patterns, case_se
             # Diagnostic (once per folder thanks to the cache).
             log("netstat: folder without date: %s" % redact(child))
         if is_dir:
-            cache[ckey] = {"size": 0, "mtime": mtime, "dir": True, "tried": True}
+            entry = {"size": 0, "mtime": mtime, "dir": True}
+            if mtime:
+                entry["tried"] = True   # a dateless folder stays retryable
+            cache[ckey] = entry
         else:
             cache[ckey] = {"size": size, "mtime": mtime}
         changed = True
@@ -484,9 +489,9 @@ def main():
                         cache[fpath] = {"size": fast, "mtime": mtime, "updated": time.time(), "partial": True, "approx": True}
                         save_cache(cache)
                         phase1_refreshed = True
+                        pending_exact.append(fpath)   # exact pass still refines it
                         monitor.waitForAbort(0.2)
-                        if monitor.abortRequested() or cur_path(win) != cur:
-                            break
+                        continue                      # skip the redundant incremental pass
                     size, timed_out = folder_size_incremental(fpath, show_hidden, patterns, monitor, win, cur, cache, INITIAL_TIMEOUT, case_sensitive)
                     if monitor.abortRequested() or cur_path(win) != cur:
                         break

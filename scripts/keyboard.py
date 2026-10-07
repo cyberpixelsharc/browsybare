@@ -278,6 +278,25 @@ def dispatch():
     win = _win()
     mode = win.getProperty("bp.kb.mode")
     text = _settle_text()
+    # Validate the neturl BEFORE closing: an invalid URL must keep the keyboard
+    # open so the user can fix it instead of retyping from scratch.
+    if mode == "neturl":
+        try:
+            import sources as _sources
+            valid = _sources.netsrc_valid(text)
+        except Exception:
+            valid = False
+        if not valid:
+            try:
+                import xbmcgui as _gui
+                _gui.Dialog().notification(
+                    xbmc.getLocalizedString(31448) or "Browsybare",
+                    xbmc.getLocalizedString(31451),
+                    _gui.NOTIFICATION_ERROR, 4000)
+            except Exception:
+                pass
+            _log("keyboard: netsource rejected '%s'" % redact(text.strip()))
+            return
     close()
     if mode in ("netname", "netserver", "netport", "netpath", "netuser", "netpass"):
         import sources as _sources
@@ -328,23 +347,8 @@ def dispatch():
         win.setProperty("bp.blacklist.new", text)
         xbmc.executebuiltin("RunScript(special://skin/scripts/main.py,bladd)")
     elif mode == "neturl":
-        # Step 1 of the network-source flow: keep the URL, ask for the name.
-        try:
-            import sources as _sources
-            valid = _sources.netsrc_valid(text)
-        except Exception:
-            valid = False
-        if not valid:
-            try:
-                import xbmcgui as _gui
-                _gui.Dialog().notification(
-                    xbmc.getLocalizedString(31448) or "Browsybare",
-                    xbmc.getLocalizedString(31451),
-                    _gui.NOTIFICATION_ERROR, 4000)
-            except Exception:
-                pass
-            _log("keyboard: netsource rejected '%s'" % redact(text.strip()))
-            return
+        # Step 1 of the network-source flow: keep the URL, ask for the name
+        # (validity was checked before close()).
         win.setProperty("bp.net.pending", text.strip())
         open_kb("netlabel")
     elif mode == "netlabel":
@@ -1041,9 +1045,7 @@ def hardware(ch):
         _insert(ch)
     elif ch == "space":
         _insert(" ")
-    else:
-        # fallback: insert as is (e.g. "," ".")
-        _insert(ch)
+    # else: an unknown multi-char token is ignored (never typed as its own name)
 
 
 if __name__ == "__main__":

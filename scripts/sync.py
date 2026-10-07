@@ -458,6 +458,8 @@ _POWER_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 def _power_actions(label, onclicks):
     """Row onclicks from Estuary -> ours: specific confirm for destructive ops,
     generic otherwise. Dialog.Close(shutdownmenu) is dropped."""
+    # A comma or ")" in the label would truncate the generated builtin argument.
+    label = (label or "").replace(",", " ").replace(")", " ")
     ops = [o.strip() for o in onclicks if o and o.strip()]
     simple = [o for o in ops if o != "Dialog.Close(shutdownmenu)"]
     if len(simple) == 1:
@@ -1428,7 +1430,8 @@ def theme_next():
     except ValueError:
         nxt = ids[0]
     try:
-        xbmc.executebuiltin("Skin.SetString(theme,%s)" % nxt)
+        xbmc.executebuiltin("Skin.SetString(theme,%s)"
+                            % (nxt or "").replace(",", " ").replace(")", " "))
     except Exception:
         return False
     themes(nxt)

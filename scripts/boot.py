@@ -697,6 +697,15 @@ def run():
             did_copy = False
             log("boot: sync failed: %s" % e)
             record_issue("sync_failed")
+            # A post-copy merge error must not leave the sync veil (and the
+            # input gate) up until the next Kodi restart.
+            try:
+                _w = xbmcgui.Window(10000)
+                _w.clearProperty("bp.sync.active")
+                _w.clearProperty("bp.sync.t0")
+                _w.clearProperty("bp.sync.phase")
+            except Exception:
+                pass
         # The generated Beenden include is parsed before this onload; force a
         # reload when sync rewrote it, even without a base copy.
         try:
