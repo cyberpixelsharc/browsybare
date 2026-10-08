@@ -872,3 +872,15 @@ msgstr "Automatisch nach Updates suchen"
 msgid "The required add-on is not installed or disabled"
 msgctxt "#31545"
 msgstr "Das benötigte Add-on ist nicht installiert oder deaktiviert"
+
+msgid "Fullscreen visualisation"
+msgctxt "#31546"
+msgstr "Vollbild-Visualisierung"
+
+msgid "Off"
+msgctxt "#31548"
+msgstr "Aus"
+
+msgid "No visualisation add-on installed"
+msgctxt "#31549"
+msgstr "Kein Visualisierungs-Add-on installiert"

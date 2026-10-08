@@ -719,6 +719,7 @@ def run():
         step("blacklist", main.blacklist_open)
         step("dirsources", main.dirsrc_open)
         step("netsources", main.netsrc_open)
+        step("visualisation", main.viz_init)
         step("remotes", main.remote_open)
         step("accents", accents)
         step("volume", volume.init)

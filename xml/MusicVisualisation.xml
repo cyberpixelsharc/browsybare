@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Disabled by design: no fullscreen audio player. Stub for window 12006 (Backspace lands here): onloads stop playback and return Home. -->
+<!-- Fullscreen audio visualisation. Window 12006 is the core's Backspace/SwitchToFullScreen
+     target. With the "Fullscreen visualisation" setting ON it shows Kodi's active
+     visualisation add-on (projectM, milkdrop, shadertoy, spectrum, waveform, ...); with the
+     setting OFF (default) the onloads keep the old behaviour: Backspace during audio stops
+     playback and returns Home. Back closes it. -->
 <window>
-	<onload>PlayerControl(Stop)</onload>
-	<onload>ActivateWindow(Home)</onload>
+	<defaultcontrol></defaultcontrol>
+	<onload condition="!Skin.HasSetting(audio.visualisation)">PlayerControl(Stop)</onload>
+	<onload condition="!Skin.HasSetting(audio.visualisation)">ActivateWindow(Home)</onload>
 	<controls>
-		<control type="image">
+		<control type="visualisation" id="2">
 			<left>0</left>
 			<top>0</top>
-			<width>1</width>
-			<height>1</height>
+			<width>1920</width>
+			<bottom>0</bottom>
+			<visible>Visualisation.Enabled</visible>
 		</control>
 	</controls>
 </window>

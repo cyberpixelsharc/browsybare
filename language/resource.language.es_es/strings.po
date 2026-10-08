@@ -872,3 +872,15 @@ msgstr "Actualizaciones automáticas"
 msgid "The required add-on is not installed or disabled"
 msgctxt "#31545"
 msgstr "El complemento requerido no está instalado o está desactivado"
+
+msgid "Fullscreen visualisation"
+msgctxt "#31546"
+msgstr "Visualización a pantalla completa"
+
+msgid "Off"
+msgctxt "#31548"
+msgstr "Desactivado"
+
+msgid "No visualisation add-on installed"
+msgctxt "#31549"
+msgstr "No hay ningún complemento de visualización instalado"

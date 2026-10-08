@@ -872,3 +872,15 @@ msgstr "Automatically check for updates"
 msgid "The required add-on is not installed or disabled"
 msgctxt "#31545"
 msgstr "The required add-on is not installed or disabled"
+
+msgid "Fullscreen visualisation"
+msgctxt "#31546"
+msgstr "Fullscreen visualisation"
+
+msgid "Off"
+msgctxt "#31548"
+msgstr "Off"
+
+msgid "No visualisation add-on installed"
+msgctxt "#31549"
+msgstr "No visualisation add-on installed"

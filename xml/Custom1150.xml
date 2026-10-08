@@ -5988,9 +5988,75 @@
 								<onright>127</onright>
 								
 																<onup>437</onup>
+								<ondown>446</ondown>
+						</control>
+						</control>
+						<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),4)</visible>
+							<height>68</height>
+							<control type="button" id="446">
+								<left>0</left>
+								<top>0</top>
+								<width>704</width>
+								<height>60</height>
+								<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+								<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+								<onclick>RunScript(special://skin/scripts/main.py,vizcycle)</onclick>
+								<onleft>446</onleft>
+								<onright>446</onright>
+								<onup>127</onup>
 								<ondown>278</ondown>
+							</control>
+							<control type="label">
+								<left>26</left>
+								<top>0</top>
+								<width>418</width>
+								<height>60</height>
+								<font>font13</font>
+								<align>left</align>
+								<aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$LOCALIZE[31546]</label>
+								<visible>!Control.HasFocus(446)</visible>
+							</control>
+							<control type="label">
+								<left>26</left>
+								<top>0</top>
+								<width>418</width>
+								<height>60</height>
+								<font>font13</font>
+								<align>left</align>
+								<aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$LOCALIZE[31546]</label>
+								<visible>Control.HasFocus(446)</visible>
+							</control>
+							<control type="label">
+								<left>240</left>
+								<top>0</top>
+								<width>438</width>
+								<height>60</height>
+								<font>font13</font>
+								<align>right</align>
+								<aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.viz.name)]</label>
+								<visible>!Control.HasFocus(446)</visible>
+							</control>
+							<control type="label">
+								<left>240</left>
+								<top>0</top>
+								<width>438</width>
+								<height>60</height>
+								<font>font13</font>
+								<align>right</align>
+								<aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.viz.name)]</label>
+								<visible>Control.HasFocus(446)</visible>
+							</control>
 						</control>
-						</control>
+
 												<control type="group">
 							<height>10</height>
 							<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),4)</visible>
@@ -6010,7 +6076,7 @@
 								<texturefocus colordiffuse="$INFO[Skin.String(accent)]">settings/eraser.png</texturefocus>
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">settings/eraser.png</texturenofocus>
 								<onclick>RunScript(special://skin/scripts/main.py,resetopen,278)</onclick>
-								<onup>127</onup>
+								<onup>446</onup>
 								<ondown>438</ondown>
 							</control>
 							<control type="image">

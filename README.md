@@ -37,6 +37,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Info button opens the shared INFO modal with extracted tags and covers.
 * Continue from the last position: reopening a track that has a saved spot (within the last 7 weeks) opens a Playback prompt with Continue / Restart.
 * Bottom padding rows keep the last files above the footer. Focus returns to the list after stop.
+* Optional fullscreen visualisation: a "Fullscreen visualisation" row in the audio settings cycles through Off and every installed visualisation add-on (like the theme switcher), showing the current one. During playback, Backspace opens it fullscreen and Back returns to the file manager with the footer still playing; "Off" (the default) keeps Backspace closing the player. While it runs, Kodi's default visualisation keys apply: **P** opens the preset list and **V** toggles the visualisation's own settings. Visualisation add-ons are installed from the Kodi add-on repository (projectM, Milkdrop, Shadertoy, Spectrum, Waveform, ...); the row picks them up automatically.
 
 ## Video player
 

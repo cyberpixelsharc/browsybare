@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Our own select dialog (Kodi's CGUIDialogSelect, e.g. the visualisation
+     preset list): Browsybare look instead of the Estuary base dialog. Control
+     ids are mandated by GUIDialogSelect.cpp: heading 1, number-of-items 2,
+     simple list 3, detailed list 6, extra buttons 5/8, cancel 7. Protected
+     (OUR_XML), never replaced by sync. -->
+<window>
+	<defaultcontrol always="true">3</defaultcontrol>
+	<controls>
+		<!-- Full-screen dim; clicking it closes (dialog window is full-screen). -->
+		<control type="button">
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<bottom>0</bottom>
+			<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturefocus>
+			<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texturenofocus>
+			<onclick>Action(close)</onclick>
+		</control>
+		<control type="group">
+			<centerleft>50%</centerleft>
+			<centertop>50%</centertop>
+			<width>1220</width>
+			<height>760</height>
+			<control type="image">
+				<width>1220</width>
+				<height>760</height>
+				<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]">drawn/panel.png</texture>
+			</control>
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>1220</width>
+				<height>60</height>
+				<texture border="24" colordiffuse="$INFO[Window(10000).Property(bp.theme.header)]">drawn/header.png</texture>
+			</control>
+			<control type="label" id="1">
+				<left>0</left>
+				<top>0</top>
+				<width>1220</width>
+				<height>60</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<font>font25_title</font>
+				<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
+			</control>
+			<!-- Click absorber over the panel so a click does not hit the backdrop. -->
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>1220</width>
+				<height>760</height>
+				<texture>drawn/blank.png</texture>
+			</control>
+			<!-- List surface, same look as the settings middle area. -->
+			<control type="image">
+				<left>24</left>
+				<top>80</top>
+				<width>880</width>
+				<bottom>30</bottom>
+				<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.bg)]">drawn/fill.png</texture>
+			</control>
+			<control type="list" id="3">
+				<left>24</left>
+				<top>80</top>
+				<width>860</width>
+				<bottom>30</bottom>
+				<onleft>61</onleft>
+				<onright>61</onright>
+				<pagecontrol>61</pagecontrol>
+				<scrolltime>120</scrolltime>
+				<itemlayout width="860" height="60">
+					<control type="label">
+						<left>24</left>
+						<top>0</top>
+						<right>24</right>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<aligny>center</aligny>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+						<selectedcolor>$INFO[Skin.String(accent)]</selectedcolor>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</itemlayout>
+				<focusedlayout width="860" height="60">
+					<control type="image">
+						<left>8</left>
+						<top>0</top>
+						<right>8</right>
+						<bottom>0</bottom>
+						<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texture>
+					</control>
+					<control type="label">
+						<left>24</left>
+						<top>0</top>
+						<right>24</right>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<aligny>center</aligny>
+						<textcolor>$INFO[Skin.String(accent)]</textcolor>
+						<selectedcolor>$INFO[Skin.String(accent)]</selectedcolor>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="list" id="6">
+				<left>24</left>
+				<top>80</top>
+				<width>860</width>
+				<bottom>30</bottom>
+				<onleft>61</onleft>
+				<onright>61</onright>
+				<pagecontrol>61</pagecontrol>
+				<scrolltime>120</scrolltime>
+				<itemlayout width="860" height="72">
+					<control type="image">
+						<left>18</left>
+						<top>6</top>
+						<width>60</width>
+						<height>60</height>
+						<aspectratio align="left">keep</aspectratio>
+						<texture>$INFO[ListItem.Icon]</texture>
+					</control>
+					<control type="label">
+						<left>94</left>
+						<top>0</top>
+						<right>24</right>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<aligny>center</aligny>
+						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+						<selectedcolor>$INFO[Skin.String(accent)]</selectedcolor>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</itemlayout>
+				<focusedlayout width="860" height="72">
+					<control type="image">
+						<left>8</left>
+						<top>0</top>
+						<right>8</right>
+						<bottom>0</bottom>
+						<texture border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texture>
+					</control>
+					<control type="image">
+						<left>18</left>
+						<top>6</top>
+						<width>60</width>
+						<height>60</height>
+						<aspectratio align="left">keep</aspectratio>
+						<texture>$INFO[ListItem.Icon]</texture>
+					</control>
+					<control type="label">
+						<left>94</left>
+						<top>0</top>
+						<right>24</right>
+						<bottom>0</bottom>
+						<font>font13</font>
+						<aligny>center</aligny>
+						<textcolor>$INFO[Skin.String(accent)]</textcolor>
+						<selectedcolor>$INFO[Skin.String(accent)]</selectedcolor>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="scrollbar" id="61">
+				<left>890</left>
+				<top>80</top>
+				<width>7</width>
+				<bottom>30</bottom>
+				<onleft>3</onleft>
+				<onright>9001</onright>
+				<orientation>vertical</orientation>
+				<scrolltime>400</scrolltime>
+				<showonepage>false</showonepage>
+				<texturesliderbackground>drawn/blank.png</texturesliderbackground>
+				<texturesliderbar border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbar>
+				<texturesliderbarfocus border="3" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/scrollbar.png</texturesliderbarfocus>
+			</control>
+			<control type="grouplist" id="9001">
+				<left>920</left>
+				<top>80</top>
+				<width>276</width>
+				<orientation>vertical</orientation>
+				<itemgap>12</itemgap>
+				<onleft>61</onleft>
+				<onright>3</onright>
+				<control type="button" id="5">
+					<width>276</width>
+					<height>60</height>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised3)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+					<visible>!String.IsEmpty(Control.GetLabel(5))</visible>
+				</control>
+				<control type="button" id="8">
+					<width>276</width>
+					<height>60</height>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised3)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+					<visible>!String.IsEmpty(Control.GetLabel(8))</visible>
+				</control>
+				<control type="button" id="7">
+					<width>276</width>
+					<height>60</height>
+					<font>font13</font>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised3)]">drawn/row.png</texturefocus>
+					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+					<onclick>Action(close)</onclick>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

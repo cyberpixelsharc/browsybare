@@ -137,9 +137,27 @@ def _reset_system():
     _set_bool("update.autocheck", False)
 
 
+def _reset_visualisation():
+    """Audio rubric reset: also clear Kodi's active visualisation and the row label,
+    so the "Fullscreen visualisation" row goes back to Off."""
+    try:
+        import json
+        xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Settings.SetSettingValue",
+            "params": {"setting": "musicplayer.visualisation", "value": ""}}))
+    except Exception:
+        pass
+    try:
+        _win().setProperty("bp.viz.name", xbmc.getLocalizedString(31548))
+    except Exception:
+        pass
+
+
 def _reset_audio():
     _set_bool("show.audiopath", False)
     _set_bool("audio.noscroll", False)
+    _set_bool("audio.visualisation", False)
+    _reset_visualisation()
 
 
 def _reset_video():

@@ -841,9 +841,15 @@ def special(tok):
             except Exception:
                 home = True
             if home and _audio_playing():
-                # Locked while music plays (browsing up would jump behind the
-                # footer).
-                _log("keyboard: hardware back locked (audio playing)")
+                # While music plays, browsing up would jump behind the footer, so
+                # Back is normally locked. With the fullscreen-visualisation
+                # setting ON it opens window 12006 (the core's own Backspace
+                # target) instead.
+                if xbmc.getCondVisibility("Skin.HasSetting(audio.visualisation)"):
+                    _log("keyboard: hardware back -> open visualisation")
+                    xbmc.executebuiltin("ActivateWindow(12006)")
+                else:
+                    _log("keyboard: hardware back locked (audio playing)")
             elif home:
                 _log("keyboard: hardware back with kb closed -> folder up")
                 xbmc.executebuiltin("RunScript(special://skin/scripts/main.py,up)")

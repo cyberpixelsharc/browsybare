@@ -40,6 +40,102 @@ def _accent_level(level):
     return _f(level)
 
 
+def _musiczviz_addons():
+    """[(id, name)] of the enabled visualisation add-ons, sorted by name."""
+    try:
+        resp = xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Addons.GetAddons",
+            "params": {"type": "xbmc.player.musicviz", "enabled": True,
+                       "properties": ["name"]}}))
+        addons = json.loads(resp).get("result", {}).get("addons", []) or []
+    except Exception:
+        return []
+    out = [(a.get("addonid") or "", a.get("name") or a.get("addonid") or "")
+           for a in addons]
+    out = [x for x in out if x[0]]
+    out.sort(key=lambda x: x[1].lower())
+    return out
+
+
+def _active_viz():
+    """The selected visualisation add-on id (musicplayer.visualisation), or ""."""
+    try:
+        resp = xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Settings.GetSettingValue",
+            "params": {"setting": "musicplayer.visualisation"}}))
+        return json.loads(resp).get("result", {}).get("value") or ""
+    except Exception:
+        return ""
+
+
+def _set_active_viz(vid):
+    try:
+        xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Settings.SetSettingValue",
+            "params": {"setting": "musicplayer.visualisation", "value": vid}}))
+    except Exception:
+        pass
+
+
+def _viz_label(vid, vizzes):
+    if not vid:
+        return xbmc.getLocalizedString(31548)   # "Off"
+    for aid, name in vizzes:
+        if aid == vid:
+            return name
+    return vid
+
+
+def viz_init():
+    """Publish the current visualisation name for the settings row."""
+    win = xbmcgui.Window(10000)
+    vizzes = _musiczviz_addons()
+    enabled = xbmc.getCondVisibility("Skin.HasSetting(audio.visualisation)")
+    vid = _active_viz() if enabled else ""
+    win.setProperty("bp.viz.name", safe_label(_viz_label(vid, vizzes)))
+
+
+def vizcycle():
+    """Cycle the audio visualisation: Off -> each installed add-on -> Off."""
+    win = xbmcgui.Window(10000)
+    vizzes = _musiczviz_addons()
+    if not vizzes:
+        try:
+            xbmcgui.Dialog().notification(
+                xbmc.getLocalizedString(31448) or "Browsybare",
+                safe_label(xbmc.getLocalizedString(31549)),
+                xbmcgui.NOTIFICATION_WARNING, 4000)
+        except Exception:
+            pass
+        xbmc.executebuiltin("Skin.Reset(audio.visualisation)")
+        win.setProperty("bp.viz.name", xbmc.getLocalizedString(31548))
+        return
+    ids = [""] + [v[0] for v in vizzes]
+    cur = _active_viz()
+    if (not xbmc.getCondVisibility("Skin.HasSetting(audio.visualisation)")
+            or cur not in ids):
+        i = 0
+    else:
+        i = ids.index(cur)
+    nxt = ids[(i + 1) % len(ids)]
+    _set_active_viz(nxt)
+    if nxt:
+        xbmc.executebuiltin("Skin.SetBool(audio.visualisation)")
+    else:
+        xbmc.executebuiltin("Skin.Reset(audio.visualisation)")
+    win.setProperty("bp.viz.name", safe_label(_viz_label(nxt, vizzes)))
+    log("visualisation cycle: %s" % (nxt or "off"))
+
+
+def vizsettings():
+    """V key in the visualisation window: toggle the current visualisation
+    add-on's settings dialog (Kodi's default V only opens it)."""
+    if xbmc.getCondVisibility("Window.IsActive(10140)"):
+        xbmc.executebuiltin("Dialog.Close(10140)")
+        return
+    xbmc.executebuiltin("Addon.Default.OpenSettings(xbmc.player.musicviz)")
+
+
 def _kmaps():
     from sync import keymaps as _f
     return _f()
@@ -2673,35 +2769,52 @@ def update_autocheck():
     the UI. Silent unless a newer release exists, then it opens the same install
     confirmation as the manual check. Declining is not repeated until the next
     session (the boot trigger is one-shot)."""
+    log("update autocheck: start")
     mon = xbmc.Monitor()
     if mon.waitForAbort(10):  # let the skin settle after boot
         return
     try:
         if not xbmc.getCondVisibility("Skin.HasSetting(update.autocheck)"):
+            log("update autocheck: disabled")
             return
     except Exception:
         return
-    if mon.abortRequested():
-        return
     win = xbmcgui.Window(10000)
-    # Never stack onto a found-but-unactioned update, an open modal or a player.
-    if win.getProperty("bp.update.state") == "avail":
-        return
-    if not xbmc.getCondVisibility("Window.IsActive(10000)"):
-        return
-    if xbmc.getCondVisibility("Player.HasVideo | Player.HasAudio"):
-        return
-    for p in ("bp.confirm", "bp.notice", "bp.info", "bp.keys", "bp.resume",
-              "bp.del", "bp.rowmenu", "bp.srcq", "bp.settings",
-              "bp.power", "bp.about", "bp.bl", "bp.timer", "bp.rscan"):
-        if win.getProperty(p):
+    # The boot trigger is one-shot, so WAIT (bounded, ~60 s) for a quiet Home
+    # instead of silently wasting the session's only check when a player or an
+    # overlay is up at the 10 s mark.
+    reason = "unknown"
+    for _ in range(30):
+        if mon.abortRequested():
             return
+        if win.getProperty("bp.update.state") == "avail":
+            log("update autocheck: already offered")
+            return
+        if not xbmc.getCondVisibility("Window.IsActive(10000)"):
+            reason = "home not active"
+        elif xbmc.getCondVisibility("Player.HasVideo | Player.HasAudio"):
+            reason = "player active"
+        else:
+            busy = [p for p in ("bp.confirm", "bp.notice", "bp.info", "bp.keys",
+                                "bp.resume", "bp.del", "bp.rowmenu", "bp.srcq",
+                                "bp.settings", "bp.power", "bp.about",
+                                "bp.timer", "bp.rscan") if win.getProperty(p)]
+            if not busy:
+                reason = ""
+                break
+            reason = "overlay %s" % busy[0]
+        if mon.waitForAbort(2):
+            return
+    if reason:
+        log("update autocheck: skipped (%s)" % reason)
+        return
     dev = _dev_update()
     if dev:
         latest, url = dev
     else:
         latest, url, _err = _github_latest()
     if not latest:
+        log("update autocheck: no version from GitHub")
         return
     if _version_tuple(latest) <= _version_tuple(win.getProperty("bp.version") or ""):
         log("update autocheck: up to date (%s)" % latest)
@@ -3427,6 +3540,8 @@ if __name__ == "__main__":
                    "pickopen", "pickselect",
                    "sort", "foldersfirst", "grid", "accent_next",
                    "themecycle",
+                   "vizcycle",
+                   "vizsettings",
                    "listbump"):
             try:
                 if xbmcgui.Window(10000).getProperty("bp.sync.active") == "1":
@@ -3594,6 +3709,12 @@ if __name__ == "__main__":
             accent_next()
         elif cmd == "themecycle":
             _run_theme_next()
+        elif cmd == "vizcycle":
+            vizcycle()
+        elif cmd == "vizinit":
+            viz_init()
+        elif cmd == "vizsettings":
+            vizsettings()
         elif cmd == "intensity":
             intensity(sys.argv[2] if len(sys.argv) > 2 else "")
         elif cmd == "intensity_next":

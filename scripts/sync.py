@@ -60,6 +60,8 @@ OUR_XML = {
     "DialogOK.xml",
     "DialogBusy.xml",
     "DialogContextMenu.xml",
+    "DialogSelect.xml",
+    "DialogAddonSettings.xml",
     "IncludesPowerMenu.xml",
     "IncludesInfo.xml",
     "VideoOSD.xml",
@@ -254,22 +256,37 @@ def merge_includes(est, root):
 
 
 def merge_focus_color(est, root):
-    """Rewrite Estuary's static `button_focus` color to a LIVE accent label
-    across the synced XML; idempotent."""
+    """Theme the synced (Estuary) XML toward our look, idempotent: rewrite
+    Estuary's `button_focus` to the live accent, the `dialog_tint` surface to our
+    theme panel, the `font32_title` dialog titles to our font25_modal, and the
+    simple-list default text colour `grey` to our theme's text."""
     xmldir = os.path.join(root, "xml")
     if not os.path.isdir(xmldir):
         return
     rep_cd = 'colordiffuse="$INFO[Window(10000).Property(bp.accent.focus)]"'
     rep_tc = '<textcolor>$INFO[Window(10000).Property(bp.accent.focus)]</textcolor>'
+    rep_dialog = 'colordiffuse="$INFO[Window(10000).Property(bp.theme.panel)]"'
+    rep_font = '<font>font25_modal</font>'
+    rep_fcolor = ('<param name="fontcolor">'
+                  '$INFO[Window(10000).Property(bp.theme.text2)]</param>')
+    tokens = ("button_focus", '"dialog_tint"', "font32_title",
+              '"fontcolor">grey', "vendor_icon.png")
     for name in os.listdir(xmldir):
         if not name.endswith(".xml"):
             continue
         p = os.path.join(xmldir, name)
         s = read_text(p)
-        if not s or "button_focus" not in s:
+        if not s or not any(t in s for t in tokens):
             continue
         s2 = s.replace('colordiffuse="button_focus"', rep_cd)
         s2 = s2.replace('<textcolor>button_focus</textcolor>', rep_tc)
+        s2 = s2.replace('colordiffuse="dialog_tint"', rep_dialog)
+        s2 = s2.replace('<font>font32_title</font>', rep_font)
+        s2 = s2.replace('<param name="fontcolor">grey</param>', rep_fcolor)
+        # Dialog header: replace Kodi's vendor logo (the close button's idle
+        # texture) with the close X, so there is no logo and no default radio
+        # graphic; the button shows the X in every state.
+        s2 = s2.replace('special://xbmc/media/vendor_icon.png', 'dialogs/close.png')
         if s2 != s:
             write_text(p, s2)
 
@@ -1199,7 +1216,7 @@ def accents():
     slot = ""
     tint = ""
     if re.fullmatch(r"[0-9a-fA-F]{8}", accent):
-        tint = "1A" + accent[2:]
+        tint = "38" + accent[2:]
     for i, c in enumerate(colors[:MAX_ACCENT_SLOTS], 1):
         if c == accent:
             slot = str(i)
@@ -1239,12 +1256,12 @@ def accents():
     except Exception:
         pass
     blend = "FF%02X%02X%02X" % tuple(
-        round(0.1 * int(accent[k:k+2], 16) + 0.9 * b) for k, b in zip((2, 4, 6), base)) \
+        round(0.22 * int(accent[k:k+2], 16) + 0.78 * b) for k, b in zip((2, 4, 6), base)) \
         if re.fullmatch(r"[0-9a-fA-F]{8}", accent) else ""
     for i in range(1, MAX_ACCENT_SLOTS + 1):
         if i <= len(colors):
             rgb = [int(colors[i - 1][k:k+2], 16) for k in (2, 4, 6)]
-            hov = "FF%02X%02X%02X" % tuple(round(0.1 * v + 0.9 * b) for v, b in zip(rgb, base))
+            hov = "FF%02X%02X%02X" % tuple(round(0.22 * v + 0.78 * b) for v, b in zip(rgb, base))
             win.setProperty("bp.accent.hov.%d" % i, hov)
             # Per-slot base-layer values: the swatch onclicks copy these so an
             # accent change updates windows even behind a dialog.

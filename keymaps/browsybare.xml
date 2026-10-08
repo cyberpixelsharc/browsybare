@@ -820,4 +820,28 @@
       <!--/GEN:photo_keyboard-->
     </keyboard>
   </window1151>
+  <!-- Fullscreen visualisation (window 12006): Kodi's default keymap maps
+       Backspace to a Fullscreen TOGGLE plus a longpress Stop and Escape to
+       "FullScreen" (not a valid action), so closing the visualisation was
+       unreliable. Bind Back/Escape straight to Home; unmapped keys (p preset
+       list, v add-on settings, preset next/prev) still fall through to the
+       system map. -->
+  <Visualisation>
+    <keyboard>
+      <backspace>ActivateWindow(Home)</backspace>
+      <escape>ActivateWindow(Home)</escape>
+    </keyboard>
+    <remote>
+      <back>ActivateWindow(Home)</back>
+    </remote>
+  </Visualisation>
+  <!-- Add-on settings dialog (window 10140): Kodi's default V opens the active
+       visualisation's settings but never closes it again. Bind V here to close
+       (main.vizsettings), so it toggles. Other keys fall through to the system
+       map, Back still closes normally. -->
+  <AddonSettings>
+    <keyboard>
+      <v>RunScript(special://skin/scripts/main.py,vizsettings)</v>
+    </keyboard>
+  </AddonSettings>
 </keymap>

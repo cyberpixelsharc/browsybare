@@ -66,7 +66,7 @@
 				<width>680</width>
 				<height>6</height>
 				<texturesliderbackground colordiffuse="$INFO[Window(10000).Property(bp.theme.raised2)]">drawn/white.png</texturesliderbackground>
-				<textureslidernib colordiffuse="FF8EB7D7">drawn/white.png</textureslidernib>
+				<textureslidernib colordiffuse="$INFO[Skin.String(accent)]">drawn/white.png</textureslidernib>
 				<visible>!String.IsEmpty(Control.GetLabel(20))</visible>
 			</control>
 			<control type="grouplist">
@@ -83,7 +83,7 @@
 				<align>center</align>
 				<aligny>center</aligny>
 				<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
-				<focusedcolor>FF8EB7D7</focusedcolor>
+				<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 				<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised3)]">drawn/row.png</texturefocus>
 				<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 			</control>
@@ -94,7 +94,7 @@
 				<align>center</align>
 				<aligny>center</aligny>
 				<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
-				<focusedcolor>FF8EB7D7</focusedcolor>
+				<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 				<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised3)]">drawn/row.png</texturefocus>
 				<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 			</control>
@@ -105,7 +105,7 @@
 					<align>center</align>
 					<aligny>center</aligny>
 					<textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
-					<focusedcolor>FF8EB7D7</focusedcolor>
+					<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 					<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.raised3)]">drawn/row.png</texturefocus>
 					<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
 					<visible>!String.IsEmpty(Control.GetLabel(12))</visible>
