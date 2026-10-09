@@ -2,136 +2,136 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: pl_pl\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 msgid "Error"
 msgctxt "#31303"
-msgstr "Error"
+msgstr "Błąd"
 
 msgid "Settings"
 msgctxt "#31307"
-msgstr "Ajustes"
+msgstr "Ustawienia"
 
 msgid "System"
 msgctxt "#31308"
-msgstr "Sistema"
+msgstr "System"
 
 msgid "Quit"
 msgctxt "#31310"
-msgstr "Salir"
+msgstr "Zakończ"
 
 msgid "Show zebra stripes"
 msgctxt "#31312"
-msgstr "Mostrar rayado de cebra"
+msgstr "Pokaż pasy zebry"
 
 msgid "Version"
 msgctxt "#31313"
-msgstr "Versión"
+msgstr "Wersja"
 
 msgid "Show hidden"
 msgctxt "#31317"
-msgstr "Mostrar ocultos"
+msgstr "Pokaż ukryte"
 
 msgid "Accent color"
 msgctxt "#31318"
-msgstr "Color de acento"
+msgstr "Kolor akcentu"
 
 msgid "Appearance and colors"
 msgctxt "#31319"
-msgstr "Apariencia y colores"
+msgstr "Wygląd i kolory"
 
 msgid "Files and folders"
 msgctxt "#31320"
-msgstr "Archivos y carpetas"
+msgstr "Pliki i foldery"
 
 msgid "Sorting"
 msgctxt "#31321"
-msgstr "Orden"
+msgstr "Sortowanie"
 
 msgid "Alphabetical"
 msgctxt "#31322"
-msgstr "Alfabético"
+msgstr "Alfabetycznie"
 
 msgid "Size"
 msgctxt "#31323"
-msgstr "Tamaño"
+msgstr "Rozmiar"
 
 msgid "Date modified"
 msgctxt "#31324"
-msgstr "Fecha de modificación"
+msgstr "Data modyfikacji"
 
 msgid "Drives"
 msgctxt "#31325"
-msgstr "Unidades"
+msgstr "Dyski"
 
 msgid "No source available"
 msgctxt "#31326"
-msgstr "Ninguna fuente disponible"
+msgstr "Brak dostępnego źródła"
 
 msgid "Rename"
 msgctxt "#31327"
-msgstr "Renombrar"
+msgstr "Zmień nazwę"
 
 msgid "Delete"
 msgctxt "#31328"
-msgstr "Eliminar"
+msgstr "Usuń"
 
 msgid "New folder"
 msgctxt "#31329"
-msgstr "Nueva carpeta"
+msgstr "Nowy folder"
 
 msgid "File not found"
 msgctxt "#31330"
-msgstr "Archivo no encontrado"
+msgstr "Nie znaleziono pliku"
 
 msgid "Invalid name"
 msgctxt "#31331"
-msgstr "Nombre no válido"
+msgstr "Nieprawidłowa nazwa"
 
 msgid "Really delete this folder?"
 msgctxt "#31332"
-msgstr "¿Eliminar realmente esta carpeta?"
+msgstr "Na pewno usunąć ten folder?"
 
 msgid "Really delete this file?"
 msgctxt "#31333"
-msgstr "¿Eliminar realmente este archivo?"
+msgstr "Na pewno usunąć ten plik?"
 
 msgid "Target already exists"
 msgctxt "#31334"
-msgstr "El destino ya existe"
+msgstr "Cel już istnieje"
 
 msgid "Already exists"
 msgctxt "#31335"
-msgstr "Ya existe"
+msgstr "Już istnieje"
 
 msgid "Rename failed: %s"
 msgctxt "#31336"
-msgstr "No se pudo renombrar: %s"
+msgstr "Zmiana nazwy nie powiodła się: %s"
 
 msgid "Delete failed: %s"
 msgctxt "#31337"
-msgstr "No se pudo eliminar: %s"
+msgstr "Usuwanie nie powiodło się: %s"
 
 msgid "Create folder failed: %s"
 msgctxt "#31338"
-msgstr "No se pudo crear la carpeta: %s"
+msgstr "Tworzenie folderu nie powiodło się: %s"
 
 msgid "Actions…"
 msgctxt "#31339"
-msgstr "Acciones…"
+msgstr "Akcje…"
 
 msgid "Yes"
 msgctxt "#31340"
-msgstr "Sí"
+msgstr "Tak"
 
 msgid "No"
 msgctxt "#31341"
-msgstr "No"
+msgstr "Nie"
 
 msgid "Search"
 msgctxt "#31342"
-msgstr "Buscar"
+msgstr "Szukaj"
 
 msgid "OK"
 msgctxt "#31343"
@@ -139,47 +139,47 @@ msgstr "OK"
 
 msgid "Cancel"
 msgctxt "#31344"
-msgstr "Cancelar"
+msgstr "Anuluj"
 
 msgid "Patterns"
 msgctxt "#31345"
-msgstr "Patrones"
+msgstr "Wzorce"
 
 msgid "Add pattern"
 msgctxt "#31346"
-msgstr "Añadir patrón"
+msgstr "Dodaj wzorzec"
 
 msgid "Directories"
 msgctxt "#31349"
-msgstr "Directorios"
+msgstr "Foldery"
 
 msgid "Add source"
 msgctxt "#31350"
-msgstr "Añadir fuente"
+msgstr "Dodaj źródło"
 
 msgid "Folders first"
 msgctxt "#31351"
-msgstr "Carpetas primero"
+msgstr "Najpierw foldery"
 
 msgid "Options"
 msgctxt "#31352"
-msgstr "Opciones"
+msgstr "Opcje"
 
 msgid "Match case"
 msgctxt "#31353"
-msgstr "Distinguir mayúsculas"
+msgstr "Uwzględniaj wielkość liter"
 
 msgid "Select this folder"
 msgctxt "#31355"
-msgstr "Elegir esta carpeta"
+msgstr "Wybierz ten folder"
 
 msgid "Cannot select drive root"
 msgctxt "#31357"
-msgstr "No se puede elegir la raíz de la unidad"
+msgstr "Nie można wybrać katalogu głównego dysku"
 
 msgid "Already added"
 msgctxt "#31358"
-msgstr "Ya añadido"
+msgstr "Już dodano"
 
 msgid "Audio"
 msgctxt "#31360"
@@ -187,23 +187,23 @@ msgstr "Audio"
 
 msgid "Scroll labels"
 msgctxt "#31361"
-msgstr "Desplazar etiquetas"
+msgstr "Przewijaj etykiety"
 
 msgid "Video"
 msgctxt "#31362"
-msgstr "Vídeo"
+msgstr "Wideo"
 
 msgid "Home folder"
 msgctxt "#31363"
-msgstr "Carpeta personal"
+msgstr "Folder domowy"
 
 msgid "Installing…"
 msgctxt "#31364"
-msgstr "Instalando…"
+msgstr "Instalowanie…"
 
 msgid "Installation and Fusion"
 msgctxt "#31365"
-msgstr "Instalación y fusión"
+msgstr "Instalacja i scalanie"
 
 msgid "3D"
 msgctxt "#36501"
@@ -211,63 +211,63 @@ msgstr "3D"
 
 msgid "Show source path"
 msgctxt "#31367"
-msgstr "Mostrar ruta de origen"
+msgstr "Pokaż ścieżkę źródła"
 
 msgid "Color intensity"
 msgctxt "#31366"
-msgstr "Intensidad del color"
+msgstr "Intensywność koloru"
 
 msgid "General"
 msgctxt "#31368"
-msgstr "General"
+msgstr "Ogólne"
 
 msgid "Player"
 msgctxt "#31369"
-msgstr "Reproductor"
+msgstr "Odtwarzacz"
 
 msgid "Sources"
 msgctxt "#31370"
-msgstr "Fuentes"
+msgstr "Źródła"
 
 msgid "Blocklist"
 msgctxt "#31371"
-msgstr "Bloqueo"
+msgstr "Lista blokad"
 
 msgid "Toggle"
 msgctxt "#31374"
-msgstr "Alternar"
+msgstr "Przełącz"
 
 msgid "Remote"
 msgctxt "#31375"
-msgstr "Mando"
+msgstr "Pilot"
 
 msgid "Back"
 msgctxt "#31376"
-msgstr "Atrás"
+msgstr "Wstecz"
 
 msgid "Home"
 msgctxt "#31377"
-msgstr "Inicio"
+msgstr "Dom"
 
 msgid "Menu"
 msgctxt "#31378"
-msgstr "Menú"
+msgstr "Menu"
 
 msgid "Up"
 msgctxt "#31379"
-msgstr "Arriba"
+msgstr "Góra"
 
 msgid "Down"
 msgctxt "#31380"
-msgstr "Abajo"
+msgstr "Dół"
 
 msgid "Left"
 msgctxt "#31381"
-msgstr "Izquierda"
+msgstr "Lewo"
 
 msgid "Right"
 msgctxt "#31382"
-msgstr "Derecha"
+msgstr "Prawo"
 
 msgid "OK"
 msgctxt "#31383"
@@ -275,215 +275,215 @@ msgstr "OK"
 
 msgid "Rewind"
 msgctxt "#31386"
-msgstr "Retroceder"
+msgstr "Przewiń do tyłu"
 
 msgid "Forward"
 msgctxt "#31387"
-msgstr "Avanzar"
+msgstr "Przewiń do przodu"
 
 msgid "Previous"
 msgctxt "#31388"
-msgstr "Anterior"
+msgstr "Poprzedni"
 
 msgid "Next"
 msgctxt "#31389"
-msgstr "Siguiente"
+msgstr "Następny"
 
 msgid "Louder"
 msgctxt "#31390"
-msgstr "Subir volumen"
+msgstr "Głośniej"
 
 msgid "Quieter"
 msgctxt "#31391"
-msgstr "Bajar volumen"
+msgstr "Ciszej"
 
 msgid "Exit"
 msgctxt "#31393"
-msgstr "Salir"
+msgstr "Zakończ"
 
 msgid "Settings"
 msgctxt "#31398"
-msgstr "Ajustes"
+msgstr "Ustawienia"
 
 msgid "Scanning…"
 msgctxt "#31395"
-msgstr "Analizando…"
+msgstr "Skanowanie…"
 
 msgid "Start scanner"
 msgctxt "#31396"
-msgstr "Iniciar análisis"
+msgstr "Rozpocznij skanowanie"
 
 msgid "Save"
 msgctxt "#31397"
-msgstr "Guardar"
+msgstr "Zapisz"
 
 msgid "Really power off the operating system?"
 msgctxt "#31399"
-msgstr "¿Apagar realmente el sistema?"
+msgstr "Naprawdę wyłączyć system operacyjny?"
 
 msgid "Really restart the operating system?"
 msgctxt "#31400"
-msgstr "¿Reiniciar realmente el sistema?"
+msgstr "Naprawdę ponownie uruchomić system operacyjny?"
 
 msgid "Really suspend the operating system?"
 msgctxt "#31401"
-msgstr "¿Suspender realmente el sistema?"
+msgstr "Naprawdę uśpić system operacyjny?"
 
 msgid "Really hibernate the operating system?"
 msgctxt "#31402"
-msgstr "¿Hibernar realmente el sistema?"
+msgstr "Naprawdę hibernować system operacyjny?"
 
 msgid "Really run this action?"
 msgctxt "#31403"
-msgstr "¿Ejecutar realmente esta acción?"
+msgstr "Naprawdę wykonać tę akcję?"
 
 msgid "Really quit Kodi now?"
 msgctxt "#31404"
-msgstr "¿Salir de Kodi ahora?"
+msgstr "Naprawdę zamknąć Kodi teraz?"
 
 msgid "Shutdown timer"
 msgctxt "#31405"
-msgstr "Temporizador de apagado"
+msgstr "Wyłącznik czasowy"
 
 msgid "15 minutes"
 msgctxt "#31406"
-msgstr "15 minutos"
+msgstr "15 minut"
 
 msgid "30 minutes"
 msgctxt "#31407"
-msgstr "30 minutos"
+msgstr "30 minut"
 
 msgid "60 minutes"
 msgctxt "#31408"
-msgstr "60 minutos"
+msgstr "60 minut"
 
 msgid "120 minutes"
 msgctxt "#31409"
-msgstr "120 minutos"
+msgstr "120 minut"
 
 msgid "Delete active timer (%s)"
 msgctxt "#31411"
-msgstr "Eliminar temporizador activo (%s)"
+msgstr "Usuń aktywny wyłącznik (%s)"
 
 msgid "No timer active"
 msgctxt "#31412"
-msgstr "Ningún temporizador activo"
+msgstr "Brak aktywnego wyłącznika"
 
 msgid "90 minutes"
 msgctxt "#31413"
-msgstr "90 minutos"
+msgstr "90 minut"
 
 msgid "5 minutes"
 msgctxt "#31414"
-msgstr "5 minutos"
+msgstr "5 minut"
 
 msgid "Block list"
 msgctxt "#31415"
-msgstr "Bloqueo"
+msgstr "Lista blokowania"
 
 msgid "Scan folder sizes"
 msgctxt "#31416"
-msgstr "Analizar tamaños de carpeta"
+msgstr "Skanuj rozmiary folderów"
 
 msgid "Copy"
 msgctxt "#31394"
-msgstr "Copiar"
+msgstr "Kopiuj"
 
 msgid "Cut"
 msgctxt "#31410"
-msgstr "Cortar"
+msgstr "Wytnij"
 
 msgid "Paste"
 msgctxt "#31417"
-msgstr "Pegar"
+msgstr "Wklej"
 
 msgid "Clipboard is empty"
 msgctxt "#31418"
-msgstr "El portapapeles está vacío"
+msgstr "Schowek jest pusty"
 
 msgid "The target already exists!"
 msgctxt "#31419"
-msgstr "¡El destino ya existe!"
+msgstr "Cel już istnieje!"
 
 msgid "Copied: %s"
 msgctxt "#31420"
-msgstr "Copiado: %s"
+msgstr "Skopiowano: %s"
 
 msgid "Cut: %s"
 msgctxt "#31421"
-msgstr "Cortado: %s"
+msgstr "Wycięto: %s"
 
 msgid "Paste failed: %s"
 msgctxt "#31422"
-msgstr "No se pudo pegar: %s"
+msgstr "Wklejanie nie powiodło się: %s"
 
 msgid "Pasted: %s"
 msgctxt "#31423"
-msgstr "Pegado: %s"
+msgstr "Wklejono: %s"
 
 msgid "Add as directory source"
 msgctxt "#31424"
-msgstr "Añadir como fuente de directorio"
+msgstr "Dodaj jako źródło folderu"
 
 msgid "Add this folder as a directory source?"
 msgctxt "#31425"
-msgstr "¿Añadir esta carpeta como fuente de directorio?"
+msgstr "Dodać ten folder jako źródło?"
 
 msgid "Info"
 msgctxt "#31426"
-msgstr "Información"
+msgstr "Informacje"
 
 msgid "Title"
 msgctxt "#31427"
-msgstr "Título"
+msgstr "Tytuł"
 
 msgid "Artist"
 msgctxt "#31428"
-msgstr "Artista"
+msgstr "Wykonawca"
 
 msgid "Album"
 msgctxt "#31429"
-msgstr "Álbum"
+msgstr "Album"
 
 msgid "Year"
 msgctxt "#31430"
-msgstr "Año"
+msgstr "Rok"
 
 msgid "Genre"
 msgctxt "#31431"
-msgstr "Género"
+msgstr "Gatunek"
 
 msgid "Duration"
 msgctxt "#31432"
-msgstr "Duración"
+msgstr "Czas trwania"
 
 msgid "Codec"
 msgctxt "#31433"
-msgstr "Códec"
+msgstr "Kodek"
 
 msgid "Bitrate"
 msgctxt "#31435"
-msgstr "Tasa de bits"
+msgstr "Przepływność"
 
 msgid "Sample rate"
 msgctxt "#31436"
-msgstr "Frecuencia de muestreo"
+msgstr "Częstotliwość próbkowania"
 
 msgid "Channels"
 msgctxt "#31437"
-msgstr "Canales"
+msgstr "Kanały"
 
 msgid "Size"
 msgctxt "#31440"
-msgstr "Tamaño"
+msgstr "Rozmiar"
 
 msgid "Modified"
 msgctxt "#31441"
-msgstr "Modificado"
+msgstr "Zmodyfikowano"
 
 msgid "Frame rate"
 msgctxt "#31442"
-msgstr "Cuadros por segundo"
+msgstr "Liczba klatek"
 
 msgid "Audio"
 msgctxt "#31443"
@@ -495,55 +495,55 @@ msgstr "HDR"
 
 msgid "Subtitle"
 msgctxt "#31445"
-msgstr "Subtítulo"
+msgstr "Napisy"
 
 msgid "Off"
 msgctxt "#31446"
-msgstr "Desactivado"
+msgstr "Wył."
 
 msgid "Internal storage"
 msgctxt "#31447"
-msgstr "Almacenamiento interno"
+msgstr "Pamięć wewnętrzna"
 
 msgid "Networks"
 msgctxt "#31448"
-msgstr "Redes"
+msgstr "Sieci"
 
 msgid "Server address"
 msgctxt "#31449"
-msgstr "Dirección del servidor"
+msgstr "Adres serwera"
 
 msgid "Display name"
 msgctxt "#31450"
-msgstr "Nombre visible"
+msgstr "Nazwa wyświetlana"
 
 msgid "Use ftp://, smb://, nfs://, http(s):// or dav(s)://"
 msgctxt "#31451"
-msgstr "Usa ftp://, smb://, nfs://, http(s):// o dav(s)://"
+msgstr "Użyj ftp://, smb://, nfs://, http(s):// lub dav(s)://"
 
 msgid "Network source"
 msgctxt "#31452"
-msgstr "Fuente de red"
+msgstr "Źródło sieciowe"
 
 msgid "Name"
 msgctxt "#31453"
-msgstr "Nombre"
+msgstr "Nazwa"
 
 msgid "Protocol"
 msgctxt "#31454"
-msgstr "Protocolo"
+msgstr "Protokół"
 
 msgid "Server"
 msgctxt "#31455"
-msgstr "Servidor"
+msgstr "Serwer"
 
 msgid "Username"
 msgctxt "#31456"
-msgstr "Usuario"
+msgstr "Nazwa użytkownika"
 
 msgid "Password"
 msgctxt "#31457"
-msgstr "Contraseña"
+msgstr "Hasło"
 
 msgid "OK"
 msgctxt "#31458"
@@ -551,143 +551,143 @@ msgstr "OK"
 
 msgid "Source already exists"
 msgctxt "#31459"
-msgstr "La fuente ya existe"
+msgstr "Źródło już istnieje"
 
 msgid "Path"
 msgctxt "#31460"
-msgstr "Ruta"
+msgstr "Ścieżka"
 
 msgid "Port"
 msgctxt "#31461"
-msgstr "Puerto"
+msgstr "Port"
 
 msgid "Invalid port"
 msgctxt "#31462"
-msgstr "Puerto no válido"
+msgstr "Nieprawidłowy port"
 
 msgid "Connection OK"
 msgctxt "#31463"
-msgstr "Conexión correcta"
+msgstr "Połączenie OK"
 
 msgid "Connection failed"
 msgctxt "#31464"
-msgstr "Conexión fallida"
+msgstr "Połączenie nie powiodło się"
 
 msgid "Test"
 msgctxt "#31465"
-msgstr "Probar"
+msgstr "Testuj"
 
 msgid "Edit"
 msgctxt "#31466"
-msgstr "Editar"
+msgstr "Edytuj"
 
 msgid "Connection error"
 msgctxt "#31467"
-msgstr "Error de conexión"
+msgstr "Błąd połączenia"
 
 msgid "Scan network files"
 msgctxt "#31468"
-msgstr "Analizar archivos de red"
+msgstr "Skanuj pliki sieciowe"
 
 msgid "Scanning..."
 msgctxt "#31470"
-msgstr "Analizando..."
+msgstr "Skanowanie..."
 
 msgid "Start-up delay"
 msgctxt "#31471"
-msgstr "Retardo de inicio"
+msgstr "Opóźnienie startu"
 
 msgid "System and Kodi"
 msgctxt "#31472"
-msgstr "Sistema y Kodi"
+msgstr "System i Kodi"
 
 msgid "GUI sound volume"
 msgctxt "#31473"
-msgstr "Volumen interfaz"
+msgstr "Głośność dźwięków interfejsu"
 
 msgid "Photo"
 msgctxt "#31474"
-msgstr "Foto"
+msgstr "Zdjęcie"
 
 msgid "An older version (%s) was installed over the newer version (%s)."
 msgctxt "#31476"
-msgstr "Se instaló una versión anterior (%s) sobre la versión más reciente (%s)."
+msgstr "Starsza wersja (%s) została zainstalowana na nowszej wersji (%s)."
 
 msgid "Version (%s) was installed again over version (%s)."
 msgctxt "#31477"
-msgstr "La versión (%s) se reinstaló sobre la versión (%s)."
+msgstr "Wersja (%s) została ponownie zainstalowana na wersji (%s)."
 
 msgid "Installation warning"
 msgctxt "#31478"
-msgstr "Advertencia de instalación"
+msgstr "Ostrzeżenie instalacji"
 
 msgid "Some base files could not be copied. A new attempt is made on the next start."
 msgctxt "#31479"
-msgstr "Algunos archivos base no se pudieron copiar. Se reintentará en el próximo inicio."
+msgstr "Niektórych plików bazowych nie udało się skopiować. Kolejna próba nastąpi przy następnym starcie."
 
 msgid "The settings folder was broken and has been repaired successfully."
 msgctxt "#31480"
-msgstr "La carpeta de ajustes estaba dañada y se reparó correctamente."
+msgstr "Folder ustawień był uszkodzony i został naprawiony."
 
 msgid "The settings folder is broken and could not be repaired."
 msgctxt "#31481"
-msgstr "La carpeta de ajustes está dañada y no se pudo reparar."
+msgstr "Folder ustawień jest uszkodzony i nie udało się go naprawić."
 
 msgid "The base layer could not be updated. See the log for details."
 msgctxt "#31482"
-msgstr "No se pudo actualizar la capa base. Consulta el registro para más detalles."
+msgstr "Nie udało się zaktualizować warstwy bazowej. Szczegóły w dzienniku."
 
 msgid "Reset the settings of this section to their defaults?"
 msgctxt "#31483"
-msgstr "¿Restablecer los ajustes de esta sección a sus valores predeterminados?"
+msgstr "Przywrócić ustawienia tej sekcji do domyślnych?"
 
 msgid "Screen dimmer"
 msgctxt "#31484"
-msgstr "Atenuador de pantalla"
+msgstr "Przyciemnianie ekranu"
 
 msgid "Camera"
 msgctxt "#31485"
-msgstr "Cámara"
+msgstr "Aparat"
 
 msgid "Lens"
 msgctxt "#31486"
-msgstr "Objetivo"
+msgstr "Obiektyw"
 
 msgid "Date taken"
 msgctxt "#31487"
-msgstr "Fecha de captura"
+msgstr "Data wykonania"
 
 msgid "Exposure"
 msgctxt "#31488"
-msgstr "Exposición"
+msgstr "Ekspozycja"
 
 msgid "Aperture"
 msgctxt "#31489"
-msgstr "Apertura"
+msgstr "Przysłona"
 
 msgid "Focal length"
 msgctxt "#31490"
-msgstr "Distancia focal"
+msgstr "Ogniskowa"
 
 msgid "Resolution"
 msgctxt "#31491"
-msgstr "Resolución"
+msgstr "Rozdzielczość"
 
 msgid "Orientation"
 msgctxt "#31492"
-msgstr "Orientación"
+msgstr "Orientacja"
 
 msgid "Include subfolders"
 msgctxt "#31493"
-msgstr "Incluir subcarpetas"
+msgstr "Uwzględnij podfoldery"
 
 msgid "Shortcuts"
 msgctxt "#31494"
-msgstr "Atajos"
+msgstr "Skróty"
 
 msgid "P & Space"
 msgctxt "#31495"
-msgstr "P y Espacio"
+msgstr "P i Spacja"
 
 msgid "X"
 msgctxt "#31496"
@@ -695,7 +695,7 @@ msgstr "X"
 
 msgid "Comma / Period"
 msgctxt "#31498"
-msgstr "Coma / Punto"
+msgstr "Przecinek / Kropka"
 
 msgid "F / R"
 msgctxt "#31499"
@@ -707,19 +707,19 @@ msgstr "M"
 
 msgid "Plus / Minus"
 msgctxt "#31501"
-msgstr "Más / Menos"
+msgstr "Plus / Minus"
 
 msgid "Backspace"
 msgctxt "#31502"
-msgstr "Retroceso"
+msgstr "Backspace"
 
 msgid "Arrow keys"
 msgctxt "#31503"
-msgstr "Teclas de dirección"
+msgstr "Klawisze strzałek"
 
 msgid "Enter"
 msgctxt "#31504"
-msgstr "Intro"
+msgstr "Enter"
 
 msgid "ESC"
 msgctxt "#31505"
@@ -727,55 +727,55 @@ msgstr "ESC"
 
 msgid "Shift+F10"
 msgctxt "#31506"
-msgstr "Mayús+F10"
+msgstr "Shift+F10"
 
 msgid "Play / Pause"
 msgctxt "#31507"
-msgstr "Reproducir / Pausa"
+msgstr "Odtwarzaj / Pauza"
 
 msgid "Stop"
 msgctxt "#31508"
-msgstr "Detener"
+msgstr "Zatrzymaj"
 
 msgid "Previous / Next"
 msgctxt "#31510"
-msgstr "Anterior / Siguiente"
+msgstr "Poprzedni / Następny"
 
 msgid "Skip back / forward"
 msgctxt "#31511"
-msgstr "Retroceder / avanzar"
+msgstr "Przeskocz w tył / w przód"
 
 msgid "Mute"
 msgctxt "#31512"
-msgstr "Silenciar"
+msgstr "Wycisz"
 
 msgid "Louder / Quieter"
 msgctxt "#31513"
-msgstr "Subir / bajar volumen"
+msgstr "Głośniej / Ciszej"
 
 msgid "Close / folder up"
 msgctxt "#31514"
-msgstr "Cerrar / subir carpeta"
+msgstr "Zamknij / folder w górę"
 
 msgid "Navigate"
 msgctxt "#31515"
-msgstr "Navegar"
+msgstr "Nawigacja"
 
 msgid "Select"
 msgctxt "#31516"
-msgstr "Seleccionar"
+msgstr "Wybierz"
 
 msgid "Close overlay"
 msgctxt "#31517"
-msgstr "Cerrar superposiciones"
+msgstr "Zamknij nakładkę"
 
 msgid "Context menu"
 msgctxt "#31518"
-msgstr "Menú contextual"
+msgstr "Menu kontekstowe"
 
 msgid "Ctrl+Enter"
 msgctxt "#31519"
-msgstr "Ctrl+Intro"
+msgstr "Ctrl+Enter"
 
 msgid "ISO"
 msgctxt "#31520"
@@ -783,108 +783,108 @@ msgstr "ISO"
 
 msgid "No web browser found"
 msgctxt "#31521"
-msgstr "No se encontró un navegador web"
+msgstr "Nie znaleziono przeglądarki internetowej"
 
 msgid "Check for update"
 msgctxt "#31522"
-msgstr "Buscar actualización"
+msgstr "Sprawdź aktualizacje"
 
 msgid "Update check"
 msgctxt "#31523"
-msgstr "Comprobación de actualizaciones"
+msgstr "Sprawdzanie aktualizacji"
 
 msgid "No new version available"
 msgctxt "#31524"
-msgstr "No hay nueva versión disponible"
+msgstr "Brak nowej wersji"
 
 msgid "Update check failed"
 msgctxt "#31526"
-msgstr "Error de comprobación"
+msgstr "Sprawdzanie aktualizacji nie powiodło się"
 
 msgid "Playback"
 msgctxt "#31527"
-msgstr "Reproducción"
+msgstr "Odtwarzanie"
 
 msgid "Should the playback resume at %s?"
 msgctxt "#31528"
-msgstr "¿Debe reanudarse la reproducción en %s?"
+msgstr "Wznowić odtwarzanie od %s?"
 
 msgid "Resume"
 msgctxt "#31529"
-msgstr "Reanudar"
+msgstr "Wznów"
 
 msgid "Restart"
 msgctxt "#31530"
-msgstr "Reiniciar"
+msgstr "Od nowa"
 
 msgid "New version %s available"
 msgctxt "#31531"
-msgstr "Nueva versión %s disponible"
+msgstr "Dostępna nowa wersja %s"
 
 msgid "Downloading version %s"
 msgctxt "#31532"
-msgstr "Descargando la versión %s"
+msgstr "Pobieranie wersji %s"
 
 msgid "Download failed"
 msgctxt "#31534"
-msgstr "Error al descargar"
+msgstr "Pobieranie nie powiodło się"
 
 msgid "Update"
 msgctxt "#31535"
-msgstr "Actualización"
+msgstr "Aktualizuj"
 
 msgid "Download and install the new version %s?"
 msgctxt "#31536"
-msgstr "¿Descargar e instalar la nueva versión %s?"
+msgstr "Pobrać i zainstalować nową wersję %s?"
 
 msgid "Write access"
 msgctxt "#31537"
-msgstr "Acceso de escritura"
+msgstr "Dostęp do zapisu"
 
 msgid "Theme"
 msgctxt "#31538"
-msgstr "Tema"
+msgstr "Motyw"
 
 msgid "External storage"
 msgctxt "#31539"
-msgstr "Almacenamiento externo"
+msgstr "Pamięć zewnętrzna"
 
 msgid "Searching for update"
 msgctxt "#31540"
-msgstr "Buscando actualización"
+msgstr "Szukanie aktualizacji"
 
 msgid "Saving version %s"
 msgctxt "#31541"
-msgstr "Guardando la versión %s"
+msgstr "Zapisywanie wersji %s"
 
 msgid "Version %s saved and extracted"
 msgctxt "#31542"
-msgstr "Versión %s guardada y descomprimida"
+msgstr "Wersja %s zapisana i rozpakowana"
 
 msgid "Saving failed"
 msgctxt "#31543"
-msgstr "Error al guardar"
+msgstr "Zapisywanie nie powiodło się"
 
 msgid "Automatically check for updates"
 msgctxt "#31544"
-msgstr "Actualizaciones automáticas"
+msgstr "Automatycznie sprawdzaj aktualizacje"
 
 msgid "The required add-on is not installed or disabled"
 msgctxt "#31545"
-msgstr "El complemento requerido no está instalado o está desactivado"
+msgstr "Wymagany dodatek nie jest zainstalowany lub jest wyłączony"
 
 msgid "Fullscreen visualisation"
 msgctxt "#31546"
-msgstr "Modo pantalla completa"
+msgstr "Wizualizacja pełnoekranowa"
 
 msgid "Off"
 msgctxt "#31548"
-msgstr "Desactivado"
+msgstr "Wył."
 
 msgid "No visualisation add-on installed"
 msgctxt "#31549"
-msgstr "No hay ningún complemento de visualización instalado"
+msgstr "Nie zainstalowano dodatku wizualizacji"
 
 msgid "Crossfade"
 msgctxt "#31550"
-msgstr "Fundido cruzado"
+msgstr "Przenikanie"

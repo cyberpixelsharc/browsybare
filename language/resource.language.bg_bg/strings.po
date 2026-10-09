@@ -2,136 +2,136 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_es\n"
+"Language: bg_bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Error"
 msgctxt "#31303"
-msgstr "Error"
+msgstr "Грешка"
 
 msgid "Settings"
 msgctxt "#31307"
-msgstr "Ajustes"
+msgstr "Настройки"
 
 msgid "System"
 msgctxt "#31308"
-msgstr "Sistema"
+msgstr "Система"
 
 msgid "Quit"
 msgctxt "#31310"
-msgstr "Salir"
+msgstr "Изход"
 
 msgid "Show zebra stripes"
 msgctxt "#31312"
-msgstr "Mostrar rayado de cebra"
+msgstr "Показване на ивици"
 
 msgid "Version"
 msgctxt "#31313"
-msgstr "Versión"
+msgstr "Версия"
 
 msgid "Show hidden"
 msgctxt "#31317"
-msgstr "Mostrar ocultos"
+msgstr "Показване на скритите"
 
 msgid "Accent color"
 msgctxt "#31318"
-msgstr "Color de acento"
+msgstr "Цвят на акцента"
 
 msgid "Appearance and colors"
 msgctxt "#31319"
-msgstr "Apariencia y colores"
+msgstr "Изглед и цветове"
 
 msgid "Files and folders"
 msgctxt "#31320"
-msgstr "Archivos y carpetas"
+msgstr "Файлове и папки"
 
 msgid "Sorting"
 msgctxt "#31321"
-msgstr "Orden"
+msgstr "Подреждане"
 
 msgid "Alphabetical"
 msgctxt "#31322"
-msgstr "Alfabético"
+msgstr "По азбучен ред"
 
 msgid "Size"
 msgctxt "#31323"
-msgstr "Tamaño"
+msgstr "Размер"
 
 msgid "Date modified"
 msgctxt "#31324"
-msgstr "Fecha de modificación"
+msgstr "Дата на промяна"
 
 msgid "Drives"
 msgctxt "#31325"
-msgstr "Unidades"
+msgstr "Устройства"
 
 msgid "No source available"
 msgctxt "#31326"
-msgstr "Ninguna fuente disponible"
+msgstr "Няма наличен източник"
 
 msgid "Rename"
 msgctxt "#31327"
-msgstr "Renombrar"
+msgstr "Преименуване"
 
 msgid "Delete"
 msgctxt "#31328"
-msgstr "Eliminar"
+msgstr "Изтриване"
 
 msgid "New folder"
 msgctxt "#31329"
-msgstr "Nueva carpeta"
+msgstr "Нова папка"
 
 msgid "File not found"
 msgctxt "#31330"
-msgstr "Archivo no encontrado"
+msgstr "Файлът не е намерен"
 
 msgid "Invalid name"
 msgctxt "#31331"
-msgstr "Nombre no válido"
+msgstr "Невалидно име"
 
 msgid "Really delete this folder?"
 msgctxt "#31332"
-msgstr "¿Eliminar realmente esta carpeta?"
+msgstr "Наистина ли да изтрия тази папка?"
 
 msgid "Really delete this file?"
 msgctxt "#31333"
-msgstr "¿Eliminar realmente este archivo?"
+msgstr "Наистина ли да изтрия този файл?"
 
 msgid "Target already exists"
 msgctxt "#31334"
-msgstr "El destino ya existe"
+msgstr "Целта вече съществува"
 
 msgid "Already exists"
 msgctxt "#31335"
-msgstr "Ya existe"
+msgstr "Вече съществува"
 
 msgid "Rename failed: %s"
 msgctxt "#31336"
-msgstr "No se pudo renombrar: %s"
+msgstr "Преименуването не успя: %s"
 
 msgid "Delete failed: %s"
 msgctxt "#31337"
-msgstr "No se pudo eliminar: %s"
+msgstr "Изтриването не успя: %s"
 
 msgid "Create folder failed: %s"
 msgctxt "#31338"
-msgstr "No se pudo crear la carpeta: %s"
+msgstr "Създаването на папка не успя: %s"
 
 msgid "Actions…"
 msgctxt "#31339"
-msgstr "Acciones…"
+msgstr "Действия…"
 
 msgid "Yes"
 msgctxt "#31340"
-msgstr "Sí"
+msgstr "Да"
 
 msgid "No"
 msgctxt "#31341"
-msgstr "No"
+msgstr "Не"
 
 msgid "Search"
 msgctxt "#31342"
-msgstr "Buscar"
+msgstr "Търсене"
 
 msgid "OK"
 msgctxt "#31343"
@@ -139,71 +139,71 @@ msgstr "OK"
 
 msgid "Cancel"
 msgctxt "#31344"
-msgstr "Cancelar"
+msgstr "Отказ"
 
 msgid "Patterns"
 msgctxt "#31345"
-msgstr "Patrones"
+msgstr "Шаблони"
 
 msgid "Add pattern"
 msgctxt "#31346"
-msgstr "Añadir patrón"
+msgstr "Добавяне на шаблон"
 
 msgid "Directories"
 msgctxt "#31349"
-msgstr "Directorios"
+msgstr "Папки"
 
 msgid "Add source"
 msgctxt "#31350"
-msgstr "Añadir fuente"
+msgstr "Добавяне на източник"
 
 msgid "Folders first"
 msgctxt "#31351"
-msgstr "Carpetas primero"
+msgstr "Първо папките"
 
 msgid "Options"
 msgctxt "#31352"
-msgstr "Opciones"
+msgstr "Опции"
 
 msgid "Match case"
 msgctxt "#31353"
-msgstr "Distinguir mayúsculas"
+msgstr "Различаване на главни/малки букви"
 
 msgid "Select this folder"
 msgctxt "#31355"
-msgstr "Elegir esta carpeta"
+msgstr "Избор на тази папка"
 
 msgid "Cannot select drive root"
 msgctxt "#31357"
-msgstr "No se puede elegir la raíz de la unidad"
+msgstr "Коренът на устройството не може да бъде избран"
 
 msgid "Already added"
 msgctxt "#31358"
-msgstr "Ya añadido"
+msgstr "Вече е добавено"
 
 msgid "Audio"
 msgctxt "#31360"
-msgstr "Audio"
+msgstr "Аудио"
 
 msgid "Scroll labels"
 msgctxt "#31361"
-msgstr "Desplazar etiquetas"
+msgstr "Превъртане на етикетите"
 
 msgid "Video"
 msgctxt "#31362"
-msgstr "Vídeo"
+msgstr "Видео"
 
 msgid "Home folder"
 msgctxt "#31363"
-msgstr "Carpeta personal"
+msgstr "Начална папка"
 
 msgid "Installing…"
 msgctxt "#31364"
-msgstr "Instalando…"
+msgstr "Инсталиране…"
 
 msgid "Installation and Fusion"
 msgctxt "#31365"
-msgstr "Instalación y fusión"
+msgstr "Инсталация и сливане"
 
 msgid "3D"
 msgctxt "#36501"
@@ -211,63 +211,63 @@ msgstr "3D"
 
 msgid "Show source path"
 msgctxt "#31367"
-msgstr "Mostrar ruta de origen"
+msgstr "Показване на пътя на източника"
 
 msgid "Color intensity"
 msgctxt "#31366"
-msgstr "Intensidad del color"
+msgstr "Интензитет на цвета"
 
 msgid "General"
 msgctxt "#31368"
-msgstr "General"
+msgstr "Общи"
 
 msgid "Player"
 msgctxt "#31369"
-msgstr "Reproductor"
+msgstr "Плейър"
 
 msgid "Sources"
 msgctxt "#31370"
-msgstr "Fuentes"
+msgstr "Източници"
 
 msgid "Blocklist"
 msgctxt "#31371"
-msgstr "Bloqueo"
+msgstr "Блокиране"
 
 msgid "Toggle"
 msgctxt "#31374"
-msgstr "Alternar"
+msgstr "Превключване"
 
 msgid "Remote"
 msgctxt "#31375"
-msgstr "Mando"
+msgstr "Управление"
 
 msgid "Back"
 msgctxt "#31376"
-msgstr "Atrás"
+msgstr "Назад"
 
 msgid "Home"
 msgctxt "#31377"
-msgstr "Inicio"
+msgstr "Начало"
 
 msgid "Menu"
 msgctxt "#31378"
-msgstr "Menú"
+msgstr "Меню"
 
 msgid "Up"
 msgctxt "#31379"
-msgstr "Arriba"
+msgstr "Нагоре"
 
 msgid "Down"
 msgctxt "#31380"
-msgstr "Abajo"
+msgstr "Надолу"
 
 msgid "Left"
 msgctxt "#31381"
-msgstr "Izquierda"
+msgstr "Наляво"
 
 msgid "Right"
 msgctxt "#31382"
-msgstr "Derecha"
+msgstr "Надясно"
 
 msgid "OK"
 msgctxt "#31383"
@@ -275,219 +275,219 @@ msgstr "OK"
 
 msgid "Rewind"
 msgctxt "#31386"
-msgstr "Retroceder"
+msgstr "Превъртане назад"
 
 msgid "Forward"
 msgctxt "#31387"
-msgstr "Avanzar"
+msgstr "Превъртане напред"
 
 msgid "Previous"
 msgctxt "#31388"
-msgstr "Anterior"
+msgstr "Предишен"
 
 msgid "Next"
 msgctxt "#31389"
-msgstr "Siguiente"
+msgstr "Следващ"
 
 msgid "Louder"
 msgctxt "#31390"
-msgstr "Subir volumen"
+msgstr "По-силно"
 
 msgid "Quieter"
 msgctxt "#31391"
-msgstr "Bajar volumen"
+msgstr "По-тихо"
 
 msgid "Exit"
 msgctxt "#31393"
-msgstr "Salir"
+msgstr "Изход"
 
 msgid "Settings"
 msgctxt "#31398"
-msgstr "Ajustes"
+msgstr "Настройки"
 
 msgid "Scanning…"
 msgctxt "#31395"
-msgstr "Analizando…"
+msgstr "Сканиране…"
 
 msgid "Start scanner"
 msgctxt "#31396"
-msgstr "Iniciar análisis"
+msgstr "Стартиране на сканирането"
 
 msgid "Save"
 msgctxt "#31397"
-msgstr "Guardar"
+msgstr "Запазване"
 
 msgid "Really power off the operating system?"
 msgctxt "#31399"
-msgstr "¿Apagar realmente el sistema?"
+msgstr "Наистина ли да изключа операционната система?"
 
 msgid "Really restart the operating system?"
 msgctxt "#31400"
-msgstr "¿Reiniciar realmente el sistema?"
+msgstr "Наистина ли да рестартирам операционната система?"
 
 msgid "Really suspend the operating system?"
 msgctxt "#31401"
-msgstr "¿Suspender realmente el sistema?"
+msgstr "Наистина ли да приспя операционната система?"
 
 msgid "Really hibernate the operating system?"
 msgctxt "#31402"
-msgstr "¿Hibernar realmente el sistema?"
+msgstr "Наистина ли да хибернирам операционната система?"
 
 msgid "Really run this action?"
 msgctxt "#31403"
-msgstr "¿Ejecutar realmente esta acción?"
+msgstr "Наистина ли да изпълня това действие?"
 
 msgid "Really quit Kodi now?"
 msgctxt "#31404"
-msgstr "¿Salir de Kodi ahora?"
+msgstr "Наистина ли да затворя Kodi сега?"
 
 msgid "Shutdown timer"
 msgctxt "#31405"
-msgstr "Temporizador de apagado"
+msgstr "Таймер за изключване"
 
 msgid "15 minutes"
 msgctxt "#31406"
-msgstr "15 minutos"
+msgstr "15 минути"
 
 msgid "30 minutes"
 msgctxt "#31407"
-msgstr "30 minutos"
+msgstr "30 минути"
 
 msgid "60 minutes"
 msgctxt "#31408"
-msgstr "60 minutos"
+msgstr "60 минути"
 
 msgid "120 minutes"
 msgctxt "#31409"
-msgstr "120 minutos"
+msgstr "120 минути"
 
 msgid "Delete active timer (%s)"
 msgctxt "#31411"
-msgstr "Eliminar temporizador activo (%s)"
+msgstr "Изтриване на активния таймер (%s)"
 
 msgid "No timer active"
 msgctxt "#31412"
-msgstr "Ningún temporizador activo"
+msgstr "Няма активен таймер"
 
 msgid "90 minutes"
 msgctxt "#31413"
-msgstr "90 minutos"
+msgstr "90 минути"
 
 msgid "5 minutes"
 msgctxt "#31414"
-msgstr "5 minutos"
+msgstr "5 минути"
 
 msgid "Block list"
 msgctxt "#31415"
-msgstr "Bloqueo"
+msgstr "Списък за блокиране"
 
 msgid "Scan folder sizes"
 msgctxt "#31416"
-msgstr "Analizar tamaños de carpeta"
+msgstr "Сканиране на размерите на папките"
 
 msgid "Copy"
 msgctxt "#31394"
-msgstr "Copiar"
+msgstr "Копиране"
 
 msgid "Cut"
 msgctxt "#31410"
-msgstr "Cortar"
+msgstr "Изрязване"
 
 msgid "Paste"
 msgctxt "#31417"
-msgstr "Pegar"
+msgstr "Поставяне"
 
 msgid "Clipboard is empty"
 msgctxt "#31418"
-msgstr "El portapapeles está vacío"
+msgstr "Клипбордът е празен"
 
 msgid "The target already exists!"
 msgctxt "#31419"
-msgstr "¡El destino ya existe!"
+msgstr "Целта вече съществува!"
 
 msgid "Copied: %s"
 msgctxt "#31420"
-msgstr "Copiado: %s"
+msgstr "Копирано: %s"
 
 msgid "Cut: %s"
 msgctxt "#31421"
-msgstr "Cortado: %s"
+msgstr "Изрязано: %s"
 
 msgid "Paste failed: %s"
 msgctxt "#31422"
-msgstr "No se pudo pegar: %s"
+msgstr "Поставянето не успя: %s"
 
 msgid "Pasted: %s"
 msgctxt "#31423"
-msgstr "Pegado: %s"
+msgstr "Поставено: %s"
 
 msgid "Add as directory source"
 msgctxt "#31424"
-msgstr "Añadir como fuente de directorio"
+msgstr "Добавяне като източник на папка"
 
 msgid "Add this folder as a directory source?"
 msgctxt "#31425"
-msgstr "¿Añadir esta carpeta como fuente de directorio?"
+msgstr "Да добавя ли тази папка като източник?"
 
 msgid "Info"
 msgctxt "#31426"
-msgstr "Información"
+msgstr "Информация"
 
 msgid "Title"
 msgctxt "#31427"
-msgstr "Título"
+msgstr "Заглавие"
 
 msgid "Artist"
 msgctxt "#31428"
-msgstr "Artista"
+msgstr "Изпълнител"
 
 msgid "Album"
 msgctxt "#31429"
-msgstr "Álbum"
+msgstr "Албум"
 
 msgid "Year"
 msgctxt "#31430"
-msgstr "Año"
+msgstr "Година"
 
 msgid "Genre"
 msgctxt "#31431"
-msgstr "Género"
+msgstr "Жанр"
 
 msgid "Duration"
 msgctxt "#31432"
-msgstr "Duración"
+msgstr "Продължителност"
 
 msgid "Codec"
 msgctxt "#31433"
-msgstr "Códec"
+msgstr "Кодек"
 
 msgid "Bitrate"
 msgctxt "#31435"
-msgstr "Tasa de bits"
+msgstr "Битрейт"
 
 msgid "Sample rate"
 msgctxt "#31436"
-msgstr "Frecuencia de muestreo"
+msgstr "Честота на дискретизация"
 
 msgid "Channels"
 msgctxt "#31437"
-msgstr "Canales"
+msgstr "Канали"
 
 msgid "Size"
 msgctxt "#31440"
-msgstr "Tamaño"
+msgstr "Размер"
 
 msgid "Modified"
 msgctxt "#31441"
-msgstr "Modificado"
+msgstr "Променено"
 
 msgid "Frame rate"
 msgctxt "#31442"
-msgstr "Cuadros por segundo"
+msgstr "Кадрова честота"
 
 msgid "Audio"
 msgctxt "#31443"
-msgstr "Audio"
+msgstr "Аудио"
 
 msgid "HDR"
 msgctxt "#31444"
@@ -495,55 +495,55 @@ msgstr "HDR"
 
 msgid "Subtitle"
 msgctxt "#31445"
-msgstr "Subtítulo"
+msgstr "Субтитри"
 
 msgid "Off"
 msgctxt "#31446"
-msgstr "Desactivado"
+msgstr "Изкл."
 
 msgid "Internal storage"
 msgctxt "#31447"
-msgstr "Almacenamiento interno"
+msgstr "Вътрешна памет"
 
 msgid "Networks"
 msgctxt "#31448"
-msgstr "Redes"
+msgstr "Мрежи"
 
 msgid "Server address"
 msgctxt "#31449"
-msgstr "Dirección del servidor"
+msgstr "Адрес на сървъра"
 
 msgid "Display name"
 msgctxt "#31450"
-msgstr "Nombre visible"
+msgstr "Показвано име"
 
 msgid "Use ftp://, smb://, nfs://, http(s):// or dav(s)://"
 msgctxt "#31451"
-msgstr "Usa ftp://, smb://, nfs://, http(s):// o dav(s)://"
+msgstr "Използвайте ftp://, smb://, nfs://, http(s):// или dav(s)://"
 
 msgid "Network source"
 msgctxt "#31452"
-msgstr "Fuente de red"
+msgstr "Мрежов източник"
 
 msgid "Name"
 msgctxt "#31453"
-msgstr "Nombre"
+msgstr "Име"
 
 msgid "Protocol"
 msgctxt "#31454"
-msgstr "Protocolo"
+msgstr "Протокол"
 
 msgid "Server"
 msgctxt "#31455"
-msgstr "Servidor"
+msgstr "Сървър"
 
 msgid "Username"
 msgctxt "#31456"
-msgstr "Usuario"
+msgstr "Потребителско име"
 
 msgid "Password"
 msgctxt "#31457"
-msgstr "Contraseña"
+msgstr "Парола"
 
 msgid "OK"
 msgctxt "#31458"
@@ -551,143 +551,143 @@ msgstr "OK"
 
 msgid "Source already exists"
 msgctxt "#31459"
-msgstr "La fuente ya existe"
+msgstr "Източникът вече съществува"
 
 msgid "Path"
 msgctxt "#31460"
-msgstr "Ruta"
+msgstr "Път"
 
 msgid "Port"
 msgctxt "#31461"
-msgstr "Puerto"
+msgstr "Порт"
 
 msgid "Invalid port"
 msgctxt "#31462"
-msgstr "Puerto no válido"
+msgstr "Невалиден порт"
 
 msgid "Connection OK"
 msgctxt "#31463"
-msgstr "Conexión correcta"
+msgstr "Връзката е OK"
 
 msgid "Connection failed"
 msgctxt "#31464"
-msgstr "Conexión fallida"
+msgstr "Връзката не успя"
 
 msgid "Test"
 msgctxt "#31465"
-msgstr "Probar"
+msgstr "Тест"
 
 msgid "Edit"
 msgctxt "#31466"
-msgstr "Editar"
+msgstr "Редактиране"
 
 msgid "Connection error"
 msgctxt "#31467"
-msgstr "Error de conexión"
+msgstr "Грешка при връзката"
 
 msgid "Scan network files"
 msgctxt "#31468"
-msgstr "Analizar archivos de red"
+msgstr "Сканиране на мрежовите файлове"
 
 msgid "Scanning..."
 msgctxt "#31470"
-msgstr "Analizando..."
+msgstr "Сканиране..."
 
 msgid "Start-up delay"
 msgctxt "#31471"
-msgstr "Retardo de inicio"
+msgstr "Закъснение при стартиране"
 
 msgid "System and Kodi"
 msgctxt "#31472"
-msgstr "Sistema y Kodi"
+msgstr "Система и Kodi"
 
 msgid "GUI sound volume"
 msgctxt "#31473"
-msgstr "Volumen interfaz"
+msgstr "Сила на интерфейса"
 
 msgid "Photo"
 msgctxt "#31474"
-msgstr "Foto"
+msgstr "Снимка"
 
 msgid "An older version (%s) was installed over the newer version (%s)."
 msgctxt "#31476"
-msgstr "Se instaló una versión anterior (%s) sobre la versión más reciente (%s)."
+msgstr "По-стара версия (%s) беше инсталирана върху по-новата версия (%s)."
 
 msgid "Version (%s) was installed again over version (%s)."
 msgctxt "#31477"
-msgstr "La versión (%s) se reinstaló sobre la versión (%s)."
+msgstr "Версия (%s) беше инсталирана отново върху версия (%s)."
 
 msgid "Installation warning"
 msgctxt "#31478"
-msgstr "Advertencia de instalación"
+msgstr "Предупреждение при инсталация"
 
 msgid "Some base files could not be copied. A new attempt is made on the next start."
 msgctxt "#31479"
-msgstr "Algunos archivos base no se pudieron copiar. Se reintentará en el próximo inicio."
+msgstr "Някои основни файлове не можаха да бъдат копирани. Нов опит ще бъде направен при следващото стартиране."
 
 msgid "The settings folder was broken and has been repaired successfully."
 msgctxt "#31480"
-msgstr "La carpeta de ajustes estaba dañada y se reparó correctamente."
+msgstr "Папката с настройки беше повредена и беше успешно поправена."
 
 msgid "The settings folder is broken and could not be repaired."
 msgctxt "#31481"
-msgstr "La carpeta de ajustes está dañada y no se pudo reparar."
+msgstr "Папката с настройки е повредена и не можа да бъде поправена."
 
 msgid "The base layer could not be updated. See the log for details."
 msgctxt "#31482"
-msgstr "No se pudo actualizar la capa base. Consulta el registro para más detalles."
+msgstr "Основният слой не можа да бъде обновен. Вижте дневника за подробности."
 
 msgid "Reset the settings of this section to their defaults?"
 msgctxt "#31483"
-msgstr "¿Restablecer los ajustes de esta sección a sus valores predeterminados?"
+msgstr "Да възстановя ли настройките на този раздел по подразбиране?"
 
 msgid "Screen dimmer"
 msgctxt "#31484"
-msgstr "Atenuador de pantalla"
+msgstr "Затъмняване на екрана"
 
 msgid "Camera"
 msgctxt "#31485"
-msgstr "Cámara"
+msgstr "Камера"
 
 msgid "Lens"
 msgctxt "#31486"
-msgstr "Objetivo"
+msgstr "Обектив"
 
 msgid "Date taken"
 msgctxt "#31487"
-msgstr "Fecha de captura"
+msgstr "Дата на снимката"
 
 msgid "Exposure"
 msgctxt "#31488"
-msgstr "Exposición"
+msgstr "Експозиция"
 
 msgid "Aperture"
 msgctxt "#31489"
-msgstr "Apertura"
+msgstr "Диафрагма"
 
 msgid "Focal length"
 msgctxt "#31490"
-msgstr "Distancia focal"
+msgstr "Фокусно разстояние"
 
 msgid "Resolution"
 msgctxt "#31491"
-msgstr "Resolución"
+msgstr "Резолюция"
 
 msgid "Orientation"
 msgctxt "#31492"
-msgstr "Orientación"
+msgstr "Ориентация"
 
 msgid "Include subfolders"
 msgctxt "#31493"
-msgstr "Incluir subcarpetas"
+msgstr "Включване на подпапките"
 
 msgid "Shortcuts"
 msgctxt "#31494"
-msgstr "Atajos"
+msgstr "Бързи клавиши"
 
 msgid "P & Space"
 msgctxt "#31495"
-msgstr "P y Espacio"
+msgstr "P и Интервал"
 
 msgid "X"
 msgctxt "#31496"
@@ -695,7 +695,7 @@ msgstr "X"
 
 msgid "Comma / Period"
 msgctxt "#31498"
-msgstr "Coma / Punto"
+msgstr "Запетая / Точка"
 
 msgid "F / R"
 msgctxt "#31499"
@@ -707,19 +707,19 @@ msgstr "M"
 
 msgid "Plus / Minus"
 msgctxt "#31501"
-msgstr "Más / Menos"
+msgstr "Плюс / Минус"
 
 msgid "Backspace"
 msgctxt "#31502"
-msgstr "Retroceso"
+msgstr "Backspace"
 
 msgid "Arrow keys"
 msgctxt "#31503"
-msgstr "Teclas de dirección"
+msgstr "Стрелки"
 
 msgid "Enter"
 msgctxt "#31504"
-msgstr "Intro"
+msgstr "Enter"
 
 msgid "ESC"
 msgctxt "#31505"
@@ -727,55 +727,55 @@ msgstr "ESC"
 
 msgid "Shift+F10"
 msgctxt "#31506"
-msgstr "Mayús+F10"
+msgstr "Shift+F10"
 
 msgid "Play / Pause"
 msgctxt "#31507"
-msgstr "Reproducir / Pausa"
+msgstr "Пускане / Пауза"
 
 msgid "Stop"
 msgctxt "#31508"
-msgstr "Detener"
+msgstr "Спиране"
 
 msgid "Previous / Next"
 msgctxt "#31510"
-msgstr "Anterior / Siguiente"
+msgstr "Предишен / Следващ"
 
 msgid "Skip back / forward"
 msgctxt "#31511"
-msgstr "Retroceder / avanzar"
+msgstr "Прескачане назад / напред"
 
 msgid "Mute"
 msgctxt "#31512"
-msgstr "Silenciar"
+msgstr "Заглушаване"
 
 msgid "Louder / Quieter"
 msgctxt "#31513"
-msgstr "Subir / bajar volumen"
+msgstr "По-силно / По-тихо"
 
 msgid "Close / folder up"
 msgctxt "#31514"
-msgstr "Cerrar / subir carpeta"
+msgstr "Затваряне / папка нагоре"
 
 msgid "Navigate"
 msgctxt "#31515"
-msgstr "Navegar"
+msgstr "Навигация"
 
 msgid "Select"
 msgctxt "#31516"
-msgstr "Seleccionar"
+msgstr "Избор"
 
 msgid "Close overlay"
 msgctxt "#31517"
-msgstr "Cerrar superposiciones"
+msgstr "Затваряне на наслагването"
 
 msgid "Context menu"
 msgctxt "#31518"
-msgstr "Menú contextual"
+msgstr "Контекстно меню"
 
 msgid "Ctrl+Enter"
 msgctxt "#31519"
-msgstr "Ctrl+Intro"
+msgstr "Ctrl+Enter"
 
 msgid "ISO"
 msgctxt "#31520"
@@ -783,108 +783,108 @@ msgstr "ISO"
 
 msgid "No web browser found"
 msgctxt "#31521"
-msgstr "No se encontró un navegador web"
+msgstr "Не е намерен уеб браузър"
 
 msgid "Check for update"
 msgctxt "#31522"
-msgstr "Buscar actualización"
+msgstr "Проверка за обновление"
 
 msgid "Update check"
 msgctxt "#31523"
-msgstr "Comprobación de actualizaciones"
+msgstr "Проверка за обновления"
 
 msgid "No new version available"
 msgctxt "#31524"
-msgstr "No hay nueva versión disponible"
+msgstr "Няма нова версия"
 
 msgid "Update check failed"
 msgctxt "#31526"
-msgstr "Error de comprobación"
+msgstr "Проверката за обновления не успя"
 
 msgid "Playback"
 msgctxt "#31527"
-msgstr "Reproducción"
+msgstr "Възпроизвеждане"
 
 msgid "Should the playback resume at %s?"
 msgctxt "#31528"
-msgstr "¿Debe reanudarse la reproducción en %s?"
+msgstr "Да продължа ли възпроизвеждането от %s?"
 
 msgid "Resume"
 msgctxt "#31529"
-msgstr "Reanudar"
+msgstr "Продължаване"
 
 msgid "Restart"
 msgctxt "#31530"
-msgstr "Reiniciar"
+msgstr "Отначало"
 
 msgid "New version %s available"
 msgctxt "#31531"
-msgstr "Nueva versión %s disponible"
+msgstr "Налична е нова версия %s"
 
 msgid "Downloading version %s"
 msgctxt "#31532"
-msgstr "Descargando la versión %s"
+msgstr "Изтегляне на версия %s"
 
 msgid "Download failed"
 msgctxt "#31534"
-msgstr "Error al descargar"
+msgstr "Изтеглянето не успя"
 
 msgid "Update"
 msgctxt "#31535"
-msgstr "Actualización"
+msgstr "Обновяване"
 
 msgid "Download and install the new version %s?"
 msgctxt "#31536"
-msgstr "¿Descargar e instalar la nueva versión %s?"
+msgstr "Да изтегля и инсталирам новата версия %s?"
 
 msgid "Write access"
 msgctxt "#31537"
-msgstr "Acceso de escritura"
+msgstr "Достъп за запис"
 
 msgid "Theme"
 msgctxt "#31538"
-msgstr "Tema"
+msgstr "Тема"
 
 msgid "External storage"
 msgctxt "#31539"
-msgstr "Almacenamiento externo"
+msgstr "Външна памет"
 
 msgid "Searching for update"
 msgctxt "#31540"
-msgstr "Buscando actualización"
+msgstr "Търсене на обновление"
 
 msgid "Saving version %s"
 msgctxt "#31541"
-msgstr "Guardando la versión %s"
+msgstr "Запазване на версия %s"
 
 msgid "Version %s saved and extracted"
 msgctxt "#31542"
-msgstr "Versión %s guardada y descomprimida"
+msgstr "Версия %s е запазена и разархивирана"
 
 msgid "Saving failed"
 msgctxt "#31543"
-msgstr "Error al guardar"
+msgstr "Запазването не успя"
 
 msgid "Automatically check for updates"
 msgctxt "#31544"
-msgstr "Actualizaciones automáticas"
+msgstr "Автоматична проверка за обновления"
 
 msgid "The required add-on is not installed or disabled"
 msgctxt "#31545"
-msgstr "El complemento requerido no está instalado o está desactivado"
+msgstr "Необходимата добавка не е инсталирана или е изключена"
 
 msgid "Fullscreen visualisation"
 msgctxt "#31546"
-msgstr "Modo pantalla completa"
+msgstr "Визуализация на цял екран"
 
 msgid "Off"
 msgctxt "#31548"
-msgstr "Desactivado"
+msgstr "Изкл."
 
 msgid "No visualisation add-on installed"
 msgctxt "#31549"
-msgstr "No hay ningún complemento de visualización instalado"
+msgstr "Няма инсталирана добавка за визуализация"
 
 msgid "Crossfade"
 msgctxt "#31550"
-msgstr "Fundido cruzado"
+msgstr "Кроссфейд"

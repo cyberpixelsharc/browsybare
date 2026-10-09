@@ -121,7 +121,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 
 * Kodi 21 ("Omega") or 22 ("Piers")
 * The **Estuary skin stays installed** -- Browsybare takes over its windows (settings, player, system dialogs) at runtime as the base layer.
-* Languages: English, German, French, Spanish (interface strings plus matching on-screen keyboard layouts). Any other Kodi language falls back to English.
+* Languages: English, German, French, Spanish, Italian, Dutch, Polish, Portuguese (Portugal and Brazil), Russian, Swedish, Danish, Norwegian (Bokmål), Finnish, Czech, Turkish, Hungarian, Slovak, Slovenian, Bulgarian, Greek and Romanian (interface strings plus matching on-screen keyboard layouts). Any other Kodi language falls back to English.
 * Screen aspects: 16:9, 16:10, 5:3/15:9, 3:2 and 4:3 each have their own skin resolution, so round elements stay round and the layout fills the screen. Ultrawide (21:9/32:9) is not supported yet.
 
 ## Development

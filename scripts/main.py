@@ -3026,6 +3026,20 @@ def _temp_dir():
     return ""
 
 
+def _reset_stale_theme(dest_root):
+    """After an in-place update: if the persisted theme is no longer shipped
+    (a release dropped or renamed it), reset the setting to the default so the
+    switch does not keep a dead id."""
+    try:
+        from sync import THEME_DEFAULT, theme_ids
+        cur = (xbmc.getInfoLabel("Skin.String(theme)") or "").strip()
+        if cur and cur not in theme_ids(dest_root):
+            xbmc.executebuiltin("Skin.SetString(theme,%s)" % THEME_DEFAULT)
+            log("update: theme %s no longer shipped, reset to %s" % (cur, THEME_DEFAULT))
+    except Exception:
+        pass
+
+
 def _install_zip(zip_path, dest_root, ver=None):
     """Copy a release zip (single `browsybare/` root) over `dest_root` -- this
     running skin. Verifies the addon id/version, stages the whole zip first and
@@ -3101,6 +3115,32 @@ def _install_zip(zip_path, dest_root, ver=None):
                     shutil.copy2(dst, b)
                     replaced.append(rel)
                 shutil.copy2(src, dst)
+        # Prune stale theme files: a release can drop or rename themes and the
+        # copy above never removes old files, so they would keep showing in the
+        # theme switch. Only themes/ is pruned (fully ours); a user's own theme
+        # that cannot be removed (read-only) is kept.
+        try:
+            themes_dir = os.path.join(dest_root, "themes")
+            shipped = {os.path.relpath(os.path.join(dp, fn), new_root)
+                       for dp, _dirs, fs in os.walk(os.path.join(new_root, "themes"))
+                       for fn in fs}
+            if os.path.isdir(themes_dir):
+                for fn in os.listdir(themes_dir):
+                    p = os.path.join(themes_dir, fn)
+                    if not (fn.endswith(".json") and os.path.isfile(p)):
+                        continue
+                    if os.path.join("themes", fn) in shipped:
+                        continue
+                    # Keep a write-protected file: that is how a user's own
+                    # theme opts out of the prune (a read-only dir entry).
+                    if not os.access(p, os.W_OK):
+                        continue
+                    try:
+                        os.remove(p)
+                    except OSError:
+                        pass
+        except Exception:
+            pass
     except Exception as e:
         for rel in replaced:
             b = os.path.join(backup, rel)
@@ -3113,6 +3153,7 @@ def _install_zip(zip_path, dest_root, ver=None):
     finally:
         shutil.rmtree(stage, ignore_errors=True)
         shutil.rmtree(backup, ignore_errors=True)
+    _reset_stale_theme(dest_root)
     return True, ""
 
 

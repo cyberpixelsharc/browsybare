@@ -2,136 +2,136 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_es\n"
+"Language: fi_fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Error"
 msgctxt "#31303"
-msgstr "Error"
+msgstr "Virhe"
 
 msgid "Settings"
 msgctxt "#31307"
-msgstr "Ajustes"
+msgstr "Asetukset"
 
 msgid "System"
 msgctxt "#31308"
-msgstr "Sistema"
+msgstr "Järjestelmä"
 
 msgid "Quit"
 msgctxt "#31310"
-msgstr "Salir"
+msgstr "Lopeta"
 
 msgid "Show zebra stripes"
 msgctxt "#31312"
-msgstr "Mostrar rayado de cebra"
+msgstr "Näytä raidat"
 
 msgid "Version"
 msgctxt "#31313"
-msgstr "Versión"
+msgstr "Versio"
 
 msgid "Show hidden"
 msgctxt "#31317"
-msgstr "Mostrar ocultos"
+msgstr "Näytä piilotetut"
 
 msgid "Accent color"
 msgctxt "#31318"
-msgstr "Color de acento"
+msgstr "Korostusväri"
 
 msgid "Appearance and colors"
 msgctxt "#31319"
-msgstr "Apariencia y colores"
+msgstr "Ulkoasu ja värit"
 
 msgid "Files and folders"
 msgctxt "#31320"
-msgstr "Archivos y carpetas"
+msgstr "Tiedostot ja kansiot"
 
 msgid "Sorting"
 msgctxt "#31321"
-msgstr "Orden"
+msgstr "Lajittelu"
 
 msgid "Alphabetical"
 msgctxt "#31322"
-msgstr "Alfabético"
+msgstr "Aakkosjärjestys"
 
 msgid "Size"
 msgctxt "#31323"
-msgstr "Tamaño"
+msgstr "Koko"
 
 msgid "Date modified"
 msgctxt "#31324"
-msgstr "Fecha de modificación"
+msgstr "Muokkauspäivä"
 
 msgid "Drives"
 msgctxt "#31325"
-msgstr "Unidades"
+msgstr "Asemat"
 
 msgid "No source available"
 msgctxt "#31326"
-msgstr "Ninguna fuente disponible"
+msgstr "Lähdettä ei saatavilla"
 
 msgid "Rename"
 msgctxt "#31327"
-msgstr "Renombrar"
+msgstr "Nimeä uudelleen"
 
 msgid "Delete"
 msgctxt "#31328"
-msgstr "Eliminar"
+msgstr "Poista"
 
 msgid "New folder"
 msgctxt "#31329"
-msgstr "Nueva carpeta"
+msgstr "Uusi kansio"
 
 msgid "File not found"
 msgctxt "#31330"
-msgstr "Archivo no encontrado"
+msgstr "Tiedostoa ei löytynyt"
 
 msgid "Invalid name"
 msgctxt "#31331"
-msgstr "Nombre no válido"
+msgstr "Virheellinen nimi"
 
 msgid "Really delete this folder?"
 msgctxt "#31332"
-msgstr "¿Eliminar realmente esta carpeta?"
+msgstr "Poistetaanko tämä kansio?"
 
 msgid "Really delete this file?"
 msgctxt "#31333"
-msgstr "¿Eliminar realmente este archivo?"
+msgstr "Poistetaanko tämä tiedosto?"
 
 msgid "Target already exists"
 msgctxt "#31334"
-msgstr "El destino ya existe"
+msgstr "Kohde on jo olemassa"
 
 msgid "Already exists"
 msgctxt "#31335"
-msgstr "Ya existe"
+msgstr "On jo olemassa"
 
 msgid "Rename failed: %s"
 msgctxt "#31336"
-msgstr "No se pudo renombrar: %s"
+msgstr "Uudelleennimeäminen epäonnistui: %s"
 
 msgid "Delete failed: %s"
 msgctxt "#31337"
-msgstr "No se pudo eliminar: %s"
+msgstr "Poistaminen epäonnistui: %s"
 
 msgid "Create folder failed: %s"
 msgctxt "#31338"
-msgstr "No se pudo crear la carpeta: %s"
+msgstr "Kansion luonti epäonnistui: %s"
 
 msgid "Actions…"
 msgctxt "#31339"
-msgstr "Acciones…"
+msgstr "Toiminnot…"
 
 msgid "Yes"
 msgctxt "#31340"
-msgstr "Sí"
+msgstr "Kyllä"
 
 msgid "No"
 msgctxt "#31341"
-msgstr "No"
+msgstr "Ei"
 
 msgid "Search"
 msgctxt "#31342"
-msgstr "Buscar"
+msgstr "Etsi"
 
 msgid "OK"
 msgctxt "#31343"
@@ -139,71 +139,71 @@ msgstr "OK"
 
 msgid "Cancel"
 msgctxt "#31344"
-msgstr "Cancelar"
+msgstr "Peruuta"
 
 msgid "Patterns"
 msgctxt "#31345"
-msgstr "Patrones"
+msgstr "Kuviot"
 
 msgid "Add pattern"
 msgctxt "#31346"
-msgstr "Añadir patrón"
+msgstr "Lisää kuvio"
 
 msgid "Directories"
 msgctxt "#31349"
-msgstr "Directorios"
+msgstr "Kansiot"
 
 msgid "Add source"
 msgctxt "#31350"
-msgstr "Añadir fuente"
+msgstr "Lisää lähde"
 
 msgid "Folders first"
 msgctxt "#31351"
-msgstr "Carpetas primero"
+msgstr "Kansiot ensin"
 
 msgid "Options"
 msgctxt "#31352"
-msgstr "Opciones"
+msgstr "Asetukset"
 
 msgid "Match case"
 msgctxt "#31353"
-msgstr "Distinguir mayúsculas"
+msgstr "Huomioi kirjainkoko"
 
 msgid "Select this folder"
 msgctxt "#31355"
-msgstr "Elegir esta carpeta"
+msgstr "Valitse tämä kansio"
 
 msgid "Cannot select drive root"
 msgctxt "#31357"
-msgstr "No se puede elegir la raíz de la unidad"
+msgstr "Aseman juurta ei voi valita"
 
 msgid "Already added"
 msgctxt "#31358"
-msgstr "Ya añadido"
+msgstr "Lisätty jo"
 
 msgid "Audio"
 msgctxt "#31360"
-msgstr "Audio"
+msgstr "Ääni"
 
 msgid "Scroll labels"
 msgctxt "#31361"
-msgstr "Desplazar etiquetas"
+msgstr "Vieritä nimiöitä"
 
 msgid "Video"
 msgctxt "#31362"
-msgstr "Vídeo"
+msgstr "Video"
 
 msgid "Home folder"
 msgctxt "#31363"
-msgstr "Carpeta personal"
+msgstr "Kotikansio"
 
 msgid "Installing…"
 msgctxt "#31364"
-msgstr "Instalando…"
+msgstr "Asennetaan…"
 
 msgid "Installation and Fusion"
 msgctxt "#31365"
-msgstr "Instalación y fusión"
+msgstr "Asennus ja yhdistäminen"
 
 msgid "3D"
 msgctxt "#36501"
@@ -211,63 +211,63 @@ msgstr "3D"
 
 msgid "Show source path"
 msgctxt "#31367"
-msgstr "Mostrar ruta de origen"
+msgstr "Näytä lähdepolku"
 
 msgid "Color intensity"
 msgctxt "#31366"
-msgstr "Intensidad del color"
+msgstr "Värin voimakkuus"
 
 msgid "General"
 msgctxt "#31368"
-msgstr "General"
+msgstr "Yleiset"
 
 msgid "Player"
 msgctxt "#31369"
-msgstr "Reproductor"
+msgstr "Soitin"
 
 msgid "Sources"
 msgctxt "#31370"
-msgstr "Fuentes"
+msgstr "Lähteet"
 
 msgid "Blocklist"
 msgctxt "#31371"
-msgstr "Bloqueo"
+msgstr "Estolista"
 
 msgid "Toggle"
 msgctxt "#31374"
-msgstr "Alternar"
+msgstr "Vaihda"
 
 msgid "Remote"
 msgctxt "#31375"
-msgstr "Mando"
+msgstr "Kaukosäädin"
 
 msgid "Back"
 msgctxt "#31376"
-msgstr "Atrás"
+msgstr "Takaisin"
 
 msgid "Home"
 msgctxt "#31377"
-msgstr "Inicio"
+msgstr "Koti"
 
 msgid "Menu"
 msgctxt "#31378"
-msgstr "Menú"
+msgstr "Valikko"
 
 msgid "Up"
 msgctxt "#31379"
-msgstr "Arriba"
+msgstr "Ylös"
 
 msgid "Down"
 msgctxt "#31380"
-msgstr "Abajo"
+msgstr "Alas"
 
 msgid "Left"
 msgctxt "#31381"
-msgstr "Izquierda"
+msgstr "Vasen"
 
 msgid "Right"
 msgctxt "#31382"
-msgstr "Derecha"
+msgstr "Oikea"
 
 msgid "OK"
 msgctxt "#31383"
@@ -275,219 +275,219 @@ msgstr "OK"
 
 msgid "Rewind"
 msgctxt "#31386"
-msgstr "Retroceder"
+msgstr "Kelaa taaksepäin"
 
 msgid "Forward"
 msgctxt "#31387"
-msgstr "Avanzar"
+msgstr "Kelaa eteenpäin"
 
 msgid "Previous"
 msgctxt "#31388"
-msgstr "Anterior"
+msgstr "Edellinen"
 
 msgid "Next"
 msgctxt "#31389"
-msgstr "Siguiente"
+msgstr "Seuraava"
 
 msgid "Louder"
 msgctxt "#31390"
-msgstr "Subir volumen"
+msgstr "Kovempaa"
 
 msgid "Quieter"
 msgctxt "#31391"
-msgstr "Bajar volumen"
+msgstr "Hiljempaa"
 
 msgid "Exit"
 msgctxt "#31393"
-msgstr "Salir"
+msgstr "Lopeta"
 
 msgid "Settings"
 msgctxt "#31398"
-msgstr "Ajustes"
+msgstr "Asetukset"
 
 msgid "Scanning…"
 msgctxt "#31395"
-msgstr "Analizando…"
+msgstr "Skannataan…"
 
 msgid "Start scanner"
 msgctxt "#31396"
-msgstr "Iniciar análisis"
+msgstr "Aloita skannaus"
 
 msgid "Save"
 msgctxt "#31397"
-msgstr "Guardar"
+msgstr "Tallenna"
 
 msgid "Really power off the operating system?"
 msgctxt "#31399"
-msgstr "¿Apagar realmente el sistema?"
+msgstr "Sammutetaanko käyttöjärjestelmä?"
 
 msgid "Really restart the operating system?"
 msgctxt "#31400"
-msgstr "¿Reiniciar realmente el sistema?"
+msgstr "Käynnistetäänkö käyttöjärjestelmä uudelleen?"
 
 msgid "Really suspend the operating system?"
 msgctxt "#31401"
-msgstr "¿Suspender realmente el sistema?"
+msgstr "Asetetaanko käyttöjärjestelmä lepotilaan?"
 
 msgid "Really hibernate the operating system?"
 msgctxt "#31402"
-msgstr "¿Hibernar realmente el sistema?"
+msgstr "Asetetaanko käyttöjärjestelmä horrostilaan?"
 
 msgid "Really run this action?"
 msgctxt "#31403"
-msgstr "¿Ejecutar realmente esta acción?"
+msgstr "Suoritetaanko tämä toiminto?"
 
 msgid "Really quit Kodi now?"
 msgctxt "#31404"
-msgstr "¿Salir de Kodi ahora?"
+msgstr "Lopetetaanko Kodi nyt?"
 
 msgid "Shutdown timer"
 msgctxt "#31405"
-msgstr "Temporizador de apagado"
+msgstr "Sammutusajastin"
 
 msgid "15 minutes"
 msgctxt "#31406"
-msgstr "15 minutos"
+msgstr "15 minuuttia"
 
 msgid "30 minutes"
 msgctxt "#31407"
-msgstr "30 minutos"
+msgstr "30 minuuttia"
 
 msgid "60 minutes"
 msgctxt "#31408"
-msgstr "60 minutos"
+msgstr "60 minuuttia"
 
 msgid "120 minutes"
 msgctxt "#31409"
-msgstr "120 minutos"
+msgstr "120 minuuttia"
 
 msgid "Delete active timer (%s)"
 msgctxt "#31411"
-msgstr "Eliminar temporizador activo (%s)"
+msgstr "Poista aktiivinen ajastin (%s)"
 
 msgid "No timer active"
 msgctxt "#31412"
-msgstr "Ningún temporizador activo"
+msgstr "Ei aktiivista ajastinta"
 
 msgid "90 minutes"
 msgctxt "#31413"
-msgstr "90 minutos"
+msgstr "90 minuuttia"
 
 msgid "5 minutes"
 msgctxt "#31414"
-msgstr "5 minutos"
+msgstr "5 minuuttia"
 
 msgid "Block list"
 msgctxt "#31415"
-msgstr "Bloqueo"
+msgstr "Estolista"
 
 msgid "Scan folder sizes"
 msgctxt "#31416"
-msgstr "Analizar tamaños de carpeta"
+msgstr "Skannaa kansioiden koot"
 
 msgid "Copy"
 msgctxt "#31394"
-msgstr "Copiar"
+msgstr "Kopioi"
 
 msgid "Cut"
 msgctxt "#31410"
-msgstr "Cortar"
+msgstr "Leikkaa"
 
 msgid "Paste"
 msgctxt "#31417"
-msgstr "Pegar"
+msgstr "Liitä"
 
 msgid "Clipboard is empty"
 msgctxt "#31418"
-msgstr "El portapapeles está vacío"
+msgstr "Leikepöytä on tyhjä"
 
 msgid "The target already exists!"
 msgctxt "#31419"
-msgstr "¡El destino ya existe!"
+msgstr "Kohde on jo olemassa!"
 
 msgid "Copied: %s"
 msgctxt "#31420"
-msgstr "Copiado: %s"
+msgstr "Kopioitu: %s"
 
 msgid "Cut: %s"
 msgctxt "#31421"
-msgstr "Cortado: %s"
+msgstr "Leikattu: %s"
 
 msgid "Paste failed: %s"
 msgctxt "#31422"
-msgstr "No se pudo pegar: %s"
+msgstr "Liittäminen epäonnistui: %s"
 
 msgid "Pasted: %s"
 msgctxt "#31423"
-msgstr "Pegado: %s"
+msgstr "Liitetty: %s"
 
 msgid "Add as directory source"
 msgctxt "#31424"
-msgstr "Añadir como fuente de directorio"
+msgstr "Lisää kansiolähteeksi"
 
 msgid "Add this folder as a directory source?"
 msgctxt "#31425"
-msgstr "¿Añadir esta carpeta como fuente de directorio?"
+msgstr "Lisätäänkö tämä kansio lähteeksi?"
 
 msgid "Info"
 msgctxt "#31426"
-msgstr "Información"
+msgstr "Tiedot"
 
 msgid "Title"
 msgctxt "#31427"
-msgstr "Título"
+msgstr "Nimi"
 
 msgid "Artist"
 msgctxt "#31428"
-msgstr "Artista"
+msgstr "Esittäjä"
 
 msgid "Album"
 msgctxt "#31429"
-msgstr "Álbum"
+msgstr "Albumi"
 
 msgid "Year"
 msgctxt "#31430"
-msgstr "Año"
+msgstr "Vuosi"
 
 msgid "Genre"
 msgctxt "#31431"
-msgstr "Género"
+msgstr "Tyylilaji"
 
 msgid "Duration"
 msgctxt "#31432"
-msgstr "Duración"
+msgstr "Kesto"
 
 msgid "Codec"
 msgctxt "#31433"
-msgstr "Códec"
+msgstr "Koodekki"
 
 msgid "Bitrate"
 msgctxt "#31435"
-msgstr "Tasa de bits"
+msgstr "Bittinopeus"
 
 msgid "Sample rate"
 msgctxt "#31436"
-msgstr "Frecuencia de muestreo"
+msgstr "Näytteenottotaajuus"
 
 msgid "Channels"
 msgctxt "#31437"
-msgstr "Canales"
+msgstr "Kanavat"
 
 msgid "Size"
 msgctxt "#31440"
-msgstr "Tamaño"
+msgstr "Koko"
 
 msgid "Modified"
 msgctxt "#31441"
-msgstr "Modificado"
+msgstr "Muokattu"
 
 msgid "Frame rate"
 msgctxt "#31442"
-msgstr "Cuadros por segundo"
+msgstr "Kuvataajuus"
 
 msgid "Audio"
 msgctxt "#31443"
-msgstr "Audio"
+msgstr "Ääni"
 
 msgid "HDR"
 msgctxt "#31444"
@@ -495,55 +495,55 @@ msgstr "HDR"
 
 msgid "Subtitle"
 msgctxt "#31445"
-msgstr "Subtítulo"
+msgstr "Tekstitys"
 
 msgid "Off"
 msgctxt "#31446"
-msgstr "Desactivado"
+msgstr "Pois"
 
 msgid "Internal storage"
 msgctxt "#31447"
-msgstr "Almacenamiento interno"
+msgstr "Sisäinen tallennustila"
 
 msgid "Networks"
 msgctxt "#31448"
-msgstr "Redes"
+msgstr "Verkot"
 
 msgid "Server address"
 msgctxt "#31449"
-msgstr "Dirección del servidor"
+msgstr "Palvelimen osoite"
 
 msgid "Display name"
 msgctxt "#31450"
-msgstr "Nombre visible"
+msgstr "Näyttönimi"
 
 msgid "Use ftp://, smb://, nfs://, http(s):// or dav(s)://"
 msgctxt "#31451"
-msgstr "Usa ftp://, smb://, nfs://, http(s):// o dav(s)://"
+msgstr "Käytä: ftp://, smb://, nfs://, http(s):// tai dav(s)://"
 
 msgid "Network source"
 msgctxt "#31452"
-msgstr "Fuente de red"
+msgstr "Verkkolähde"
 
 msgid "Name"
 msgctxt "#31453"
-msgstr "Nombre"
+msgstr "Nimi"
 
 msgid "Protocol"
 msgctxt "#31454"
-msgstr "Protocolo"
+msgstr "Protokolla"
 
 msgid "Server"
 msgctxt "#31455"
-msgstr "Servidor"
+msgstr "Palvelin"
 
 msgid "Username"
 msgctxt "#31456"
-msgstr "Usuario"
+msgstr "Käyttäjänimi"
 
 msgid "Password"
 msgctxt "#31457"
-msgstr "Contraseña"
+msgstr "Salasana"
 
 msgid "OK"
 msgctxt "#31458"
@@ -551,143 +551,143 @@ msgstr "OK"
 
 msgid "Source already exists"
 msgctxt "#31459"
-msgstr "La fuente ya existe"
+msgstr "Lähde on jo olemassa"
 
 msgid "Path"
 msgctxt "#31460"
-msgstr "Ruta"
+msgstr "Polku"
 
 msgid "Port"
 msgctxt "#31461"
-msgstr "Puerto"
+msgstr "Portti"
 
 msgid "Invalid port"
 msgctxt "#31462"
-msgstr "Puerto no válido"
+msgstr "Virheellinen portti"
 
 msgid "Connection OK"
 msgctxt "#31463"
-msgstr "Conexión correcta"
+msgstr "Yhteys OK"
 
 msgid "Connection failed"
 msgctxt "#31464"
-msgstr "Conexión fallida"
+msgstr "Yhteys epäonnistui"
 
 msgid "Test"
 msgctxt "#31465"
-msgstr "Probar"
+msgstr "Testaa"
 
 msgid "Edit"
 msgctxt "#31466"
-msgstr "Editar"
+msgstr "Muokkaa"
 
 msgid "Connection error"
 msgctxt "#31467"
-msgstr "Error de conexión"
+msgstr "Yhteysvirhe"
 
 msgid "Scan network files"
 msgctxt "#31468"
-msgstr "Analizar archivos de red"
+msgstr "Skannaa verkkotiedostot"
 
 msgid "Scanning..."
 msgctxt "#31470"
-msgstr "Analizando..."
+msgstr "Skannataan..."
 
 msgid "Start-up delay"
 msgctxt "#31471"
-msgstr "Retardo de inicio"
+msgstr "Käynnistysviive"
 
 msgid "System and Kodi"
 msgctxt "#31472"
-msgstr "Sistema y Kodi"
+msgstr "Järjestelmä ja Kodi"
 
 msgid "GUI sound volume"
 msgctxt "#31473"
-msgstr "Volumen interfaz"
+msgstr "Käyttöliittymän äänitaso"
 
 msgid "Photo"
 msgctxt "#31474"
-msgstr "Foto"
+msgstr "Valokuva"
 
 msgid "An older version (%s) was installed over the newer version (%s)."
 msgctxt "#31476"
-msgstr "Se instaló una versión anterior (%s) sobre la versión más reciente (%s)."
+msgstr "Vanhempi versio (%s) asennettiin uudemman version (%s) päälle."
 
 msgid "Version (%s) was installed again over version (%s)."
 msgctxt "#31477"
-msgstr "La versión (%s) se reinstaló sobre la versión (%s)."
+msgstr "Versio (%s) asennettiin uudelleen version (%s) päälle."
 
 msgid "Installation warning"
 msgctxt "#31478"
-msgstr "Advertencia de instalación"
+msgstr "Asennusvaroitus"
 
 msgid "Some base files could not be copied. A new attempt is made on the next start."
 msgctxt "#31479"
-msgstr "Algunos archivos base no se pudieron copiar. Se reintentará en el próximo inicio."
+msgstr "Joitakin perustiedostoja ei voitu kopioida. Uusi yritys tehdään seuraavalla käynnistyskerralla."
 
 msgid "The settings folder was broken and has been repaired successfully."
 msgctxt "#31480"
-msgstr "La carpeta de ajustes estaba dañada y se reparó correctamente."
+msgstr "Asetuskansio oli rikki ja se korjattiin onnistuneesti."
 
 msgid "The settings folder is broken and could not be repaired."
 msgctxt "#31481"
-msgstr "La carpeta de ajustes está dañada y no se pudo reparar."
+msgstr "Asetuskansio on rikki eikä sitä voitu korjata."
 
 msgid "The base layer could not be updated. See the log for details."
 msgctxt "#31482"
-msgstr "No se pudo actualizar la capa base. Consulta el registro para más detalles."
+msgstr "Perustasoa ei voitu päivittää. Katso lokista lisätietoja."
 
 msgid "Reset the settings of this section to their defaults?"
 msgctxt "#31483"
-msgstr "¿Restablecer los ajustes de esta sección a sus valores predeterminados?"
+msgstr "Palautetaanko tämän osion asetukset oletusarvoihin?"
 
 msgid "Screen dimmer"
 msgctxt "#31484"
-msgstr "Atenuador de pantalla"
+msgstr "Himmennä näyttöä"
 
 msgid "Camera"
 msgctxt "#31485"
-msgstr "Cámara"
+msgstr "Kamera"
 
 msgid "Lens"
 msgctxt "#31486"
-msgstr "Objetivo"
+msgstr "Objektiivi"
 
 msgid "Date taken"
 msgctxt "#31487"
-msgstr "Fecha de captura"
+msgstr "Kuvauspäivä"
 
 msgid "Exposure"
 msgctxt "#31488"
-msgstr "Exposición"
+msgstr "Valotus"
 
 msgid "Aperture"
 msgctxt "#31489"
-msgstr "Apertura"
+msgstr "Aukko"
 
 msgid "Focal length"
 msgctxt "#31490"
-msgstr "Distancia focal"
+msgstr "Polttoväli"
 
 msgid "Resolution"
 msgctxt "#31491"
-msgstr "Resolución"
+msgstr "Resoluutio"
 
 msgid "Orientation"
 msgctxt "#31492"
-msgstr "Orientación"
+msgstr "Suunta"
 
 msgid "Include subfolders"
 msgctxt "#31493"
-msgstr "Incluir subcarpetas"
+msgstr "Sisällytä alikansiot"
 
 msgid "Shortcuts"
 msgctxt "#31494"
-msgstr "Atajos"
+msgstr "Pikanäppäimet"
 
 msgid "P & Space"
 msgctxt "#31495"
-msgstr "P y Espacio"
+msgstr "P ja Välilyönti"
 
 msgid "X"
 msgctxt "#31496"
@@ -695,7 +695,7 @@ msgstr "X"
 
 msgid "Comma / Period"
 msgctxt "#31498"
-msgstr "Coma / Punto"
+msgstr "Pilkku / Piste"
 
 msgid "F / R"
 msgctxt "#31499"
@@ -707,19 +707,19 @@ msgstr "M"
 
 msgid "Plus / Minus"
 msgctxt "#31501"
-msgstr "Más / Menos"
+msgstr "Plus / Miinus"
 
 msgid "Backspace"
 msgctxt "#31502"
-msgstr "Retroceso"
+msgstr "Backspace"
 
 msgid "Arrow keys"
 msgctxt "#31503"
-msgstr "Teclas de dirección"
+msgstr "Nuolinäppäimet"
 
 msgid "Enter"
 msgctxt "#31504"
-msgstr "Intro"
+msgstr "Enter"
 
 msgid "ESC"
 msgctxt "#31505"
@@ -727,55 +727,55 @@ msgstr "ESC"
 
 msgid "Shift+F10"
 msgctxt "#31506"
-msgstr "Mayús+F10"
+msgstr "Shift+F10"
 
 msgid "Play / Pause"
 msgctxt "#31507"
-msgstr "Reproducir / Pausa"
+msgstr "Toista / Tauko"
 
 msgid "Stop"
 msgctxt "#31508"
-msgstr "Detener"
+msgstr "Pysäytä"
 
 msgid "Previous / Next"
 msgctxt "#31510"
-msgstr "Anterior / Siguiente"
+msgstr "Edellinen / Seuraava"
 
 msgid "Skip back / forward"
 msgctxt "#31511"
-msgstr "Retroceder / avanzar"
+msgstr "Siirry taakse / eteen"
 
 msgid "Mute"
 msgctxt "#31512"
-msgstr "Silenciar"
+msgstr "Mykistä"
 
 msgid "Louder / Quieter"
 msgctxt "#31513"
-msgstr "Subir / bajar volumen"
+msgstr "Kovempaa / Hiljempaa"
 
 msgid "Close / folder up"
 msgctxt "#31514"
-msgstr "Cerrar / subir carpeta"
+msgstr "Sulje / kansio ylös"
 
 msgid "Navigate"
 msgctxt "#31515"
-msgstr "Navegar"
+msgstr "Siirry"
 
 msgid "Select"
 msgctxt "#31516"
-msgstr "Seleccionar"
+msgstr "Valitse"
 
 msgid "Close overlay"
 msgctxt "#31517"
-msgstr "Cerrar superposiciones"
+msgstr "Sulje peittokuva"
 
 msgid "Context menu"
 msgctxt "#31518"
-msgstr "Menú contextual"
+msgstr "Kontekstivalikko"
 
 msgid "Ctrl+Enter"
 msgctxt "#31519"
-msgstr "Ctrl+Intro"
+msgstr "Ctrl+Enter"
 
 msgid "ISO"
 msgctxt "#31520"
@@ -783,108 +783,108 @@ msgstr "ISO"
 
 msgid "No web browser found"
 msgctxt "#31521"
-msgstr "No se encontró un navegador web"
+msgstr "Selainta ei löytynyt"
 
 msgid "Check for update"
 msgctxt "#31522"
-msgstr "Buscar actualización"
+msgstr "Tarkista päivitys"
 
 msgid "Update check"
 msgctxt "#31523"
-msgstr "Comprobación de actualizaciones"
+msgstr "Päivitystarkistus"
 
 msgid "No new version available"
 msgctxt "#31524"
-msgstr "No hay nueva versión disponible"
+msgstr "Uutta versiota ei saatavilla"
 
 msgid "Update check failed"
 msgctxt "#31526"
-msgstr "Error de comprobación"
+msgstr "Päivitystarkistus epäonnistui"
 
 msgid "Playback"
 msgctxt "#31527"
-msgstr "Reproducción"
+msgstr "Toisto"
 
 msgid "Should the playback resume at %s?"
 msgctxt "#31528"
-msgstr "¿Debe reanudarse la reproducción en %s?"
+msgstr "Jatketaanko toistoa kohdasta %s?"
 
 msgid "Resume"
 msgctxt "#31529"
-msgstr "Reanudar"
+msgstr "Jatka"
 
 msgid "Restart"
 msgctxt "#31530"
-msgstr "Reiniciar"
+msgstr "Aloita alusta"
 
 msgid "New version %s available"
 msgctxt "#31531"
-msgstr "Nueva versión %s disponible"
+msgstr "Uusi versio %s saatavilla"
 
 msgid "Downloading version %s"
 msgctxt "#31532"
-msgstr "Descargando la versión %s"
+msgstr "Ladataan versiota %s"
 
 msgid "Download failed"
 msgctxt "#31534"
-msgstr "Error al descargar"
+msgstr "Lataus epäonnistui"
 
 msgid "Update"
 msgctxt "#31535"
-msgstr "Actualización"
+msgstr "Päivitä"
 
 msgid "Download and install the new version %s?"
 msgctxt "#31536"
-msgstr "¿Descargar e instalar la nueva versión %s?"
+msgstr "Ladataanko ja asennetaanko uusi versio %s?"
 
 msgid "Write access"
 msgctxt "#31537"
-msgstr "Acceso de escritura"
+msgstr "Kirjoitusoikeus"
 
 msgid "Theme"
 msgctxt "#31538"
-msgstr "Tema"
+msgstr "Teema"
 
 msgid "External storage"
 msgctxt "#31539"
-msgstr "Almacenamiento externo"
+msgstr "Ulkoinen tallennustila"
 
 msgid "Searching for update"
 msgctxt "#31540"
-msgstr "Buscando actualización"
+msgstr "Etsitään päivitystä"
 
 msgid "Saving version %s"
 msgctxt "#31541"
-msgstr "Guardando la versión %s"
+msgstr "Tallennetaan versiota %s"
 
 msgid "Version %s saved and extracted"
 msgctxt "#31542"
-msgstr "Versión %s guardada y descomprimida"
+msgstr "Versio %s tallennettu ja purettu"
 
 msgid "Saving failed"
 msgctxt "#31543"
-msgstr "Error al guardar"
+msgstr "Tallennus epäonnistui"
 
 msgid "Automatically check for updates"
 msgctxt "#31544"
-msgstr "Actualizaciones automáticas"
+msgstr "Tarkista päivitykset automaattisesti"
 
 msgid "The required add-on is not installed or disabled"
 msgctxt "#31545"
-msgstr "El complemento requerido no está instalado o está desactivado"
+msgstr "Vaadittua lisäosaa ei ole asennettu tai se on poistettu käytöstä"
 
 msgid "Fullscreen visualisation"
 msgctxt "#31546"
-msgstr "Modo pantalla completa"
+msgstr "Koko näytön visualisointi"
 
 msgid "Off"
 msgctxt "#31548"
-msgstr "Desactivado"
+msgstr "Pois"
 
 msgid "No visualisation add-on installed"
 msgctxt "#31549"
-msgstr "No hay ningún complemento de visualización instalado"
+msgstr "Visualisointilisäosaa ei ole asennettu"
 
 msgid "Crossfade"
 msgctxt "#31550"
-msgstr "Fundido cruzado"
+msgstr "Ristihäivytys"

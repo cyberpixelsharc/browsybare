@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="browsybare" name="Browsybare"   version="0.3.28" provider-name="cyberpixelsharc">
+<addon id="browsybare" name="Browsybare"   version="0.3.29" provider-name="cyberpixelsharc">
 	<requires>
 		<import addon="xbmc.gui" version="5.17.0"/>
 		<import addon="xbmc.python" version="3.0.0"/>
@@ -20,10 +20,46 @@
 		<summary lang="de_DE">Ein minimalistischer Dateimanager-Skin für Kodi</summary>
 		<summary lang="fr_FR">Un habillage gestionnaire de fichiers minimaliste pour Kodi</summary>
 		<summary lang="es_ES">Una piel minimalista de gestor de archivos para Kodi</summary>
+		<summary lang="it_IT">Un skin gestore di file minimalista per Kodi</summary>
+		<summary lang="nl_NL">Een minimalistische bestandsbeheer-skin voor Kodi</summary>
+		<summary lang="pl_PL">Minimalistyczny skin menedżera plików dla Kodi</summary>
+		<summary lang="pt_PT">Uma skin minimalista de gestor de ficheiros para o Kodi</summary>
+		<summary lang="pt_BR">Uma skin minimalista de gerenciador de arquivos para o Kodi</summary>
+		<summary lang="ru_RU">Минималистичная оболочка-файловый менеджер для Kodi</summary>
+		<summary lang="sv_SE">Ett minimalistiskt filhanterar-skal för Kodi</summary>
+		<summary lang="da_DK">Et minimalistisk filhåndterings-skin til Kodi</summary>
+		<summary lang="nb_NO">Et minimalistisk filbehandler-skall for Kodi</summary>
+		<summary lang="fi_FI">Minimalistinen tiedostonhallintaskini Kodille</summary>
+		<summary lang="cs_CZ">Minimalistický skin správce souborů pro Kodi</summary>
+		<summary lang="tr_TR">Kodi için minimalist bir dosya yöneticisi dış görünümü</summary>
+		<summary lang="hu_HU">Minimalista fájlkezelő skin a Kodihoz</summary>
+		<summary lang="sk_SK">Minimalistický skin správcu súborov pre Kodi</summary>
+		<summary lang="sl_SI">Minimalistična koža upravljanja datotek za Kodi</summary>
+		<summary lang="bg_BG">Минималистичен скин-файлов мениджър за Kodi</summary>
+		<summary lang="el_GR">Ένα μινιμαλιστικό skin διαχείρισης αρχείων για το Kodi</summary>
+		<summary lang="ro_RO">O skin minimalist de manager de fișiere pentru Kodi</summary>
 		<description lang="en_GB">This skin reduces Kodi to a file manager: pick a source, browse folders, play media files. No library, no metadata scraping. The underlying framework (settings, player, system dialogs) is taken at runtime from the installed Estuary skin.</description>
 		<description lang="de_DE">Dieser Skin reduziert Kodi auf einen Dateimanager: Quelle wählen, Ordner durchblättern, Mediendateien abspielen. Ohne Bibliothek, ohne Metadaten-Scraping. Der Unterbau (Einstellungen, Player, System-Dialoge) wird zur Laufzeit vom installierten Estuary-Skin übernommen.</description>
 		<description lang="fr_FR">Cet habillage réduit Kodi à un gestionnaire de fichiers : choisissez une source, parcourez les dossiers, lisez les fichiers multimédias. Ni médiathèque, ni récupération de métadonnées. L'infrastructure (paramètres, lecteur, dialogues système) est reprise à l'exécution de l'habillage Estuary installé.</description>
 		<description lang="es_ES">Esta piel reduce Kodi a un gestor de archivos: elige una fuente, explora carpetas, reproduce archivos multimedia. Sin biblioteca, sin extracción de metadatos. La infraestructura (ajustes, reproductor, diálogos del sistema) se toma en tiempo de ejecución de la piel Estuary instalada.</description>
+		<description lang="it_IT">Questa skin riduce Kodi a un gestore di file: scegli un'origine, sfoglia le cartelle, riproduci i file multimediali. Nessuna libreria, nessuno scraping dei metadati. L'infrastruttura (impostazioni, lettore, dialoghi di sistema) viene ripresa a runtime dalla skin Estuary installata.</description>
+		<description lang="nl_NL">Deze skin reduceert Kodi tot een bestandsbeheerder: kies een bron, blader door mappen, speel mediabestanden af. Geen bibliotheek, geen metadatascraping. Het onderliggende raamwerk (instellingen, speler, systeemvensters) wordt tijdens het draaien overgenomen van de geïnstalleerde Estuary-skin.</description>
+		<description lang="pl_PL">Ten skin sprowadza Kodi do menedżera plików: wybierz źródło, przeglądaj foldery, odtwarzaj pliki multimedialne. Bez biblioteki, bez pobierania metadanych. Podstawowa warstwa (ustawienia, odtwarzacz, okna systemowe) jest przejmowana w czasie działania z zainstalowanego skina Estuary.</description>
+		<description lang="pt_PT">Esta skin reduz o Kodi a um gestor de ficheiros: escolha uma fonte, navegue pelas pastas, reproduza ficheiros multimédia. Sem biblioteca, sem recolha de metadados. A base (definições, reprodutor, diálogos do sistema) é assumida em tempo de execução a partir da skin Estuary instalada.</description>
+		<description lang="pt_BR">Esta skin reduz o Kodi a um gerenciador de arquivos: escolha uma fonte, navegue pelas pastas, reproduza arquivos de mídia. Sem biblioteca, sem coleta de metadados. A base (configurações, reprodutor, diálogos do sistema) é assumida em tempo de execução a partir da skin Estuary instalada.</description>
+		<description lang="ru_RU">Эта оболочка превращает Kodi в файловый менеджер: выберите источник, просматривайте папки, воспроизводите медиафайлы. Без библиотеки и сбора метаданных. Базовая часть (настройки, проигрыватель, системные окна) во время работы берётся из установленной оболочки Estuary.</description>
+		<description lang="sv_SE">Det här skalet gör om Kodi till en filhanterare: välj en källa, bläddra bland mappar, spela upp mediafiler. Inget bibliotek, ingen metadataskrapning. Grunden (inställningar, spelare, systemdialoger) hämtas vid körning från det installerade Estuary-skalet.</description>
+		<description lang="da_DK">Dette skin reducerer Kodi til en filhåndteringsprogram: vælg en kilde, gennemse mapper, afspil mediefiler. Intet bibliotek, ingen metadata-skrabning. Grundlaget (indstillinger, afspiller, systemdialoger) hentes på kørselstidspunktet fra det installerede Estuary-skin.</description>
+		<description lang="nb_NO">Dette skallet reduserer Kodi til en filbehandler: velg en kilde, bla gjennom mapper, spill av mediefiler. Ikke noe bibliotek, ingen metadataskraping. Grunnlaget (innstillinger, spiller, systemdialoger) hentes ved kjøring fra det installerte Estuary-skallet.</description>
+		<description lang="fi_FI">Tämä skini muuttaa Kodin tiedostonhallinnaksi: valitse lähde, selaa kansioita, toista mediatiedostoja. Ei kirjastoa, ei metatietojen keruuta. Taustakehys (asetukset, soitin, järjestelmävalintaikkunat) otetaan käyttöön ajon aikana asennetusta Estuary-skinistä.</description>
+		<description lang="cs_CZ">Tento skin mění Kodi na správce souborů: vyberte zdroj, procházejte složky, přehrávejte mediální soubory. Bez knihovny, bez stahování metadat. Základní vrstva (nastavení, přehrávač, systémová dialogová okna) se za běhu přebírá z nainstalovaného skinu Estuary.</description>
+		<description lang="tr_TR">Bu dış görünüm Kodi'yi bir dosya yöneticisine dönüştürür: bir kaynak seçin, klasörlere göz atın, ortam dosyalarını oynatın. Kitaplık yok, üst veri kazıma yok. Temel altyapı (ayarlar, oynatıcı, sistem iletişim kutuları) çalışma anında kurulu Estuary dış görünümünden alınır.</description>
+		<description lang="hu_HU">Ez a skin fájlkezelővé alakítja a Kodit: válassz forrást, böngészd a mappákat, játszd le a médiafájlokat. Nincs könyvtár, nincs metaadat-lekérés. Az alaprendszer (beállítások, lejátszó, rendszerpárbeszédablakok) futásidőben a telepített Estuary skinből származik.</description>
+		<description lang="sk_SK">Tento skin mení Kodi na správcu súborov: vyberte zdroj, prechádzajte priečinky, prehrávajte mediálne súbory. Žiadna knižnica, žiadne sťahovanie metadát. Základná vrstva (nastavenia, prehrávač, systémové dialógy) sa za behu preberá z nainštalovaného skinu Estuary.</description>
+		<description lang="sl_SI">Ta koža spremeni Kodi v upravljalnik datotek: izberite vir, brskajte po mapah, predvajajte medijske datoteke. Brez knjižnice, brez pridobivanja metapodatkov. Osnovni sloj (nastavitve, predvajalnik, sistemska okna) se med izvajanjem prevzame iz nameščene kože Estuary.</description>
+		<description lang="bg_BG">Този скин превръща Kodi във файлов мениджър: изберете източник, разглеждайте папки, възпроизвеждайте медийни файлове. Без библиотека, без извличане на метаданни. Основната рамка (настройки, плейър, системни диалози) се взима по време на работа от инсталирания скин Estuary.</description>
+		<description lang="el_GR">Αυτό το skin περιορίζει το Kodi σε έναν διαχειριστή αρχείων: επιλέξτε πηγή, περιηγηθείτε σε φακέλους, αναπαράγετε αρχεία πολυμέσων. Χωρίς βιβλιοθήκη, χωρίς ανάκτηση μεταδεδομένων. Το υποκείμενο πλαίσιο (ρυθμίσεις, αναπαραγωγέας, διάλογοι συστήματος) λαμβάνεται κατά την εκτέλεση από το εγκατεστημένο skin Estuary.</description>
+		<description lang="ro_RO">Acest skin reduce Kodi la un manager de fișiere: alege o sursă, răsfoiește foldere, redă fișiere media. Fără bibliotecă, fără extragerea metadatelor. Infrastructura de bază (setări, player, dialoguri de sistem) este preluată la rulare din skinul Estuary instalat.</description>
 		<assets>
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>

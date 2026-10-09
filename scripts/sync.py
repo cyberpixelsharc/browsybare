@@ -1309,13 +1309,14 @@ THEME_ROLES = ("bg", "panel", "panel_solid", "panel_solid2", "row", "zebra",
                "divider2", "veil", "text", "text2", "muted", "control")
 
 
-def _theme_files():
+def _theme_files(base=None):
     """[(id, path)] for the themes/*.json files, sorted by file name. The id
     strips an optional NN- sort prefix, which stays hidden in the UI: the
-    prefix orders the list and later themes are appended with a higher number."""
+    prefix orders the list and later themes are appended with a higher number.
+    `base` overrides the skin root (the updater checks the new folder)."""
     out = []
     try:
-        base = os.path.join(skin_root(), THEME_DIR)
+        base = os.path.join(base or skin_root(), THEME_DIR)
         for f in sorted(os.listdir(base)):
             if not f.endswith(".json"):
                 continue
@@ -1327,9 +1328,9 @@ def _theme_files():
     return out
 
 
-def theme_ids():
+def theme_ids(base=None):
     """Available theme ids in file-name (prefix) order."""
-    return [tid for tid, _path in _theme_files()]
+    return [tid for tid, _path in _theme_files(base)]
 
 
 def _strip_comments(text):

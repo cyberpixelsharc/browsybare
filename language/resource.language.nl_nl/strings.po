@@ -2,136 +2,136 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_es\n"
+"Language: nl_nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Error"
 msgctxt "#31303"
-msgstr "Error"
+msgstr "Fout"
 
 msgid "Settings"
 msgctxt "#31307"
-msgstr "Ajustes"
+msgstr "Instellingen"
 
 msgid "System"
 msgctxt "#31308"
-msgstr "Sistema"
+msgstr "Systeem"
 
 msgid "Quit"
 msgctxt "#31310"
-msgstr "Salir"
+msgstr "Afsluiten"
 
 msgid "Show zebra stripes"
 msgctxt "#31312"
-msgstr "Mostrar rayado de cebra"
+msgstr "Zebrastrepen tonen"
 
 msgid "Version"
 msgctxt "#31313"
-msgstr "Versión"
+msgstr "Versie"
 
 msgid "Show hidden"
 msgctxt "#31317"
-msgstr "Mostrar ocultos"
+msgstr "Verborgen bestanden tonen"
 
 msgid "Accent color"
 msgctxt "#31318"
-msgstr "Color de acento"
+msgstr "Accentkleur"
 
 msgid "Appearance and colors"
 msgctxt "#31319"
-msgstr "Apariencia y colores"
+msgstr "Uiterlijk en kleuren"
 
 msgid "Files and folders"
 msgctxt "#31320"
-msgstr "Archivos y carpetas"
+msgstr "Bestanden en mappen"
 
 msgid "Sorting"
 msgctxt "#31321"
-msgstr "Orden"
+msgstr "Sorteren"
 
 msgid "Alphabetical"
 msgctxt "#31322"
-msgstr "Alfabético"
+msgstr "Alfabetisch"
 
 msgid "Size"
 msgctxt "#31323"
-msgstr "Tamaño"
+msgstr "Grootte"
 
 msgid "Date modified"
 msgctxt "#31324"
-msgstr "Fecha de modificación"
+msgstr "Wijzigingsdatum"
 
 msgid "Drives"
 msgctxt "#31325"
-msgstr "Unidades"
+msgstr "Schijven"
 
 msgid "No source available"
 msgctxt "#31326"
-msgstr "Ninguna fuente disponible"
+msgstr "Geen bron beschikbaar"
 
 msgid "Rename"
 msgctxt "#31327"
-msgstr "Renombrar"
+msgstr "Naam wijzigen"
 
 msgid "Delete"
 msgctxt "#31328"
-msgstr "Eliminar"
+msgstr "Verwijderen"
 
 msgid "New folder"
 msgctxt "#31329"
-msgstr "Nueva carpeta"
+msgstr "Nieuwe map"
 
 msgid "File not found"
 msgctxt "#31330"
-msgstr "Archivo no encontrado"
+msgstr "Bestand niet gevonden"
 
 msgid "Invalid name"
 msgctxt "#31331"
-msgstr "Nombre no válido"
+msgstr "Ongeldige naam"
 
 msgid "Really delete this folder?"
 msgctxt "#31332"
-msgstr "¿Eliminar realmente esta carpeta?"
+msgstr "Deze map echt verwijderen?"
 
 msgid "Really delete this file?"
 msgctxt "#31333"
-msgstr "¿Eliminar realmente este archivo?"
+msgstr "Dit bestand echt verwijderen?"
 
 msgid "Target already exists"
 msgctxt "#31334"
-msgstr "El destino ya existe"
+msgstr "Doel bestaat al"
 
 msgid "Already exists"
 msgctxt "#31335"
-msgstr "Ya existe"
+msgstr "Bestaat al"
 
 msgid "Rename failed: %s"
 msgctxt "#31336"
-msgstr "No se pudo renombrar: %s"
+msgstr "Naam wijzigen mislukt: %s"
 
 msgid "Delete failed: %s"
 msgctxt "#31337"
-msgstr "No se pudo eliminar: %s"
+msgstr "Verwijderen mislukt: %s"
 
 msgid "Create folder failed: %s"
 msgctxt "#31338"
-msgstr "No se pudo crear la carpeta: %s"
+msgstr "Map maken mislukt: %s"
 
 msgid "Actions…"
 msgctxt "#31339"
-msgstr "Acciones…"
+msgstr "Acties…"
 
 msgid "Yes"
 msgctxt "#31340"
-msgstr "Sí"
+msgstr "Ja"
 
 msgid "No"
 msgctxt "#31341"
-msgstr "No"
+msgstr "Nee"
 
 msgid "Search"
 msgctxt "#31342"
-msgstr "Buscar"
+msgstr "Zoeken"
 
 msgid "OK"
 msgctxt "#31343"
@@ -139,47 +139,47 @@ msgstr "OK"
 
 msgid "Cancel"
 msgctxt "#31344"
-msgstr "Cancelar"
+msgstr "Annuleren"
 
 msgid "Patterns"
 msgctxt "#31345"
-msgstr "Patrones"
+msgstr "Patronen"
 
 msgid "Add pattern"
 msgctxt "#31346"
-msgstr "Añadir patrón"
+msgstr "Patroon toevoegen"
 
 msgid "Directories"
 msgctxt "#31349"
-msgstr "Directorios"
+msgstr "Mappen"
 
 msgid "Add source"
 msgctxt "#31350"
-msgstr "Añadir fuente"
+msgstr "Bron toevoegen"
 
 msgid "Folders first"
 msgctxt "#31351"
-msgstr "Carpetas primero"
+msgstr "Mappen eerst"
 
 msgid "Options"
 msgctxt "#31352"
-msgstr "Opciones"
+msgstr "Opties"
 
 msgid "Match case"
 msgctxt "#31353"
-msgstr "Distinguir mayúsculas"
+msgstr "Hoofdlettergevoelig"
 
 msgid "Select this folder"
 msgctxt "#31355"
-msgstr "Elegir esta carpeta"
+msgstr "Deze map selecteren"
 
 msgid "Cannot select drive root"
 msgctxt "#31357"
-msgstr "No se puede elegir la raíz de la unidad"
+msgstr "Kan schijfhoofdmap niet selecteren"
 
 msgid "Already added"
 msgctxt "#31358"
-msgstr "Ya añadido"
+msgstr "Al toegevoegd"
 
 msgid "Audio"
 msgctxt "#31360"
@@ -187,23 +187,23 @@ msgstr "Audio"
 
 msgid "Scroll labels"
 msgctxt "#31361"
-msgstr "Desplazar etiquetas"
+msgstr "Labels laten scrollen"
 
 msgid "Video"
 msgctxt "#31362"
-msgstr "Vídeo"
+msgstr "Video"
 
 msgid "Home folder"
 msgctxt "#31363"
-msgstr "Carpeta personal"
+msgstr "Thuismap"
 
 msgid "Installing…"
 msgctxt "#31364"
-msgstr "Instalando…"
+msgstr "Installeren…"
 
 msgid "Installation and Fusion"
 msgctxt "#31365"
-msgstr "Instalación y fusión"
+msgstr "Installatie en samenvoeging"
 
 msgid "3D"
 msgctxt "#36501"
@@ -211,63 +211,63 @@ msgstr "3D"
 
 msgid "Show source path"
 msgctxt "#31367"
-msgstr "Mostrar ruta de origen"
+msgstr "Bronpad tonen"
 
 msgid "Color intensity"
 msgctxt "#31366"
-msgstr "Intensidad del color"
+msgstr "Kleurintensiteit"
 
 msgid "General"
 msgctxt "#31368"
-msgstr "General"
+msgstr "Algemeen"
 
 msgid "Player"
 msgctxt "#31369"
-msgstr "Reproductor"
+msgstr "Speler"
 
 msgid "Sources"
 msgctxt "#31370"
-msgstr "Fuentes"
+msgstr "Bronnen"
 
 msgid "Blocklist"
 msgctxt "#31371"
-msgstr "Bloqueo"
+msgstr "Blokkeerlijst"
 
 msgid "Toggle"
 msgctxt "#31374"
-msgstr "Alternar"
+msgstr "Schakelen"
 
 msgid "Remote"
 msgctxt "#31375"
-msgstr "Mando"
+msgstr "Besturing"
 
 msgid "Back"
 msgctxt "#31376"
-msgstr "Atrás"
+msgstr "Terug"
 
 msgid "Home"
 msgctxt "#31377"
-msgstr "Inicio"
+msgstr "Home"
 
 msgid "Menu"
 msgctxt "#31378"
-msgstr "Menú"
+msgstr "Menu"
 
 msgid "Up"
 msgctxt "#31379"
-msgstr "Arriba"
+msgstr "Omhoog"
 
 msgid "Down"
 msgctxt "#31380"
-msgstr "Abajo"
+msgstr "Omlaag"
 
 msgid "Left"
 msgctxt "#31381"
-msgstr "Izquierda"
+msgstr "Links"
 
 msgid "Right"
 msgctxt "#31382"
-msgstr "Derecha"
+msgstr "Rechts"
 
 msgid "OK"
 msgctxt "#31383"
@@ -275,215 +275,215 @@ msgstr "OK"
 
 msgid "Rewind"
 msgctxt "#31386"
-msgstr "Retroceder"
+msgstr "Terugspoelen"
 
 msgid "Forward"
 msgctxt "#31387"
-msgstr "Avanzar"
+msgstr "Vooruitspoelen"
 
 msgid "Previous"
 msgctxt "#31388"
-msgstr "Anterior"
+msgstr "Vorige"
 
 msgid "Next"
 msgctxt "#31389"
-msgstr "Siguiente"
+msgstr "Volgende"
 
 msgid "Louder"
 msgctxt "#31390"
-msgstr "Subir volumen"
+msgstr "Harder"
 
 msgid "Quieter"
 msgctxt "#31391"
-msgstr "Bajar volumen"
+msgstr "Zachter"
 
 msgid "Exit"
 msgctxt "#31393"
-msgstr "Salir"
+msgstr "Afsluiten"
 
 msgid "Settings"
 msgctxt "#31398"
-msgstr "Ajustes"
+msgstr "Instellingen"
 
 msgid "Scanning…"
 msgctxt "#31395"
-msgstr "Analizando…"
+msgstr "Scannen…"
 
 msgid "Start scanner"
 msgctxt "#31396"
-msgstr "Iniciar análisis"
+msgstr "Scan starten"
 
 msgid "Save"
 msgctxt "#31397"
-msgstr "Guardar"
+msgstr "Opslaan"
 
 msgid "Really power off the operating system?"
 msgctxt "#31399"
-msgstr "¿Apagar realmente el sistema?"
+msgstr "Het besturingssysteem echt uitschakelen?"
 
 msgid "Really restart the operating system?"
 msgctxt "#31400"
-msgstr "¿Reiniciar realmente el sistema?"
+msgstr "Het besturingssysteem echt opnieuw opstarten?"
 
 msgid "Really suspend the operating system?"
 msgctxt "#31401"
-msgstr "¿Suspender realmente el sistema?"
+msgstr "Het besturingssysteem echt in slaapstand zetten?"
 
 msgid "Really hibernate the operating system?"
 msgctxt "#31402"
-msgstr "¿Hibernar realmente el sistema?"
+msgstr "Het besturingssysteem echt in sluimerstand zetten?"
 
 msgid "Really run this action?"
 msgctxt "#31403"
-msgstr "¿Ejecutar realmente esta acción?"
+msgstr "Deze actie echt uitvoeren?"
 
 msgid "Really quit Kodi now?"
 msgctxt "#31404"
-msgstr "¿Salir de Kodi ahora?"
+msgstr "Kodi nu echt afsluiten?"
 
 msgid "Shutdown timer"
 msgctxt "#31405"
-msgstr "Temporizador de apagado"
+msgstr "Uitschakeltimer"
 
 msgid "15 minutes"
 msgctxt "#31406"
-msgstr "15 minutos"
+msgstr "15 minuten"
 
 msgid "30 minutes"
 msgctxt "#31407"
-msgstr "30 minutos"
+msgstr "30 minuten"
 
 msgid "60 minutes"
 msgctxt "#31408"
-msgstr "60 minutos"
+msgstr "60 minuten"
 
 msgid "120 minutes"
 msgctxt "#31409"
-msgstr "120 minutos"
+msgstr "120 minuten"
 
 msgid "Delete active timer (%s)"
 msgctxt "#31411"
-msgstr "Eliminar temporizador activo (%s)"
+msgstr "Actieve timer verwijderen (%s)"
 
 msgid "No timer active"
 msgctxt "#31412"
-msgstr "Ningún temporizador activo"
+msgstr "Geen actieve timer"
 
 msgid "90 minutes"
 msgctxt "#31413"
-msgstr "90 minutos"
+msgstr "90 minuten"
 
 msgid "5 minutes"
 msgctxt "#31414"
-msgstr "5 minutos"
+msgstr "5 minuten"
 
 msgid "Block list"
 msgctxt "#31415"
-msgstr "Bloqueo"
+msgstr "Blokkeerlijst"
 
 msgid "Scan folder sizes"
 msgctxt "#31416"
-msgstr "Analizar tamaños de carpeta"
+msgstr "Mapgroottes scannen"
 
 msgid "Copy"
 msgctxt "#31394"
-msgstr "Copiar"
+msgstr "Kopiëren"
 
 msgid "Cut"
 msgctxt "#31410"
-msgstr "Cortar"
+msgstr "Knippen"
 
 msgid "Paste"
 msgctxt "#31417"
-msgstr "Pegar"
+msgstr "Plakken"
 
 msgid "Clipboard is empty"
 msgctxt "#31418"
-msgstr "El portapapeles está vacío"
+msgstr "Klembord is leeg"
 
 msgid "The target already exists!"
 msgctxt "#31419"
-msgstr "¡El destino ya existe!"
+msgstr "Het doel bestaat al!"
 
 msgid "Copied: %s"
 msgctxt "#31420"
-msgstr "Copiado: %s"
+msgstr "Gekopieerd: %s"
 
 msgid "Cut: %s"
 msgctxt "#31421"
-msgstr "Cortado: %s"
+msgstr "Geknipt: %s"
 
 msgid "Paste failed: %s"
 msgctxt "#31422"
-msgstr "No se pudo pegar: %s"
+msgstr "Plakken mislukt: %s"
 
 msgid "Pasted: %s"
 msgctxt "#31423"
-msgstr "Pegado: %s"
+msgstr "Geplakt: %s"
 
 msgid "Add as directory source"
 msgctxt "#31424"
-msgstr "Añadir como fuente de directorio"
+msgstr "Als mapbron toevoegen"
 
 msgid "Add this folder as a directory source?"
 msgctxt "#31425"
-msgstr "¿Añadir esta carpeta como fuente de directorio?"
+msgstr "Deze map als bron toevoegen?"
 
 msgid "Info"
 msgctxt "#31426"
-msgstr "Información"
+msgstr "Info"
 
 msgid "Title"
 msgctxt "#31427"
-msgstr "Título"
+msgstr "Titel"
 
 msgid "Artist"
 msgctxt "#31428"
-msgstr "Artista"
+msgstr "Artiest"
 
 msgid "Album"
 msgctxt "#31429"
-msgstr "Álbum"
+msgstr "Album"
 
 msgid "Year"
 msgctxt "#31430"
-msgstr "Año"
+msgstr "Jaar"
 
 msgid "Genre"
 msgctxt "#31431"
-msgstr "Género"
+msgstr "Genre"
 
 msgid "Duration"
 msgctxt "#31432"
-msgstr "Duración"
+msgstr "Duur"
 
 msgid "Codec"
 msgctxt "#31433"
-msgstr "Códec"
+msgstr "Codec"
 
 msgid "Bitrate"
 msgctxt "#31435"
-msgstr "Tasa de bits"
+msgstr "Bitrate"
 
 msgid "Sample rate"
 msgctxt "#31436"
-msgstr "Frecuencia de muestreo"
+msgstr "Bemonsteringsfrequentie"
 
 msgid "Channels"
 msgctxt "#31437"
-msgstr "Canales"
+msgstr "Kanalen"
 
 msgid "Size"
 msgctxt "#31440"
-msgstr "Tamaño"
+msgstr "Grootte"
 
 msgid "Modified"
 msgctxt "#31441"
-msgstr "Modificado"
+msgstr "Gewijzigd"
 
 msgid "Frame rate"
 msgctxt "#31442"
-msgstr "Cuadros por segundo"
+msgstr "Framerate"
 
 msgid "Audio"
 msgctxt "#31443"
@@ -495,55 +495,55 @@ msgstr "HDR"
 
 msgid "Subtitle"
 msgctxt "#31445"
-msgstr "Subtítulo"
+msgstr "Ondertitel"
 
 msgid "Off"
 msgctxt "#31446"
-msgstr "Desactivado"
+msgstr "Uit"
 
 msgid "Internal storage"
 msgctxt "#31447"
-msgstr "Almacenamiento interno"
+msgstr "Interne opslag"
 
 msgid "Networks"
 msgctxt "#31448"
-msgstr "Redes"
+msgstr "Netwerken"
 
 msgid "Server address"
 msgctxt "#31449"
-msgstr "Dirección del servidor"
+msgstr "Serveradres"
 
 msgid "Display name"
 msgctxt "#31450"
-msgstr "Nombre visible"
+msgstr "Weergavenaam"
 
 msgid "Use ftp://, smb://, nfs://, http(s):// or dav(s)://"
 msgctxt "#31451"
-msgstr "Usa ftp://, smb://, nfs://, http(s):// o dav(s)://"
+msgstr "Gebruik ftp://, smb://, nfs://, http(s):// of dav(s)://"
 
 msgid "Network source"
 msgctxt "#31452"
-msgstr "Fuente de red"
+msgstr "Netwerkbron"
 
 msgid "Name"
 msgctxt "#31453"
-msgstr "Nombre"
+msgstr "Naam"
 
 msgid "Protocol"
 msgctxt "#31454"
-msgstr "Protocolo"
+msgstr "Protocol"
 
 msgid "Server"
 msgctxt "#31455"
-msgstr "Servidor"
+msgstr "Server"
 
 msgid "Username"
 msgctxt "#31456"
-msgstr "Usuario"
+msgstr "Gebruikersnaam"
 
 msgid "Password"
 msgctxt "#31457"
-msgstr "Contraseña"
+msgstr "Wachtwoord"
 
 msgid "OK"
 msgctxt "#31458"
@@ -551,59 +551,59 @@ msgstr "OK"
 
 msgid "Source already exists"
 msgctxt "#31459"
-msgstr "La fuente ya existe"
+msgstr "Bron bestaat al"
 
 msgid "Path"
 msgctxt "#31460"
-msgstr "Ruta"
+msgstr "Pad"
 
 msgid "Port"
 msgctxt "#31461"
-msgstr "Puerto"
+msgstr "Poort"
 
 msgid "Invalid port"
 msgctxt "#31462"
-msgstr "Puerto no válido"
+msgstr "Ongeldige poort"
 
 msgid "Connection OK"
 msgctxt "#31463"
-msgstr "Conexión correcta"
+msgstr "Verbinding OK"
 
 msgid "Connection failed"
 msgctxt "#31464"
-msgstr "Conexión fallida"
+msgstr "Verbinding mislukt"
 
 msgid "Test"
 msgctxt "#31465"
-msgstr "Probar"
+msgstr "Testen"
 
 msgid "Edit"
 msgctxt "#31466"
-msgstr "Editar"
+msgstr "Bewerken"
 
 msgid "Connection error"
 msgctxt "#31467"
-msgstr "Error de conexión"
+msgstr "Verbindingsfout"
 
 msgid "Scan network files"
 msgctxt "#31468"
-msgstr "Analizar archivos de red"
+msgstr "Netwerkbestanden scannen"
 
 msgid "Scanning..."
 msgctxt "#31470"
-msgstr "Analizando..."
+msgstr "Scannen..."
 
 msgid "Start-up delay"
 msgctxt "#31471"
-msgstr "Retardo de inicio"
+msgstr "Opstartvertraging"
 
 msgid "System and Kodi"
 msgctxt "#31472"
-msgstr "Sistema y Kodi"
+msgstr "Systeem en Kodi"
 
 msgid "GUI sound volume"
 msgctxt "#31473"
-msgstr "Volumen interfaz"
+msgstr "Volume interfacegeluiden"
 
 msgid "Photo"
 msgctxt "#31474"
@@ -611,83 +611,83 @@ msgstr "Foto"
 
 msgid "An older version (%s) was installed over the newer version (%s)."
 msgctxt "#31476"
-msgstr "Se instaló una versión anterior (%s) sobre la versión más reciente (%s)."
+msgstr "Een oudere versie (%s) is over de nieuwere versie (%s) geïnstalleerd."
 
 msgid "Version (%s) was installed again over version (%s)."
 msgctxt "#31477"
-msgstr "La versión (%s) se reinstaló sobre la versión (%s)."
+msgstr "Versie (%s) is opnieuw over versie (%s) geïnstalleerd."
 
 msgid "Installation warning"
 msgctxt "#31478"
-msgstr "Advertencia de instalación"
+msgstr "Installatiewaarschuwing"
 
 msgid "Some base files could not be copied. A new attempt is made on the next start."
 msgctxt "#31479"
-msgstr "Algunos archivos base no se pudieron copiar. Se reintentará en el próximo inicio."
+msgstr "Sommige basisbestanden konden niet worden gekopieerd. Bij de volgende start wordt het opnieuw geprobeerd."
 
 msgid "The settings folder was broken and has been repaired successfully."
 msgctxt "#31480"
-msgstr "La carpeta de ajustes estaba dañada y se reparó correctamente."
+msgstr "De instellingenmap was beschadigd en is hersteld."
 
 msgid "The settings folder is broken and could not be repaired."
 msgctxt "#31481"
-msgstr "La carpeta de ajustes está dañada y no se pudo reparar."
+msgstr "De instellingenmap is beschadigd en kon niet worden hersteld."
 
 msgid "The base layer could not be updated. See the log for details."
 msgctxt "#31482"
-msgstr "No se pudo actualizar la capa base. Consulta el registro para más detalles."
+msgstr "De basislaag kon niet worden bijgewerkt. Zie het logboek voor details."
 
 msgid "Reset the settings of this section to their defaults?"
 msgctxt "#31483"
-msgstr "¿Restablecer los ajustes de esta sección a sus valores predeterminados?"
+msgstr "De instellingen van deze sectie terugzetten naar de standaardwaarden?"
 
 msgid "Screen dimmer"
 msgctxt "#31484"
-msgstr "Atenuador de pantalla"
+msgstr "Scherm dimmen"
 
 msgid "Camera"
 msgctxt "#31485"
-msgstr "Cámara"
+msgstr "Camera"
 
 msgid "Lens"
 msgctxt "#31486"
-msgstr "Objetivo"
+msgstr "Objectief"
 
 msgid "Date taken"
 msgctxt "#31487"
-msgstr "Fecha de captura"
+msgstr "Opnamedatum"
 
 msgid "Exposure"
 msgctxt "#31488"
-msgstr "Exposición"
+msgstr "Belichting"
 
 msgid "Aperture"
 msgctxt "#31489"
-msgstr "Apertura"
+msgstr "Diafragma"
 
 msgid "Focal length"
 msgctxt "#31490"
-msgstr "Distancia focal"
+msgstr "Brandpuntsafstand"
 
 msgid "Resolution"
 msgctxt "#31491"
-msgstr "Resolución"
+msgstr "Resolutie"
 
 msgid "Orientation"
 msgctxt "#31492"
-msgstr "Orientación"
+msgstr "Oriëntatie"
 
 msgid "Include subfolders"
 msgctxt "#31493"
-msgstr "Incluir subcarpetas"
+msgstr "Submappen meenemen"
 
 msgid "Shortcuts"
 msgctxt "#31494"
-msgstr "Atajos"
+msgstr "Sneltoetsen"
 
 msgid "P & Space"
 msgctxt "#31495"
-msgstr "P y Espacio"
+msgstr "P en Spatie"
 
 msgid "X"
 msgctxt "#31496"
@@ -695,7 +695,7 @@ msgstr "X"
 
 msgid "Comma / Period"
 msgctxt "#31498"
-msgstr "Coma / Punto"
+msgstr "Komma / Punt"
 
 msgid "F / R"
 msgctxt "#31499"
@@ -707,19 +707,19 @@ msgstr "M"
 
 msgid "Plus / Minus"
 msgctxt "#31501"
-msgstr "Más / Menos"
+msgstr "Plus / Min"
 
 msgid "Backspace"
 msgctxt "#31502"
-msgstr "Retroceso"
+msgstr "Backspace"
 
 msgid "Arrow keys"
 msgctxt "#31503"
-msgstr "Teclas de dirección"
+msgstr "Pijltjestoetsen"
 
 msgid "Enter"
 msgctxt "#31504"
-msgstr "Intro"
+msgstr "Enter"
 
 msgid "ESC"
 msgctxt "#31505"
@@ -727,55 +727,55 @@ msgstr "ESC"
 
 msgid "Shift+F10"
 msgctxt "#31506"
-msgstr "Mayús+F10"
+msgstr "Shift+F10"
 
 msgid "Play / Pause"
 msgctxt "#31507"
-msgstr "Reproducir / Pausa"
+msgstr "Afspelen / Pauze"
 
 msgid "Stop"
 msgctxt "#31508"
-msgstr "Detener"
+msgstr "Stop"
 
 msgid "Previous / Next"
 msgctxt "#31510"
-msgstr "Anterior / Siguiente"
+msgstr "Vorige / Volgende"
 
 msgid "Skip back / forward"
 msgctxt "#31511"
-msgstr "Retroceder / avanzar"
+msgstr "Achteruit / vooruit springen"
 
 msgid "Mute"
 msgctxt "#31512"
-msgstr "Silenciar"
+msgstr "Dempen"
 
 msgid "Louder / Quieter"
 msgctxt "#31513"
-msgstr "Subir / bajar volumen"
+msgstr "Harder / Zachter"
 
 msgid "Close / folder up"
 msgctxt "#31514"
-msgstr "Cerrar / subir carpeta"
+msgstr "Sluiten / map omhoog"
 
 msgid "Navigate"
 msgctxt "#31515"
-msgstr "Navegar"
+msgstr "Navigeren"
 
 msgid "Select"
 msgctxt "#31516"
-msgstr "Seleccionar"
+msgstr "Selecteren"
 
 msgid "Close overlay"
 msgctxt "#31517"
-msgstr "Cerrar superposiciones"
+msgstr "Overlay sluiten"
 
 msgid "Context menu"
 msgctxt "#31518"
-msgstr "Menú contextual"
+msgstr "Contextmenu"
 
 msgid "Ctrl+Enter"
 msgctxt "#31519"
-msgstr "Ctrl+Intro"
+msgstr "Ctrl+Enter"
 
 msgid "ISO"
 msgctxt "#31520"
@@ -783,108 +783,108 @@ msgstr "ISO"
 
 msgid "No web browser found"
 msgctxt "#31521"
-msgstr "No se encontró un navegador web"
+msgstr "Geen webbrowser gevonden"
 
 msgid "Check for update"
 msgctxt "#31522"
-msgstr "Buscar actualización"
+msgstr "Op update controleren"
 
 msgid "Update check"
 msgctxt "#31523"
-msgstr "Comprobación de actualizaciones"
+msgstr "Updatecontrole"
 
 msgid "No new version available"
 msgctxt "#31524"
-msgstr "No hay nueva versión disponible"
+msgstr "Geen nieuwe versie beschikbaar"
 
 msgid "Update check failed"
 msgctxt "#31526"
-msgstr "Error de comprobación"
+msgstr "Updatecontrole mislukt"
 
 msgid "Playback"
 msgctxt "#31527"
-msgstr "Reproducción"
+msgstr "Afspelen"
 
 msgid "Should the playback resume at %s?"
 msgctxt "#31528"
-msgstr "¿Debe reanudarse la reproducción en %s?"
+msgstr "Moet het afspelen worden hervat bij %s?"
 
 msgid "Resume"
 msgctxt "#31529"
-msgstr "Reanudar"
+msgstr "Hervatten"
 
 msgid "Restart"
 msgctxt "#31530"
-msgstr "Reiniciar"
+msgstr "Vanaf begin"
 
 msgid "New version %s available"
 msgctxt "#31531"
-msgstr "Nueva versión %s disponible"
+msgstr "Nieuwe versie %s beschikbaar"
 
 msgid "Downloading version %s"
 msgctxt "#31532"
-msgstr "Descargando la versión %s"
+msgstr "Versie %s downloaden"
 
 msgid "Download failed"
 msgctxt "#31534"
-msgstr "Error al descargar"
+msgstr "Download mislukt"
 
 msgid "Update"
 msgctxt "#31535"
-msgstr "Actualización"
+msgstr "Bijwerken"
 
 msgid "Download and install the new version %s?"
 msgctxt "#31536"
-msgstr "¿Descargar e instalar la nueva versión %s?"
+msgstr "De nieuwe versie %s downloaden en installeren?"
 
 msgid "Write access"
 msgctxt "#31537"
-msgstr "Acceso de escritura"
+msgstr "Schrijftoegang"
 
 msgid "Theme"
 msgctxt "#31538"
-msgstr "Tema"
+msgstr "Thema"
 
 msgid "External storage"
 msgctxt "#31539"
-msgstr "Almacenamiento externo"
+msgstr "Externe opslag"
 
 msgid "Searching for update"
 msgctxt "#31540"
-msgstr "Buscando actualización"
+msgstr "Zoeken naar update"
 
 msgid "Saving version %s"
 msgctxt "#31541"
-msgstr "Guardando la versión %s"
+msgstr "Versie %s opslaan"
 
 msgid "Version %s saved and extracted"
 msgctxt "#31542"
-msgstr "Versión %s guardada y descomprimida"
+msgstr "Versie %s opgeslagen en uitgepakt"
 
 msgid "Saving failed"
 msgctxt "#31543"
-msgstr "Error al guardar"
+msgstr "Opslaan mislukt"
 
 msgid "Automatically check for updates"
 msgctxt "#31544"
-msgstr "Actualizaciones automáticas"
+msgstr "Automatisch op updates controleren"
 
 msgid "The required add-on is not installed or disabled"
 msgctxt "#31545"
-msgstr "El complemento requerido no está instalado o está desactivado"
+msgstr "De vereiste add-on is niet geïnstalleerd of is uitgeschakeld"
 
 msgid "Fullscreen visualisation"
 msgctxt "#31546"
-msgstr "Modo pantalla completa"
+msgstr "Visualisatie volledig scherm"
 
 msgid "Off"
 msgctxt "#31548"
-msgstr "Desactivado"
+msgstr "Uit"
 
 msgid "No visualisation add-on installed"
 msgctxt "#31549"
-msgstr "No hay ningún complemento de visualización instalado"
+msgstr "Geen visualisatie-add-on geïnstalleerd"
 
 msgid "Crossfade"
 msgctxt "#31550"
-msgstr "Fundido cruzado"
+msgstr "Crossfade"

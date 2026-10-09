@@ -43,10 +43,90 @@ ROWS_EN = [
     "asdfghjkl;'\\°",
     "zxcvbnm,./·¨´",
 ]
+# Curated extras for the added languages (13 columns each; letters shift via
+# ch.upper, punctuation via SHIFT_EN). it/nl/pt keep the QWERTY fallback.
+ROWS_SV = [
+    "1234567890-=€",
+    "qwertyuiop[]§",
+    "asdfghjkl;'\\°",
+    "zxcvbnm,./åäö",
+]
+ROWS_DA = [
+    "1234567890-=€",
+    "qwertyuiop[]§",
+    "asdfghjkl;'\\°",
+    "zxcvbnm,./æøå",
+]
+ROWS_FI = [
+    "1234567890-=€",
+    "qwertyuiop[]§",
+    "asdfghjkl;'\\°",
+    "zxcvbnm,./äöš",
+]
+ROWS_PL = [
+    "1234567890ąćę",
+    "qwertyuiopłńó",
+    "asdfghjklśźż#",
+    "zxcvbnm,.-'\\@",
+]
+ROWS_CS = [
+    "1234567890čřž",
+    "qwertzuiopáíý",
+    "asdfghjklůšě#",
+    "yxcvbnm,.-ťó@",
+]
+ROWS_TR = [
+    "1234567890ğüş",
+    "qwertyuiopıö[",
+    "asdfghjklç@#~",
+    "zxcvbnm,.-'\\|",
+]
+ROWS_RU = [
+    "1234567890-=ё",
+    "йцукенгшщзхъ|",
+    "фывапролджэ@#",
+    "ячсмитьбю.§°±",
+]
+ROWS_HU = [
+    "1234567890öüó",
+    "qwertzuiopőú{",
+    "asdfghjkléáű#",
+    "íyxcvbnm,.-@|",
+]
+ROWS_SK = [
+    "1234567890ľšč",
+    "qwertzuiopáí{",
+    "asdfghjklôä§[",
+    "yxcvbnm,.-ň@|",
+]
+ROWS_SL = [
+    "1234567890čšž",
+    "qwertzuiop@+{",
+    "asdfghjkl#%§!",
+    "yxcvbnm,.-°*|",
+]
+ROWS_BG = [
+    "1234567890чшщ",
+    "явертъуиопью+",
+    "асдфгхйклцж@#",
+    "збнм«»§°±¶·¬´",
+]
+ROWS_EL = [
+    "1234567890#$%",
+    ";ςερτυθιοπ`+{",
+    "ασδφγηξκλ@^?!",
+    "ζχψωβνμ,.~|§°",
+]
+ROWS_RO = [
+    "1234567890ăâî",
+    "qwertyuiopșț{",
+    "asdfghjkl;'#@",
+    "zxcvbnm,./°±§",
+]
 
 
 def _layout_rows():
-    """Layout follows the active Kodi language (QWERTZ/AZERTY/QWERTY)."""
+    """Layout follows the active Kodi language (QWERTZ/AZERTY/QWERTY/...)."""
     try:
         lang = (xbmc.getLanguage(xbmc.ISO_639_1) or "").lower()
     except Exception:
@@ -57,6 +137,34 @@ def _layout_rows():
         return ROWS_FR
     if lang.startswith("es"):
         return ROWS_ES
+    if lang.startswith("sv"):
+        return ROWS_SV
+    if lang.startswith("da"):
+        return ROWS_DA
+    if lang.startswith("nb") or lang.startswith("no"):
+        return ROWS_DA
+    if lang.startswith("fi"):
+        return ROWS_FI
+    if lang.startswith("pl"):
+        return ROWS_PL
+    if lang.startswith("cs"):
+        return ROWS_CS
+    if lang.startswith("tr"):
+        return ROWS_TR
+    if lang.startswith("ru"):
+        return ROWS_RU
+    if lang.startswith("hu"):
+        return ROWS_HU
+    if lang.startswith("sk"):
+        return ROWS_SK
+    if lang.startswith("sl"):
+        return ROWS_SL
+    if lang.startswith("bg"):
+        return ROWS_BG
+    if lang.startswith("el"):
+        return ROWS_EL
+    if lang.startswith("ro"):
+        return ROWS_RO
     return ROWS_EN
 
 
