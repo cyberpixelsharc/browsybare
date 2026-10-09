@@ -1,0 +1,23 @@
+{
+  // MorningFrostLight
+  "colors": {
+	"bg": "FFB4B9BC",           // window + file-list background
+	"panel": "FFC1C6C8",        // menus, dialogs and panels
+	"panel_solid": "F2C1C6C8",  // top bar, photo OSD, audio footer
+	"panel_solid2": "FCC1C6C8", // video OSD sheet
+	"row": "FFA6ACB0",          // chip / button backgrounds (drive, breadcrumb)
+	"zebra": "FFC1C6C8",        // list stripe (every other row; == panel_solid)
+	"header": "FF929BA1",       // top-bar separator + dialog headers
+	"raised": "FF7E8C98",       // raised small elements
+	"raised2": "FF9AA3A8",      // scrollbar
+	"raised3": "FF89959B",      // extra small elements
+	"surface": "FFB9BFC2",      // modal surfaces
+	"divider": "263F4A50",      // thin separator (alpha 0x26)
+	"divider2": "33434E54",     // stronger separator (alpha 0x33)
+	"veil": "80081516",         // dim backdrop behind menus (alpha 0x80)
+	"text": "FF151B1E",         // primary text
+	"text2": "FF293237",        // list / secondary text
+	"muted": "FF414C52",        // faint text
+	"control": "FF71818A"       // off/inactive controls
+  }
+}

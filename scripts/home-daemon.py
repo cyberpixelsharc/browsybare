@@ -33,9 +33,9 @@ OSD_ADVANCE_WINDOW = 7.0
 # Settle window around a player start/stop: reading container/info labels then
 # crashed Kodi 22 (SIGSEGV in CGUIInfoManager::GetMultiInfoLabel).
 PLAYER_SETTLE = 4.0
-# Rows to scroll past the followed track so it clears the header/footer overlay
-# (Kodi scrolls the focused row only to the nearest edge).
-FOLLOW_OFFSET = 8
+# Rows to scroll the followed track away from an overlay edge (header/footer).
+# Must stay well under half a screen so the two-sided nudge keeps the direction.
+FOLLOW_OFFSET = 7
 # Controls that can still hold focus after the player UI hides on stop
 # (fallback chip 30 + audio footer rows/sliders); duty 6 returns focus to the list.
 STOP_FOCUS_IDS = (30,) + tuple(range(330, 359)) + VOLUME_SLIDER_IDS
@@ -262,21 +262,21 @@ def _focus_list_on(path, footer_focus="", prev_idx=-1):
     rows = keys.split("\n")
     for i, k in enumerate(rows):
         if k and unquote(k) == base:
-            # Kodi scrolls the focused row only to the nearest edge, where the
-            # header/footer overlay hides it. Focus a row a few positions further
-            # in the scroll direction (so the target clears the overlay), then the
-            # row itself (already visible -> no scroll) so its pill sits on the
-            # playing item. Direction from the previous follow index; near an end
-            # jump to the last possible row (Kodi ignores an out-of-range focus).
-            if i >= prev_idx:
-                far = min(len(rows) - 1, i + FOLLOW_OFFSET)
-            else:
-                far = max(0, i - FOLLOW_OFFSET)
             prev = xbmc.getInfoLabel("System.CurrentControlId") or ""
-            xbmc.executebuiltin("SetFocus(33,%d,absolute)" % far)
+            # Down nudge may reach the trailing empty padding rows: focusing one
+            # scrolls the list to the bottom, which lifts a near-end track clear
+            # of the footer (capping to the last real row left it stuck there).
+            down = min(len(rows) - 1, i + FOLLOW_OFFSET)
+            up = max(0, i - FOLLOW_OFFSET)
+            # The footer holds the focus, so focus the list explicitly first
+            # (Kodi may not scroll a control it is not focusing), then nudge both
+            # sides so the row clears whichever overlay edge it landed on, then
+            # focus the row itself so its pill sits on the playing item.
+            xbmc.executebuiltin("SetFocus(33)")
             time.sleep(0.1)
-            xbmc.executebuiltin("SetFocus(33,%d,absolute)" % i)
-            time.sleep(0.2)
+            for far in (down, up, i):
+                xbmc.executebuiltin("SetFocus(33,%d,absolute)" % far)
+                time.sleep(0.15)
             # System.CurrentControlId reads empty right at a track change; fall
             # back to the last footer control seen, else focus stays in the list.
             if prev.isdigit() and prev != "33":

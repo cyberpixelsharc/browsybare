@@ -1,0 +1,23 @@
+{
+  // ObsidianMistLight
+  "colors": {
+	"bg": "FFAAAAAA",           // window + file-list background
+	"panel": "FFB4B4B4",        // menus, dialogs and panels
+	"panel_solid": "F2B4B4B4",  // top bar, photo OSD, audio footer
+	"panel_solid2": "FCB4B4B4", // video OSD sheet
+	"row": "FF999999",          // chip / button backgrounds (drive, breadcrumb)
+	"zebra": "FFB4B4B4",        // list stripe (every other row; == panel_solid)
+	"header": "FF8D8D8D",       // top-bar separator + dialog headers
+	"raised": "FF7F7F7F",       // raised small elements
+	"raised2": "FFA0A0A0",      // scrollbar
+	"raised3": "FF8A8A8A",      // extra small elements
+	"surface": "FFACACAC",      // modal surfaces
+	"divider": "26333333",      // thin separator (alpha 0x26)
+	"divider2": "33333333",     // stronger separator (alpha 0x33)
+	"veil": "800A0A0A",         // dim backdrop behind menus (alpha 0x80)
+	"text": "FF171717",         // primary text
+	"text2": "FF303030",        // list / secondary text
+	"muted": "FF494949",        // faint text
+	"control": "FF707070"       // off/inactive controls (row + one step lighter)
+  }
+}

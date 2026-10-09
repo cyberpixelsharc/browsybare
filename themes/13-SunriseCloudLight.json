@@ -1,0 +1,23 @@
+{
+  // SunriseCloudLight
+  "colors": {
+	"bg": "FF565D70",           // window + file-list background
+	"panel": "FF626A7E",        // menus, dialogs and panels
+	"panel_solid": "F2626A7E",  // top bar, photo OSD, audio footer
+	"panel_solid2": "FC626A7E", // video OSD sheet
+	"row": "FF4B5264",          // chip / button backgrounds (drive, breadcrumb)
+	"zebra": "FF5D6579",        // list stripe (every other row)
+	"header": "FF737D91",       // top-bar separator + dialog headers
+	"raised": "FF818B9F",       // raised small elements
+	"raised2": "FF626B7F",      // scrollbar
+	"raised3": "FF747E92",      // extra small elements
+	"surface": "FF666F83",      // modal surfaces
+	"divider": "26343B40",      // thin separator (alpha 0x26)
+	"divider2": "33343B40",     // stronger separator (alpha 0x33)
+	"veil": "80181018",         // dim backdrop behind menus (alpha 0x80)
+	"text": "FF252A34",         // primary text
+	"text2": "FF303844",        // list / secondary text
+	"muted": "FF3B4652",        // faint text
+	"control": "FF7E899D"       // off/inactive controls
+  }
+}

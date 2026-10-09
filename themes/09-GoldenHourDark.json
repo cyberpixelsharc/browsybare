@@ -1,0 +1,23 @@
+{
+  // GoldenHourDark
+  "colors": {
+	"bg": "FF3B322A",           // window + file-list background
+	"panel": "FF483A31",        // menus, dialogs and panels
+	"panel_solid": "F2483A31",  // top bar, photo OSD, audio footer
+	"panel_solid2": "FC483A31", // video OSD sheet
+	"row": "FF312A25",          // chip / button backgrounds (drive, breadcrumb)
+	"zebra": "FF483A31",        // list stripe (every other row; == panel_solid)
+	"header": "FF5F4C39",       // top-bar separator + dialog headers
+	"raised": "FF73593C",       // raised small elements
+	"raised2": "FF544437",      // scrollbar
+	"raised3": "FF654F39",      // extra small elements
+	"surface": "FF4D4034",      // modal surfaces
+	"divider": "26FDEAC6",      // thin separator (alpha 0x26)
+	"divider2": "33FDEAC6",     // stronger separator (alpha 0x33)
+	"veil": "80241609",         // dim backdrop behind menus (alpha 0x80)
+	"text": "FFFDEAC6",         // primary text
+	"text2": "FFF0D9B5",        // list / secondary text
+	"muted": "FFD9C09A",        // faint text
+	"control": "FF7C6041"       // off/inactive controls
+  }
+}

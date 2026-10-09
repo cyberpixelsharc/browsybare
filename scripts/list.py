@@ -201,7 +201,6 @@ def append_matches(items, root, needle, show_hidden=False, patterns=None, folder
                                 else:
                                     item.setLabel2(size_to_string(size))
                             else:
-                                item.setLabel2("…")
                                 size = 0
                     else:
                         size = st.st_size
@@ -210,8 +209,6 @@ def append_matches(items, root, needle, show_hidden=False, patterns=None, folder
                         datetime.datetime.fromtimestamp(st.st_mtime)
                         .strftime("%Y-%m-%dT%H:%M:%S"))
                 except OSError:
-                    if is_dir:
-                        item.setLabel2("…")
                     pass
                 try:
                     cm = [] if (picker and not is_dir) else context_menu(full)
@@ -490,7 +487,8 @@ def list_network(handle, path, picker_active=False):
     case_sensitive = search.casesensitive_from_url(query)
     patterns = load_blacklist()
     # Size/date come from the background foldersize cache (~200 ms per VFS
-    # stat); shows "…" until warm. Own setting, independent of folder sizes.
+    # stat); both stay empty until the data is read. Own setting, independent
+    # of folder sizes.
     sizes_flag = sizes_on()
     netsize_flag = netsize_on()
     folder_cache = load_folder_cache() if (sizes_flag or netsize_flag) else {}
@@ -617,11 +615,8 @@ def list_network(handle, path, picker_active=False):
                     if mtime:
                         item.setDateTime(datetime.datetime.fromtimestamp(
                             mtime).strftime("%Y-%m-%dT%H:%M:%S"))
-                    if not is_dir:
-                        if isinstance(size, int):
-                            item.setLabel2(size_to_string(size))
-                        elif netsize_flag:
-                            item.setLabel2("…")
+                    if not is_dir and isinstance(size, int):
+                        item.setLabel2(size_to_string(size))
                 except Exception:
                     pass
                 item.setProperty("bp.url", item_url(child))
@@ -817,7 +812,6 @@ def main():
                                     else:
                                         item.setLabel2(size_to_string(size))
                                 else:
-                                    item.setLabel2("…")
                                     size = 0
                         else:
                             size = st.st_size
@@ -826,8 +820,6 @@ def main():
                             datetime.datetime.fromtimestamp(st.st_mtime)
                             .strftime("%Y-%m-%dT%H:%M:%S"))
                     except OSError:
-                        if is_dir:
-                            item.setLabel2("…")
                         pass
                     try:
                         cm = context_menu_picker(entry.path) if picker_active \

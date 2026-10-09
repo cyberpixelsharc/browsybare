@@ -72,7 +72,7 @@
 	<onload>ClearProperty(bp.aload.t)</onload>
 	<onload>ClearProperty(bp.exit)</onload>
 	<!-- Single serial boot (sync, drives, rows, accents, daemons). Parallel RunScripts segfaulted Kodi at interpreter startup. -->
-	<onload condition="String.IsEmpty(Skin.String(accent))">Skin.SetString(accent,FF8EB7D7)</onload>
+	<onload condition="String.IsEmpty(Skin.String(accent))">Skin.SetString(accent,FF79C78C)</onload>
 	<onload>SetProperty(bp.accent.value,$INFO[Skin.String(accent)])</onload>
 	<onload condition="String.IsEmpty(Skin.String(accent.level))">Skin.SetString(accent.level,L3)</onload>
 	<onload>SetProperty(bp.accent.level,$INFO[Skin.String(accent.level)])</onload>

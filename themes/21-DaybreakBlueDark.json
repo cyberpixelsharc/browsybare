@@ -1,0 +1,23 @@
+{
+  // DaybreakBlueDark
+  "colors": {
+	"bg": "FF091426",           // window + file-list background
+	"panel": "FF101F35",        // menus, dialogs and panels
+	"panel_solid": "F2101F35",  // top bar, photo OSD, audio footer
+	"panel_solid2": "FC101F35", // video OSD sheet
+	"row": "FF0B1729",          // chip / button backgrounds (drive, breadcrumb)
+	"zebra": "FF101F35",        // list stripe (every other row; == panel_solid)
+	"header": "FF192D47",       // top-bar separator + dialog headers
+	"raised": "FF263F5E",       // raised small elements
+	"raised2": "FF1B324C",      // scrollbar
+	"raised3": "FF213A56",      // extra small elements
+	"surface": "FF152A43",      // modal surfaces
+	"divider": "26B5D6F0",      // thin separator (alpha 0x26)
+	"divider2": "33B5D6F0",    // stronger separator (alpha 0x33)
+	"veil": "80030910",         // dim backdrop behind menus (alpha 0x80)
+	"text": "FFEAF3FB",         // primary text
+	"text2": "FFB5D6F0",        // list / secondary text
+	"muted": "FF6F8CA8",        // faint text
+	"control": "FF34506F"       // off/inactive controls
+  }
+}

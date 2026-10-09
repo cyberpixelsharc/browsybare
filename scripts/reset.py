@@ -15,7 +15,7 @@ RUBRIC_TITLES = {
     279: 31474,  # Photo
 }
 
-ACCENT_DEFAULT = "FF8EB7D7"  # Home.xml fallback = accents.json L3 slot 1
+ACCENT_DEFAULT = "FF79C78C"  # Home.xml fallback = accents.json L3 slot 3 (green)
 LEVEL_DEFAULT = "L3"
 SORT_DEFAULT = "name"
 GUISOUND_DEFAULT = 4

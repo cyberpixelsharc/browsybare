@@ -1246,9 +1246,10 @@ def accents():
     else:
         win.clearProperty("bp.accent.tint")
     # Opaque hover blend: 10% accent baked over the theme's panel tone (a
-    # transparent tint over the pills rendered wrong). Falls back to the dark
-    # panel when the theme is not applied yet; themes() runs before accents().
-    base = (0x1E, 0x1E, 0x26)
+    # transparent tint over the pills rendered wrong). Falls back to the default
+    # theme's panel when the theme is not applied yet; themes() runs before
+    # accents().
+    base = (0x43, 0x4D, 0x54)
     try:
         _p = (win.getProperty("bp.theme.panel") or "").strip()
         if re.fullmatch(r"[0-9a-fA-F]{8}", _p):
@@ -1302,7 +1303,7 @@ def accents():
 # NN- sort prefix) IS the theme id AND the menu display name; DarkNightfall =
 # today's colours. MediumOvercast is the default (first run / reset).
 THEME_DIR = "themes"
-THEME_DEFAULT = "MediumOvercast"
+THEME_DEFAULT = "ForestNineMedium"
 THEME_ROLES = ("bg", "panel", "panel_solid", "panel_solid2", "row", "zebra",
                "header", "raised", "raised2", "raised3", "surface", "divider",
                "divider2", "veil", "text", "text2", "muted", "control")

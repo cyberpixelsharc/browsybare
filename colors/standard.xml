@@ -4,13 +4,13 @@
 	<color name="primary_background">FF101014</color>
 	<color name="secondary_background">FF1A1A20</color>
 	<color name="dialog_tint">FF101014</color>
-	<color name="button_focus">FF8EB7D7</color>
-	<color name="button_alt_focus">808EB7D7</color>
-	<color name="selected">FF8EB7D7</color>
+	<color name="button_focus">FF79C78C</color>
+	<color name="button_alt_focus">8079C78C</color>
+	<color name="selected">FF79C78C</color>
 	<color name="bp_bg">FF101014</color>
 	<color name="bp_bar">FF17171D</color>
 	<color name="bp_text">FFF2F2F4</color>
-	<color name="bp_accent">FF8EB7D7</color>
+	<color name="bp_accent">FF79C78C</color>
 	<color name="bp_border">33FFFFFF</color>
 	<color name="bp_error">FFE35D4F</color>
 </colors>

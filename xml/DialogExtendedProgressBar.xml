@@ -30,7 +30,7 @@
 				<width>680</width>
 				<height>24</height>
 				<texturebg colordiffuse="bp_border">drawn/white.png</texturebg>
-				<midtexture colordiffuse="bp_accent">drawn/white.png</midtexture>
+				<midtexture colordiffuse="$INFO[Skin.String(accent)]">drawn/white.png</midtexture>
 			</control>
 		</control>
 	</controls>
