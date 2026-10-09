@@ -1309,14 +1309,100 @@ def _folder_playlist(folder, exts):
     return [f for _, f in picked]
 
 
+def _shuffled(playerid):
+    """Player's shuffle flag via JSON-RPC (Kodi persists it in guisettings under
+    mymusic/myvideos -> playlist). `Playlist.IsRandom` only reflects the ACTIVE
+    playlist and reads false right before a new one starts (verified on Omega)."""
+    try:
+        resp = xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1,
+            "method": "Player.GetProperties",
+            "params": {"playerid": playerid, "properties": ["shuffled"]}}))
+        return bool(json.loads(resp)["result"]["shuffled"])
+    except Exception:
+        return False
+
+
+def toggle_shuffle(playerid, exts):
+    """Shuffle button: flip Kodi's shuffle flag and REBUILD the current folder
+    playlist in the matching order. Kodi only shuffles in place once (turning it
+    off does NOT restore the alphabetical order), so the order is rebuilt here;
+    the current track keeps playing from its position."""
+    on = not _shuffled(playerid)
+    # Native toggle (not Player.SetShuffle): only this writes the stored
+    # guisettings shuffle so the state survives a restart.
+    xbmc.executebuiltin("PlayerControl(Random)")
+    cur = _playing_file()
+    if not cur:
+        return
+    folder = os.path.dirname(cur) or "."
+    files = _folder_playlist(folder, exts)
+    if len(files) < 2:
+        return
+    idx = -1
+    try:
+        idx = files.index(cur)
+    except ValueError:
+        base = os.path.basename(cur)
+        for i, f in enumerate(files):
+            if os.path.basename(f) == base:
+                idx = i
+                break
+    if idx < 0:
+        return
+    try:
+        pos = xbmc.Player().getTime()
+    except Exception:
+        pos = 0.0
+    if on:
+        head = files.pop(idx)
+        random.shuffle(files)
+        files.insert(0, head)
+        idx = 0
+    pl = xbmc.PlayList(xbmc.PLAYLIST_MUSIC if playerid == 0 else xbmc.PLAYLIST_VIDEO)
+    pl.clear()
+    for f in files:
+        pl.add(play_str(f), xbmcgui.ListItem(
+            safe_label(os.path.basename(sources.url_display(f)))))
+    xbmc.Player().play(pl, startpos=idx)
+    if pos > 1:
+        # Resume where we were (the rebuild restarts the current item).
+        for _ in range(40):
+            try:
+                if xbmc.Player().isPlaying():
+                    break
+            except Exception:
+                pass
+            time.sleep(0.05)
+        try:
+            xbmc.Player().seekTime(pos)
+        except Exception:
+            pass
+    log("shuffle %s: rebuilt %d items from %s (resume %.1fs)"
+        % ("on" if on else "off", len(files), redact(folder), pos))
+
+
 def _play_audio_folder(path):
     """Start an audio file within its folder's playlist (so Previous/Next walk
     the folder); playback starts at the selected track's position."""
     folder = os.path.dirname(path) or "."
     t0 = time.time()
     files = _folder_playlist(folder, AUDIO_EXT)
+    # Kodi's shuffle flag does NOT re-order a freshly built playlist (the Python
+    # PlayList.add bypasses the core's ReShuffle), so a persisted/enabled
+    # shuffle would still walk our alphabetical order. Shuffle here and keep the
+    # clicked track first.
+    if _shuffled(0) and len(files) > 1:
+        try:
+            head = files.pop(files.index(path))
+        except ValueError:
+            head = None
+        random.shuffle(files)
+        if head is not None:
+            files.insert(0, head)
     t1 = time.time()
     _set_player_osd_lines("bp.audio", path)
+    xbmcgui.Window(10000).setProperty("bp.lastplayed", path)
     pl = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
     pl.clear()
     for f in files:
@@ -1363,8 +1449,19 @@ def _play_video_folder(path):
     folder = os.path.dirname(path) or "."
     t0 = time.time()
     files = _folder_playlist(folder, VIDEO_EXT)
+    # Same as audio: a rebuilt playlist is not re-shuffled by the core, so honour
+    # the shuffle flag ourselves (keep the clicked entry first).
+    if _shuffled(1) and len(files) > 1:
+        try:
+            head = files.pop(files.index(path))
+        except ValueError:
+            head = None
+        random.shuffle(files)
+        if head is not None:
+            files.insert(0, head)
     t1 = time.time()
     _set_player_osd_lines("bp.video", path)
+    xbmcgui.Window(10000).setProperty("bp.lastplayed", path)
     pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
     pl.clear()
     for f in files:
@@ -1407,6 +1504,18 @@ def play_focus_target():
     """Footer play/pause button control id."""
 
     return 338
+
+
+def focus_playing():
+    """Footer Up: focus the playing (or last-played) row in the list via
+    SetFocus(33,pos,absolute); fall back to the list's remembered position when
+    the file is not in the current folder."""
+    pos = xbmcgui.Window(10000).getProperty("bp.playing.pos")
+    if pos and pos.isdigit():
+        xbmc.executebuiltin("SetFocus(33,%s,absolute)" % pos)
+    else:
+        xbmc.executebuiltin("SetFocus(33)")
+    log("focus playing -> %s" % (pos or "list default"))
 
 
 def _playback_audio():

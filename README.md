@@ -33,11 +33,14 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Seek bar with accent nib plus transport: play/pause, stop, previous, next.
 * Rewind/forward with skip accelerator: repeated presses within 2 seconds step 10 s, 30 s, 60 s, 3 min, 10 min.
 * State buttons: mute, 3-state repeat (off, all, one), shuffle, speed, info.
+* Shuffle and repeat are remembered across restarts. Toggling shuffle rebuilds the running playlist in the new order.
 * Volume with its own 0-100 curve mapped to the Kodi volume, footer and OSD sliders, external/CEC resync.
+* Mute is independent of the volume slider, so the mute icon reflects the real mute state and mute can be cleared at volume 0.
 * Info button opens the shared INFO modal with extracted tags and covers.
 * Continue from the last position: reopening a track that has a saved spot (within the last 7 weeks) opens a Playback prompt with Continue / Restart.
 * Bottom padding rows keep the last files above the footer. Focus returns to the list after stop.
-* Optional fullscreen visualisation: a "Fullscreen visualisation" row in the audio settings cycles through Off and every installed visualisation add-on (like the theme switcher), showing the current one. During playback, Backspace opens it fullscreen and Back returns to the file manager with the footer still playing; "Off" (the default) keeps Backspace closing the player. While it runs, Kodi's default visualisation keys apply: **P** opens the preset list and **V** toggles the visualisation's own settings. Visualisation add-ons are installed from the Kodi add-on repository (projectM, Milkdrop, Shadertoy, Spectrum, Waveform, ...); the row picks them up automatically.
+* The file list follows the playing track: on every title change the playing row is scrolled into view (roughly centred) and focus returns to the footer.
+* Optional fullscreen visualisation: a "Fullscreen visualisation" row in the audio settings cycles through Off and every installed visualisation add-on (like the theme switcher), showing the current one. During playback, Backspace opens it fullscreen and Back returns to the file manager with the footer still playing; "Off" (the default) keeps Backspace closing the player. While it runs, Kodi's default visualisation keys apply: **P** opens the preset list and **V** toggles the visualisation's own settings. Visualisation add-ons are installed from the Kodi add-on repository (projectM, Milkdrop, Shadertoy, Spectrum, Waveform, ...); the row picks them up automatically. On a touch screen, tapping the audio footer opens it and tapping again closes it.
 
 ## Video player
 

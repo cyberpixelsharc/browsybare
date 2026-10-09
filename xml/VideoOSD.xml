@@ -496,14 +496,14 @@
 				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 				<font></font>
 				<label></label>
-				<onclick>Mute()</onclick>
+				<onclick>RunScript(special://skin/scripts/main.py,volmute)</onclick>
 				<onleft>510</onleft>
 				<onright>512</onright>
 				<onup>603</onup>
 				<ondown>511</ondown>
 			</control>
 			<control type="image">
-				<visible>Player.Muted</visible>
+				<visible>String.IsEqual(Window(10000).Property(bp.vol.mute),1)</visible>
 				<left>1562</left>
 				<top>140</top>
 				<width>28</width>
@@ -512,7 +512,7 @@
 				<texture colordiffuse="$INFO[Skin.String(accent)]">osd/volume-mute.png</texture>
 			</control>
 			<control type="image">
-				<visible>!Player.Muted</visible>
+				<visible>!String.IsEqual(Window(10000).Property(bp.vol.mute),1)</visible>
 				<left>1562</left>
 				<top>140</top>
 				<width>28</width>
@@ -571,7 +571,7 @@
 				<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 				<font></font>
 				<label></label>
-				<onclick>PlayerControl(Random)</onclick>
+				<onclick>RunScript(special://skin/scripts/main.py,videoshuffle)</onclick>
 				<onleft>512</onleft>
 				<onright>513</onright>
 				<onup>607</onup>

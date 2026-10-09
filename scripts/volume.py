@@ -96,6 +96,7 @@ def step(delta):
 
 def init():
     """Home boot: window properties do not survive a restart, so recover the virtual level from Kodi's stored volume (a failed read leaves it untouched)."""
+    publish_mute(_is_muted())
     cur = _kodi_percent()
     if cur is None:
         return
@@ -120,3 +121,40 @@ def resync(cur=None):
         return
     _publish(from_kodi(cur))
     w.setProperty("bp.vol.kodi", str(cur))
+
+
+def _is_muted():
+    """Kodi's REAL mute flag. Player.Muted is unusable here: it also reports true
+    at volume 0 (verified on Omega), which would stick the mute icon on."""
+    try:
+        resp = xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1,
+            "method": "Application.GetProperties",
+            "params": {"properties": ["muted"]}}))
+        return bool(json.loads(resp)["result"]["muted"])
+    except Exception:
+        return False
+
+
+def _set_muted(flag):
+    try:
+        xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1,
+            "method": "Application.SetMute",
+            "params": {"mute": bool(flag)}}))
+    except Exception:
+        pass
+
+
+def publish_mute(flag):
+    """Mirror Kodi's real mute flag into bp.vol.mute (the skin icons bind to it
+    because Player.Muted also reports true at volume 0)."""
+    _win().setProperty("bp.vol.mute", "1" if flag else "0")
+
+
+def toggle_mute():
+    """Toggle Kodi's real mute flag ONLY (decoupled from the volume slider): muting
+    keeps the level, raising/lowering the level never mutes or unmutes."""
+    flag = not _is_muted()
+    _set_muted(flag)
+    publish_mute(flag)

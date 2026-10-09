@@ -16,5 +16,15 @@
 			<bottom>0</bottom>
 			<visible>Visualisation.Enabled</visible>
 		</control>
+		<!-- Touch: tapping the screen closes the visualisation and returns to the file manager (touch devices have no Back/ESC). -->
+		<control type="button" id="3">
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<bottom>0</bottom>
+			<texturefocus />
+			<texturenofocus />
+			<onclick>ActivateWindow(Home)</onclick>
+		</control>
 	</controls>
 </window>

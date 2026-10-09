@@ -14,7 +14,7 @@ import xbmcvfs
 import sources
 import resume
 
-from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label, redact, focus_control, skin_root
+from common import log, state_file, read_json, write_json, path_enc, path_dec, safe_label, redact, focus_control, skin_root, skin_name
 from urllib.parse import unquote_to_bytes
 from navigation import current_source_root, set_current, nav, up, root, goto, reset_top
 
@@ -102,7 +102,7 @@ def vizcycle():
     if not vizzes:
         try:
             xbmcgui.Dialog().notification(
-                xbmc.getLocalizedString(31448) or "Browsybare",
+                skin_name(),
                 safe_label(xbmc.getLocalizedString(31549)),
                 xbmcgui.NOTIFICATION_WARNING, 4000)
         except Exception:
@@ -316,6 +316,21 @@ def _faudioprev():
 def _faudionext():
     from fileops import audio_next as _f
     return _f()
+
+
+def _ffocusplaying():
+    from fileops import focus_playing as _f
+    return _f()
+
+
+def _faudioshuffle():
+    from fileops import toggle_shuffle as _f, AUDIO_EXT as _e
+    return _f(0, _e)
+
+
+def _fvideoshuffle():
+    from fileops import toggle_shuffle as _f, VIDEO_EXT as _e
+    return _f(1, _e)
 
 
 def _fticker(text, a, b):
@@ -1085,7 +1100,7 @@ def _netsrc_notify(string_id, error=True, value=""):
         if value:
             msg = "%s (%s)" % (msg, value)
         xbmcgui.Dialog().notification(
-            xbmc.getLocalizedString(31448) or "Browsybare",
+            xbmc.getLocalizedString(31448) or skin_name(),
             safe_label(msg),
             xbmcgui.NOTIFICATION_ERROR if error else xbmcgui.NOTIFICATION_INFO, 4000)
     except Exception:
@@ -2642,7 +2657,7 @@ def openlink():
         pass
     try:
         xbmcgui.Dialog().notification(
-            xbmc.getLocalizedString(31448) or "Browsybare",
+            skin_name(),
             xbmc.getLocalizedString(31521),
             xbmcgui.NOTIFICATION_WARNING, 4000)
     except Exception:
@@ -3830,6 +3845,15 @@ if __name__ == "__main__":
         elif cmd == "voldown":
             import volume
             volume.step(-volume.KEY_STEP)
+        elif cmd == "volmute":
+            import volume
+            volume.toggle_mute()
+        elif cmd == "focusplaying":
+            _ffocusplaying()
+        elif cmd == "audioshuffle":
+            _faudioshuffle()
+        elif cmd == "videoshuffle":
+            _fvideoshuffle()
         else:
             log("unknown command: %r" % cmd)
     except Exception as e:

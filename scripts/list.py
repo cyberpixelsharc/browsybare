@@ -663,6 +663,7 @@ def list_network(handle, path, picker_active=False):
     except Exception:
         pass
 
+    _publish_playing_pos(items)
     total = len(items)
     for item, url, is_folder, _ in items:
         xbmcplugin.addDirectoryItem(handle, url, item, is_folder, total)
@@ -671,6 +672,42 @@ def list_network(handle, path, picker_active=False):
         % (total, redact(path), (" err=%s" % err) if err else "", show_hidden, sort,
            folders_first_flag, case_sensitive, len(patterns),
            skipped_hidden, skipped_blocked))
+
+
+def _publish_playing_pos(items):
+    """Store the absolute list position of the playing (or last-played) file so
+    the footer Up can focus it (SetFocus(33,pos,absolute)); -1 clears it. The
+    position counts the invisible padding rows."""
+    win = xbmcgui.Window(10000)
+    # Item basenames (one per line; padding rows empty) so the daemon can focus
+    # the playing row on a track change without reloading the list.
+    try:
+        win.setProperty("bp.list.keys", "\n".join(
+            unquote(os.path.basename(str(it[1]).rstrip("/"))) for it in items))
+    except Exception:
+        pass
+    target = ""
+    try:
+        if xbmc.getCondVisibility("Player.HasAudio | Player.HasVideo"):
+            target = xbmc.getInfoLabel("Player.FilenameAndPath") or ""
+    except Exception:
+        target = ""
+    if not target:
+        target = win.getProperty("bp.lastplayed") or ""
+    pos = -1
+    if target:
+        # Match the raw core URL (it[1]), not bp.url: the latter is percent-encoded
+        # twice for the RunScript channel and would never equal the playing path.
+        base = unquote(os.path.basename(target.rstrip("/")))
+        for i, it in enumerate(items):
+            if unquote(os.path.basename(str(it[1]).rstrip("/"))) == base:
+                pos = i
+                break
+    if pos >= 0:
+        win.setProperty("bp.playing.pos", str(pos))
+    else:
+        win.clearProperty("bp.playing.pos")
+    log("playing pos %d target=%s" % (pos, redact(target)))
 
 
 def main():
@@ -851,6 +888,7 @@ def main():
                 items.append((pad, "dummy://padding/picker%d" % i, False, "", 0, 0))
     except Exception:
         pass
+    _publish_playing_pos(items)
     total = len(items)
     for item, url, is_folder, _, _, _ in items:
         xbmcplugin.addDirectoryItem(handle, url, item, is_folder, total)

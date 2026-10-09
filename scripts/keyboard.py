@@ -13,7 +13,7 @@ import xbmc
 import xbmcgui
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import safe_label, redact, path_enc, state_dir, log as _clog, focus_control
+from common import safe_label, redact, path_enc, state_dir, log as _clog, focus_control, skin_name
 
 LOG = "[skin] "
 
@@ -290,7 +290,7 @@ def dispatch():
             try:
                 import xbmcgui as _gui
                 _gui.Dialog().notification(
-                    xbmc.getLocalizedString(31448) or "Browsybare",
+                    skin_name(),
                     xbmc.getLocalizedString(31451),
                     _gui.NOTIFICATION_ERROR, 4000)
             except Exception:
@@ -931,7 +931,8 @@ def special(tok):
         if _kb_open():
             _insert("m")
         else:
-            xbmc.executebuiltin("Mute()")
+            import volume
+            volume.toggle_mute()
     elif tok == "vol_up":
         import volume
         volume.step(volume.KEY_STEP)

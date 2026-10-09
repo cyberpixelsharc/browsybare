@@ -9,6 +9,7 @@ import json
 import os
 import re
 import time
+from urllib.parse import unquote
 
 import xbmc
 import xbmcgui
@@ -32,6 +33,9 @@ OSD_ADVANCE_WINDOW = 7.0
 # Settle window around a player start/stop: reading container/info labels then
 # crashed Kodi 22 (SIGSEGV in CGUIInfoManager::GetMultiInfoLabel).
 PLAYER_SETTLE = 4.0
+# Rows to scroll past the followed track so it clears the header/footer overlay
+# (Kodi scrolls the focused row only to the nearest edge).
+FOLLOW_OFFSET = 8
 # Controls that can still hold focus after the player UI hides on stop
 # (fallback chip 30 + audio footer rows/sliders); duty 6 returns focus to the list.
 STOP_FOCUS_IDS = (30,) + tuple(range(330, 359)) + VOLUME_SLIDER_IDS
@@ -102,6 +106,19 @@ def get_volume():
     except Exception:
         pass
     return -1
+
+
+def get_muted():
+    """Kodi's real mute flag, or None. Player.Muted also reports true at volume 0,
+    so the skin mirrors this into bp.vol.mute for the mute icons."""
+    try:
+        resp = xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1,
+            "method": "Application.GetProperties",
+            "params": {"properties": ["muted"]}}))
+        return json.loads(resp).get("result", {}).get("muted")
+    except Exception:
+        return None
 
 
 def _slider_percent(sid):
@@ -230,6 +247,47 @@ def overlay_open(win):
     return False
 
 
+def _focus_list_on(path, footer_focus="", prev_idx=-1):
+    """Focus/scroll list 33 onto `path` via the plugin-published basename list
+    (bp.list.keys), clear of the header/footer overlay, then restore the previous
+    focus so the footer stays usable. Returns the row index, or -1 when the file
+    is not in the current folder. Centring the row is parked (Kodi has no
+    scroll-to-centre builtin)."""
+    keys = xbmcgui.Window(10000).getProperty("bp.list.keys")
+    if not keys:
+        return -1
+    # Network URLs arrive percent-encoded from getPlayingFile; the key list is
+    # already decoded -- unquote both so names with spaces still match.
+    base = unquote(os.path.basename(path.rstrip("/")))
+    for i, k in enumerate(keys.split("\n")):
+        if k and unquote(k) == base:
+            # Kodi scrolls the focused row only to the nearest edge, where the
+            # header/footer overlay hides it. Focus a row a few positions further
+            # in the scroll direction (so the target clears the overlay), then the
+            # row itself (already visible -> no scroll) so its pill sits on the
+            # playing item. Direction from the previous follow index.
+            far = (i + FOLLOW_OFFSET) if i >= prev_idx else max(0, i - FOLLOW_OFFSET)
+            prev = xbmc.getInfoLabel("System.CurrentControlId") or ""
+            xbmc.executebuiltin("SetFocus(33,%d,absolute)" % far)
+            time.sleep(0.1)
+            xbmc.executebuiltin("SetFocus(33,%d,absolute)" % i)
+            time.sleep(0.2)
+            # System.CurrentControlId reads empty right at a track change; fall
+            # back to the last footer control seen, else focus stays in the list.
+            if prev.isdigit() and prev != "33":
+                target = prev
+            elif prev == "33":
+                target = ""
+            else:
+                target = footer_focus
+            if target.isdigit():
+                xbmc.executebuiltin("SetFocus(%s)" % target)
+            log("home-daemon: list focus -> %d" % i)
+            return i
+    log("home-daemon: list follow miss (%d keys)" % (keys.count("\n") + 1))
+    return -1
+
+
 def main():
     win = xbmcgui.Window(10000)
     now = time.time()
@@ -266,6 +324,10 @@ def main():
     stop_focus_at = 0.0
     slider_seen = {}
     resume_path = None
+    follow_path = ""
+    follow_idx = -1
+    follow_stop = 0.0
+    footer_focus = ""
     resume_t = 0.0
     resume_total = 0.0
     resume_was_playing = False
@@ -296,6 +358,15 @@ def main():
             play_state = playing_now
             settle_until = time.time() + PLAYER_SETTLE
         in_transition = time.time() < settle_until
+        # Remember the last focused footer control: System.CurrentControlId
+        # reads empty right at a track change, so the list-follow restores from
+        # this instead of leaving focus stranded in the list.
+        try:
+            cur = xbmc.getInfoLabel("System.CurrentControlId") or ""
+            if cur.isdigit() and 336 <= int(cur) <= 359:
+                footer_focus = cur
+        except Exception:
+            pass
         # Fast duty: photo slideshow progress (20 Hz) only while the OSD is
         # visible; runs before auto-advance so the bar hits 100 at the due edge.
         try:
@@ -344,6 +415,37 @@ def main():
                 resume_was_playing = False
         except Exception as e:
             log("home-daemon error (resume save): %s" % e)
+        # Duty: the list follows the playing track (audio footer only). The first
+        # track is skipped so focusplay keeps the footer focus; overlays pause it.
+        try:
+            if playing_now:
+                follow_stop = 0.0
+                pth = xbmc.Player().getPlayingFile()
+                if pth and pth != follow_path:
+                    has_audio = xbmc.getCondVisibility("Player.HasAudio + !Player.HasVideo")
+                    ov = overlay_open(win)
+                    # Not gated on in_transition: a track change does not stop the
+                    # player, yet the settle window is still set, which used to
+                    # swallow most follows.
+                    if has_audio and not ov:
+                        if follow_path:
+                            follow_idx = _focus_list_on(pth, footer_focus, follow_idx)
+                        follow_path = pth
+                    else:
+                        log("home-daemon: follow skipped audio=%s overlay=%s"
+                            % (has_audio, ov))
+            elif follow_path:
+                # The playing flag blinks false for a tick during a track change;
+                # only forget the followed track once playback has really stopped,
+                # else the next change counts as the "first track" and is skipped.
+                if follow_stop == 0.0:
+                    follow_stop = time.time()
+                elif time.time() - follow_stop > PLAYER_SETTLE:
+                    follow_path = ""
+                    follow_idx = -1
+                    follow_stop = 0.0
+        except Exception as e:
+            log("home-daemon error (list follow): %s" % e)
         # Duty 5: padding-row skip, 10 Hz, only while the list (33) has focus.
         try:
             if not in_transition and not playing_now \
@@ -722,6 +824,10 @@ def main():
                         last_vol = cur_vol
                     # External change: let the meter follow it.
                     volume.resync(cur_vol)
+                # External mute (remote/CEC/JSON-RPC): keep the icons in sync.
+                muted = get_muted()
+                if muted is not None:
+                    volume.publish_mute(muted)
         except Exception as e:
             log("home-daemon error (volume): %s" % e)
         # --- duty 4: PVR dialog guard while the keyboard is open

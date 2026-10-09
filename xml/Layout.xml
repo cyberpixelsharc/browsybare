@@ -394,6 +394,7 @@
 					<label>     $INFO[Window(10000).Property(bp.title)]</label>
 					<ondown condition="String.IsEqual(Window(10000).Property(bp.drives),open)">60</ondown>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onleft condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onleft>
 					<onleft>32</onleft>
 					<!-- Right skips the 14px spacer (47): an image cannot take focus, so the first Right died on it at drive root. -->
@@ -433,6 +434,7 @@
 					<label>$INFO[Window(10000).Property(bp.crumb.1)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.1))</visible>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onclick>RunScript(special://skin/scripts/main.py,goto,1)</onclick>
 				</control>
 				<control type="label" id="48">
@@ -469,6 +471,7 @@
 					<label>$INFO[Window(10000).Property(bp.crumb.2)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.2))</visible>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onclick>RunScript(special://skin/scripts/main.py,goto,2)</onclick>
 				</control>
 				<control type="label" id="812">
@@ -495,6 +498,7 @@
 					<label>$INFO[Window(10000).Property(bp.crumb.3)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.3))</visible>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onclick>RunScript(special://skin/scripts/main.py,goto,3)</onclick>
 				</control>
 				<control type="label" id="813">
@@ -521,6 +525,7 @@
 					<label>$INFO[Window(10000).Property(bp.crumb.4)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.4))</visible>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onclick>RunScript(special://skin/scripts/main.py,goto,4)</onclick>
 				</control>
 				<control type="label" id="814">
@@ -547,6 +552,7 @@
 					<label>$INFO[Window(10000).Property(bp.crumb.5)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.5))</visible>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onclick>RunScript(special://skin/scripts/main.py,goto,5)</onclick>
 				</control>
 				<control type="label" id="815">
@@ -573,6 +579,7 @@
 					<label>$INFO[Window(10000).Property(bp.crumb.6)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.6))</visible>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onclick>RunScript(special://skin/scripts/main.py,goto,6)</onclick>
 				</control>
 				<control type="label" id="816">
@@ -599,6 +606,7 @@
 					<label>$INFO[Window(10000).Property(bp.crumb.7)] </label>
 					<visible>!String.IsEmpty(Window(10000).Property(bp.crumb.7))</visible>
 					<ondown>33</ondown>
+					<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 					<onclick>RunScript(special://skin/scripts/main.py,goto,7)</onclick>
 				</control>
 				<control type="label" id="817">
@@ -656,6 +664,7 @@
 				<onleft>36</onleft>
 				<onright>74</onright>
 				<ondown>33</ondown>
+				<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 				<onclick>ClearProperty(search.query)</onclick>
 				<onclick>RunScript(special://skin/scripts/main.py,search)</onclick>
 				<onclick>SetFocus(74)</onclick>
@@ -682,6 +691,7 @@
 				<onleft>36</onleft>
 				<onright>32</onright>
 				<ondown>33</ondown>
+				<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 			</control>
 			
 			<control type="button" id="923">
@@ -736,6 +746,7 @@
 				<onright>30</onright>
   <ondown condition="String.IsEqual(Window(10000).Property(bp.menu),open)">72</ondown>
 			<ondown>33</ondown>
+				<onup condition="Player.HasAudio + !Player.HasVideo">338</onup>
 				<onclick condition="String.IsEqual(Window(10000).Property(bp.menu),open)">ClearProperty(bp.menu)</onclick>
 				<onclick condition="!String.IsEqual(Window(10000).Property(bp.menu),open)">ClearProperty(bp.drives)</onclick>
 				<onclick condition="!String.IsEqual(Window(10000).Property(bp.menu),open)">SetProperty(bp.menu,open)</onclick>
@@ -795,6 +806,8 @@
 					<height>200</height>
 					<texturefocus />
 					<texturenofocus />
+					<!-- Touch: touching a non-clickable part of the footer opens the fullscreen visualisation (touch devices have no Backspace); the transport/state buttons on top still take their own clicks. -->
+					<onclick condition="Skin.HasSetting(audio.visualisation)">ActivateWindow(12006)</onclick>
 					<onclick>noop</onclick>
 				</control>
 				
@@ -804,6 +817,7 @@
 						<left>0</left>
 						<top>0</top>
 						<include content="AudioFooterContent" file="IncludesAudioFooter.xml"/>
+						
 						
 						<control type="slider" id="356">
 							<left>200</left>
@@ -857,7 +871,7 @@
 							<font></font>
 							<onleft>337</onleft>
 							<onright>339</onright>
-							<onup>33</onup>
+							<onup>RunScript(special://skin/scripts/main.py,focusplaying)</onup>
 							<ondown>358</ondown>
 							<onclick condition="String.IsEqual(Window(10000).Property(bp.netplay),1)">RunScript(special://skin/scripts/main.py,audioprev)</onclick>
 							<onclick condition="!String.IsEqual(Window(10000).Property(bp.netplay),1)">PlayerControl(Previous)</onclick>
@@ -880,7 +894,7 @@
 							<font></font>
 							<onleft>337</onleft>
 							<onright>338</onright>
-							<onup>33</onup>
+							<onup>RunScript(special://skin/scripts/main.py,focusplaying)</onup>
 							<ondown>358</ondown>
 							<onclick condition="Player.Paused">PlayerControl(Play)</onclick>
 							<onclick condition="!Player.Paused">RunScript(special://skin/scripts/main.py,skip,bwd)</onclick>
@@ -931,7 +945,7 @@
 								<font></font>
 								<onleft>339</onleft>
 							<onright>340</onright>
-							<onup>33</onup>
+							<onup>RunScript(special://skin/scripts/main.py,focusplaying)</onup>
 							<ondown>359</ondown>
 							<onclick>PlayerControl(Play)</onclick>
 							</control>
@@ -954,7 +968,7 @@
 							<font></font>
 							<onleft>338</onleft>
 							<onright>341</onright>
-							<onup>33</onup>
+							<onup>RunScript(special://skin/scripts/main.py,focusplaying)</onup>
 							<ondown>358</ondown>
 							<onclick>PlayerControl(Stop)</onclick>
 						</control>
@@ -976,7 +990,7 @@
 							<font></font>
 							<onleft>340</onleft>
 							<onright>342</onright>
-							<onup>33</onup>
+							<onup>RunScript(special://skin/scripts/main.py,focusplaying)</onup>
 							<ondown>354</ondown>
 							<onclick condition="Player.Paused">PlayerControl(Play)</onclick>
 							<onclick condition="!Player.Paused">RunScript(special://skin/scripts/main.py,skip,fwd)</onclick>
@@ -999,7 +1013,7 @@
 							<font></font>
 							<onleft>341</onleft>
 							<onright>342</onright>
-							<onup>33</onup>
+							<onup>RunScript(special://skin/scripts/main.py,focusplaying)</onup>
 							<ondown>355</ondown>
 							<onclick condition="String.IsEqual(Window(10000).Property(bp.netplay),1)">RunScript(special://skin/scripts/main.py,audionext)</onclick>
 							<onclick condition="!String.IsEqual(Window(10000).Property(bp.netplay),1)">PlayerControl(Next)</onclick>
@@ -1075,14 +1089,14 @@
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
 							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<font></font>
-							<onclick>Mute()</onclick>
+							<onclick>RunScript(special://skin/scripts/main.py,volmute)</onclick>
 							<onleft>358</onleft>
 							<onright>354</onright>
 							<onup>340</onup>
 							<ondown>353</ondown>
 						</control>
 						<control type="image">
-							<visible>Player.Muted</visible>
+							<visible>String.IsEqual(Window(10000).Property(bp.vol.mute),1)</visible>
 						<left>1562</left>
 						<top>140</top>
 						<width>28</width>
@@ -1091,7 +1105,7 @@
 						<texture colordiffuse="$INFO[Skin.String(accent)]">osd/volume-mute.png</texture>
 						</control>
 						<control type="image">
-							<visible>!Player.Muted</visible>
+							<visible>!String.IsEqual(Window(10000).Property(bp.vol.mute),1)</visible>
 						<left>1562</left>
 						<top>140</top>
 						<width>28</width>
@@ -1148,7 +1162,7 @@
 							<texturefocus colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/circle.png</texturefocus>
 							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/circle.png</texturenofocus>
 							<font></font>
-							<onclick>PlayerControl(Random)</onclick>
+							<onclick>RunScript(special://skin/scripts/main.py,audioshuffle)</onclick>
 							<onleft>354</onleft>
 							<onright>355</onright>
 							<onup>342</onup>
