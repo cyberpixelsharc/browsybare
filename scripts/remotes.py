@@ -37,6 +37,9 @@ BLOCK_FUNCS = {
     # Shutdown menu (window 10111): arrows/ok only (back stays native).
     "shutdown_keyboard": ARROWS + ["ok"],
     "shutdown_remote": ARROWS + ["ok"],
+    # Fullscreen visualisation (window 12006): the menu button opens the
+    # visualisation preset list, the same as Kodi's P key.
+    "viz_remote": ["menu"],
 }
 BLOCKS = tuple(BLOCK_FUNCS.keys())
 
@@ -605,6 +608,9 @@ def _block_body(name, defaults, user):
         # Fullscreen: the arrow keys act as transport (up=next, ...).
         if fullscreen and fn in FULLSCREEN_ARROW_ACTION:
             action = _action(FULLSCREEN_ARROW_ACTION[fn])
+        # Visualisation: the menu button opens the preset list, like P.
+        elif name == "viz_remote":
+            action = "ActivateWindow(VisualisationPresetList)"
         # Back: ALWAYS through the dispatcher (special back), in Home too.
         # Native Back falls through to the core, which stops playing audio.
         else:

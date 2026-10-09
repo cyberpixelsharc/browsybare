@@ -8,6 +8,9 @@
 	<defaultcontrol></defaultcontrol>
 	<onload condition="!Skin.HasSetting(audio.visualisation)">PlayerControl(Stop)</onload>
 	<onload condition="!Skin.HasSetting(audio.visualisation)">ActivateWindow(Home)</onload>
+	<!-- Hand the focus we came from back to the settings-return duty so Back lands
+	     on the player, not Home's default drive pill. -->
+	<onunload>RunScript(special://skin/scripts/main.py,vizreturn)</onunload>
 	<controls>
 		<control type="visualisation" id="2">
 			<left>0</left>

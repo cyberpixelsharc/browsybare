@@ -158,6 +158,14 @@ def _reset_audio():
     _set_bool("audio.noscroll", False)
     _set_bool("audio.visualisation", False)
     _reset_visualisation()
+    try:
+        import json
+        xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Settings.SetSettingValue",
+            "params": {"setting": "musicplayer.crossfade", "value": 0}}))
+        _win().setProperty("bp.crossfade.name", xbmc.getLocalizedString(31548))
+    except Exception:
+        pass
 
 
 def _reset_video():

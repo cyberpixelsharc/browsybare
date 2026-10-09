@@ -136,6 +136,70 @@ def vizsettings():
     xbmc.executebuiltin("Addon.Default.OpenSettings(xbmc.player.musicviz)")
 
 
+def vizreturn():
+    """Window 12006 onunload: hand the focus we came from to the next Home load
+    (boot.focus_default), so leaving the visualisation lands on the audio footer
+    instead of the drive chip. Uses its own property so the settings-return duty
+    (dialogs, where Home does not reload) does not consume it early."""
+    win = xbmcgui.Window(10000)
+    prev = win.getProperty("bp.viz.from") or ""
+    win.clearProperty("bp.viz.from")
+    if prev.isdigit():
+        win.setProperty("bp.viz.return", prev)
+        log("visualisation return -> focus %s" % prev)
+    else:
+        log("visualisation return: no saved focus")
+
+
+# Audio crossfade (DJ-style automix): Kodi's native musicplayer.crossfade does
+# the overlap; the row only offers our step set. Kodi has no skin-accessible EQ,
+# so the bass fade is not possible (see plan Phase 5).
+CROSSFADE_STEPS = (0, 6, 8, 10, 12, 14)
+
+
+def _active_crossfade():
+    """Kodi's crossfade seconds (musicplayer.crossfade), 0 when off/unavailable."""
+    try:
+        resp = xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Settings.GetSettingValue",
+            "params": {"setting": "musicplayer.crossfade"}}))
+        return int(json.loads(resp).get("result", {}).get("value") or 0)
+    except Exception:
+        return 0
+
+
+def _set_crossfade(sec):
+    try:
+        xbmc.executeJSONRPC(json.dumps({
+            "jsonrpc": "2.0", "id": 1, "method": "Settings.SetSettingValue",
+            "params": {"setting": "musicplayer.crossfade", "value": int(sec)}}))
+    except Exception:
+        pass
+
+
+def _crossfade_label(sec):
+    if not sec:
+        return xbmc.getLocalizedString(31548)   # "Off"
+    return "%d s" % sec
+
+
+def crossfade_init():
+    """Publish the current crossfade value for the settings row."""
+    xbmcgui.Window(10000).setProperty(
+        "bp.crossfade.name", safe_label(_crossfade_label(_active_crossfade())))
+
+
+def crossfadecycle():
+    """Cycle the audio crossfade: Off -> 6/8/10/12/14 s -> Off."""
+    cur = _active_crossfade()
+    i = CROSSFADE_STEPS.index(cur) if cur in CROSSFADE_STEPS else 0
+    nxt = CROSSFADE_STEPS[(i + 1) % len(CROSSFADE_STEPS)]
+    _set_crossfade(nxt)
+    xbmcgui.Window(10000).setProperty(
+        "bp.crossfade.name", safe_label(_crossfade_label(nxt)))
+    log("crossfade cycle: %d" % nxt)
+
+
 def _kmaps():
     from sync import keymaps as _f
     return _f()
@@ -3557,6 +3621,8 @@ if __name__ == "__main__":
                    "themecycle",
                    "vizcycle",
                    "vizsettings",
+                   "vizreturn",
+                   "crossfadecycle",
                    "listbump"):
             try:
                 if xbmcgui.Window(10000).getProperty("bp.sync.active") == "1":
@@ -3730,6 +3796,10 @@ if __name__ == "__main__":
             viz_init()
         elif cmd == "vizsettings":
             vizsettings()
+        elif cmd == "vizreturn":
+            vizreturn()
+        elif cmd == "crossfadecycle":
+            crossfadecycle()
         elif cmd == "intensity":
             intensity(sys.argv[2] if len(sys.argv) > 2 else "")
         elif cmd == "intensity_next":

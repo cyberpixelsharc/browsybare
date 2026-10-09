@@ -847,6 +847,12 @@ def special(tok):
                 # target) instead.
                 if xbmc.getCondVisibility("Skin.HasSetting(audio.visualisation)"):
                     _log("keyboard: hardware back -> open visualisation")
+                    # Remember where we came from so the visualisation's onunload
+                    # can hand it back (else Home lands on the drive pill).
+                    prev = xbmc.getInfoLabel("System.CurrentControlId") or ""
+                    if not prev.isdigit():
+                        prev = "338"    # footer play/pause
+                    xbmcgui.Window(10000).setProperty("bp.viz.from", prev)
                     xbmc.executebuiltin("ActivateWindow(12006)")
                 else:
                     _log("keyboard: hardware back locked (audio playing)")

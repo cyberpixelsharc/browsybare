@@ -394,17 +394,23 @@
   <!-- Fullscreen visualisation (window 12006): Kodi's default keymap maps
        Backspace to a Fullscreen TOGGLE plus a longpress Stop and Escape to
        "FullScreen" (not a valid action), so closing the visualisation was
-       unreliable. Bind Back/Escape straight to Home; unmapped keys (p preset
-       list, v add-on settings, preset next/prev) still fall through to the
-       system map. -->
+       unreliable. Bind Back/Escape straight to Home; the menu button opens the
+       preset list (same as Kodi's P); other unmapped keys (v add-on settings,
+       preset next/prev) still fall through to the system map. -->
   <Visualisation>
     <keyboard>
       <backspace>ActivateWindow(Home)</backspace>
       <escape>ActivateWindow(Home)</escape>
+      <menu>ActivateWindow(VisualisationPresetList)</menu>
     </keyboard>
     <remote>
       <back>ActivateWindow(Home)</back>
+      <menu>ActivateWindow(VisualisationPresetList)</menu>
     </remote>
+    <universalremote>
+      <!--GEN:viz_remote-->
+      <!--/GEN:viz_remote-->
+    </universalremote>
   </Visualisation>
   <!-- Add-on settings dialog (window 10140): Kodi's default V opens the active
        visualisation's settings but never closes it again. Bind V here to close

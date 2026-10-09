@@ -501,6 +501,19 @@ def focus_default():
         except Exception:
             pass
         time.sleep(0.2)
+    # Returning from the fullscreen visualisation (window 12006): Home reloads,
+    # so restore the focus we left from here (the settings-return duty only
+    # covers dialogs, where Home does not reload).
+    try:
+        _vr = xbmcgui.Window(10000).getProperty("bp.viz.return")
+        if _vr and _vr.isdigit():
+            xbmcgui.Window(10000).clearProperty("bp.viz.return")
+            time.sleep(0.25)
+            xbmc.executebuiltin("SetFocus(%s)" % _vr)
+            log("boot: visualisation return focus -> %s" % _vr)
+            return
+    except Exception:
+        pass
     # Returning from the settings DIALOG (Custom1150.xml): restore its focus hint.
     try:
         _ret = xbmcgui.Window(10000).getProperty("bp.return.focus")
@@ -720,6 +733,7 @@ def run():
         step("dirsources", main.dirsrc_open)
         step("netsources", main.netsrc_open)
         step("visualisation", main.viz_init)
+        step("crossfade", main.crossfade_init)
         step("remotes", main.remote_open)
         step("accents", accents)
         step("volume", volume.init)

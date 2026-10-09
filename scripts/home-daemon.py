@@ -259,14 +259,19 @@ def _focus_list_on(path, footer_focus="", prev_idx=-1):
     # Network URLs arrive percent-encoded from getPlayingFile; the key list is
     # already decoded -- unquote both so names with spaces still match.
     base = unquote(os.path.basename(path.rstrip("/")))
-    for i, k in enumerate(keys.split("\n")):
+    rows = keys.split("\n")
+    for i, k in enumerate(rows):
         if k and unquote(k) == base:
             # Kodi scrolls the focused row only to the nearest edge, where the
             # header/footer overlay hides it. Focus a row a few positions further
             # in the scroll direction (so the target clears the overlay), then the
             # row itself (already visible -> no scroll) so its pill sits on the
-            # playing item. Direction from the previous follow index.
-            far = (i + FOLLOW_OFFSET) if i >= prev_idx else max(0, i - FOLLOW_OFFSET)
+            # playing item. Direction from the previous follow index; near an end
+            # jump to the last possible row (Kodi ignores an out-of-range focus).
+            if i >= prev_idx:
+                far = min(len(rows) - 1, i + FOLLOW_OFFSET)
+            else:
+                far = max(0, i - FOLLOW_OFFSET)
             prev = xbmc.getInfoLabel("System.CurrentControlId") or ""
             xbmc.executebuiltin("SetFocus(33,%d,absolute)" % far)
             time.sleep(0.1)

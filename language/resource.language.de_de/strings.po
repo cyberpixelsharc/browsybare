@@ -884,3 +884,7 @@ msgstr "Aus"
 msgid "No visualisation add-on installed"
 msgctxt "#31549"
 msgstr "Kein Visualisierungs-Add-on installiert"
+
+msgid "Crossfade"
+msgctxt "#31550"
+msgstr "Überblenden"

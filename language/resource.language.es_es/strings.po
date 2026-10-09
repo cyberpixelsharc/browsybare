@@ -884,3 +884,7 @@ msgstr "Desactivado"
 msgid "No visualisation add-on installed"
 msgctxt "#31549"
 msgstr "No hay ningún complemento de visualización instalado"
+
+msgid "Crossfade"
+msgctxt "#31550"
+msgstr "Fundido cruzado"
