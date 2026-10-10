@@ -888,3 +888,23 @@ msgstr "Nie je nainštalovaný žiadny doplnok vizualizácie"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Prelínanie"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Pozadie"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Priečinok"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Obrázok"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Viditeľnosť"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Čiernobiele"

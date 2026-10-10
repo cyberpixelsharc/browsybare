@@ -888,3 +888,23 @@ msgstr "Görselleştirme eklentisi kurulu değil"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Çapraz geçiş"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Arka plan"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Klasör"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Resim"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Görünürlük"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Siyah beyaz"

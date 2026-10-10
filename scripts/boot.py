@@ -14,7 +14,7 @@ import xbmcvfs
 
 from common import (log, state_dir, read_json, write_json, skin_root,
                     record_issue, take_issues, kodi_screensaver_mode, L, redact)
-from sync import sync, accents, themes, skin_version
+from sync import sync, accents, themes, wallpapers, skin_version, migrate_legacy_themes
 import main
 import sources
 import volume
@@ -694,6 +694,9 @@ def run():
         log("boot: another boot in progress, exit")
         return
     try:
+        # Drop pre-rework theme files a stale update left behind, so themes()
+        # below falls back to the default instead of applying a dead design.
+        step("themes.legacy", migrate_legacy_themes)
         # The install veil (Home.xml) and the skin-keep dialog (DialogConfirm.xml)
         # paint before sync() finishes, so set the theme colours FIRST (the JSON
         # is read here; a hard-coded fallback keeps them readable without it).
@@ -736,6 +739,7 @@ def run():
         step("crossfade", main.crossfade_init)
         step("remotes", main.remote_open)
         step("accents", accents)
+        step("wallpaper", wallpapers)
         step("volume", volume.init)
         step("refreshdelay", main.refreshdelay)
         step("guisound", main.guisound)

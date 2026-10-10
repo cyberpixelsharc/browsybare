@@ -226,6 +226,65 @@ def state_file(name):
     return new
 
 
+# Network folder listings shared between the browser (list.py) and the player
+# (fileops.py): starting a file must not re-list a slow network folder -- Kodi's
+# FTPS VFS re-handshakes TLS per call and can take minutes, while the browser has
+# just listed the same folder. Short TTL bounds staleness; credential-free keys.
+LISTING_CACHE = "folder-lists.json"
+LISTING_TTL = 300.0
+LISTING_MAX = 50
+
+
+def listing_cache_path():
+    try:
+        return state_file(LISTING_CACHE)
+    except Exception:
+        return ""
+
+
+def listing_get(folder, ttl=None):
+    """(dirs, files) child names of a network `folder` from the shared cache, or
+    None. `ttl` overrides the freshness window (0/negative = any age, used by
+    the browser for stale-while-revalidate)."""
+    path = listing_cache_path()
+    if not path:
+        return None
+    data = read_json(path, {})
+    e = data.get(cache_key((folder or "").rstrip("/"))) if isinstance(data, dict) else None
+    if not isinstance(e, dict):
+        return None
+    window = LISTING_TTL if ttl is None else ttl
+    if window > 0 and (time.time() - e.get("t", 0)) >= window:
+        return None   # ttl<=0 means "any age" (browser stale-while-revalidate)
+    dirs, files = e.get("dirs"), e.get("files")
+    if isinstance(dirs, list) and isinstance(files, list):
+        details = e.get("details")
+        return dirs, files, details if isinstance(details, dict) else {}
+    return None
+
+
+def listing_put(folder, dirs, files, details=None):
+    """Remember the child names (and their sizes/dates) of a network `folder`
+    (bounded, newest kept). `details` is name -> [size, mtime, is_dir]."""
+    path = listing_cache_path()
+    if not path:
+        return
+    try:
+        data = read_json(path, {})
+        if not isinstance(data, dict):
+            data = {}
+        entry = {"t": time.time(), "dirs": list(dirs), "files": list(files)}
+        if details:
+            entry["details"] = {k: list(v) for k, v in details.items()}
+        data[cache_key((folder or "").rstrip("/"))] = entry
+        if len(data) > LISTING_MAX:
+            for k in sorted(data, key=lambda k: data[k].get("t", 0))[:-LISTING_MAX]:
+                data.pop(k, None)
+        write_json(path, data)
+    except Exception:
+        pass
+
+
 def safe_label(s):
     """Kodi-safe display string: plain str, no surrogates (undecodable filenames segfault Kodi's Python bindings). Original bytes are guessed back (UTF-8 then cp1252); navigation paths stay raw -- display only."""
     try:
@@ -272,11 +331,21 @@ def path_dec(s):
 
 
 def play_str(p):
-    """Path form for Kodi C++ boundaries (playback): real UTF-8 chars (the Python-os form may be surrogate-escaped, which the bindings reject). Undecodable latin-1 names pass through unchanged."""
+    """Path form for Kodi C++ boundaries (playback): real UTF-8 chars (the
+    Python-os form may be surrogate-escaped, which the bindings reject).
+    Undecodable bytes (e.g. a Latin-1 FTP name) are percent-encoded -- never left
+    as a surrogate, which segfaults the Kodi binding."""
     try:
         return os.fsencode(p).decode("utf-8")
     except Exception:
-        return p
+        out = []
+        for ch in p:
+            o = ord(ch)
+            if 0xD800 <= o <= 0xDFFF:
+                out.append("%%%02X" % (o - 0xDC00))   # surrogateescape byte
+            else:
+                out.append(ch)
+        return "".join(out)
 
 
 def sort_fold(s):

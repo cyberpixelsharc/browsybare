@@ -5,9 +5,10 @@ import xbmcgui
 
 from common import log
 
-RUBRICS = (274, 275, 276, 277, 278, 279)
+RUBRICS = (274, 470, 275, 276, 277, 278, 279)
 RUBRIC_TITLES = {
     274: 31319,  # Appearance and colors
+    470: 31551,  # Background
     275: 31320,  # Files and folders
     276: 31472,  # System and Kodi
     277: 31360,  # Audio
@@ -118,6 +119,15 @@ def _reset_appearance():
     _set_bool("zebra.hidden", False)
 
 
+def _reset_background():
+    import sync
+    try:
+        sync._wallpaper_write({})
+    except Exception:
+        pass
+    sync.wallpapers()
+
+
 def _reset_files():
     _set_bool("show.hidden", False)
     _set_bool("foldersize.on", False)
@@ -188,6 +198,7 @@ def _reset_photo():
 
 _RESETTERS = {
     274: _reset_appearance,
+    470: _reset_background,
     275: _reset_files,
     276: _reset_system,
     277: _reset_audio,

@@ -16,7 +16,7 @@ import sources
 from blacklist import blocked
 from navigation import drive_root_of
 from sources import is_network_path
-from common import safe_label, redact, path_dec, natkey, write_json, state_file, cache_key, heic_capable, log as _common_log
+from common import safe_label, redact, path_dec, natkey, write_json, state_file, cache_key, heic_capable, listing_get, listing_put, log as _common_log
 
 import xbmc
 import xbmcgui
@@ -358,21 +358,53 @@ def list_network(handle, path, picker_active=False):
     details = {}
     ftp_details = None
     ftp_ok = False   # OUR ftp/ftps listing (MLSD or LIST) succeeded
+    from_cache = False
+    cached_details = {}
+    via = ""
+    net_s = 0.0
+    build_s = 0.0
+    t_list = time.time()
     path = (path or "").strip()
-    # "no path" and "scheme only" ("ftp://") are half-filled entries: report
-    # unreachable immediately instead of probing the VFS (long connect timeout).
-    if not path or path.endswith("://"):
+    # Serve a cached folder BEFORE the reachability probe: while a file streams, a
+    # source with a low connection limit (e.g. a FRITZ!Box FTP) can refuse the
+    # probe, and a cached folder must still show -- a transient probe failure is
+    # not "unreachable".
+    if path and not path.endswith("://"):
+        path = sources.rstrip_slash(path)
+        is_dav = path.lower().startswith(("dav://", "davs://"))
+        tail = path.rstrip("/").rsplit("/", 1)[-1] if is_dav else ""
+        hit = listing_get(path, ttl=0)
+        # A VFS-sourced DAV entry (no PROPFIND details) is invalid: it carries the
+        # WebDAV self-reference and no sizes/dates -> re-list via PROPFIND.
+        if hit is not None and is_dav and not hit[2]:
+            hit = None
+    else:
+        hit = None
+    if hit is not None:
+        dirs, files, cached_details = hit
+        from_cache = True
+        via = "cache"
+        if cached_details:
+            # Rebuild the size/date map (child URL -> (size, mtime, is_dir)) so a
+            # cache hit shows them too, not just a cold FTP listing.
+            base = path.rstrip("/")
+            details = {base + "/" + n: tuple(v)
+                       for n, v in cached_details.items()}
+            if is_dav:
+                # A DAV listing has no dirs/files (it uses dav_entries); rebuild
+                # it from the cache, else a cached DAV folder renders empty.
+                dav_entries = [(n, unquote(n), bool(v[2]), v[0], v[1])
+                               for n, v in cached_details.items()]
+    elif not path or path.endswith("://"):
+        # "no path" and "scheme only" ("ftp://") are half-filled entries: report
+        # unreachable immediately instead of probing the VFS (long connect timeout).
         err = "unreachable"
     elif not sources.net_reachable(path):
         # Wrong network / dead host: Kodi's VFS connect can hold the listing (and
         # its spinner) for a long time, so a quick TCP probe to the host:port
         # fails fast instead of hanging on the VFS timeout.
-        path = sources.rstrip_slash(path)
         err = "unreachable"
     else:
-        path = sources.rstrip_slash(path)
-        is_dav = path.lower().startswith(("dav://", "davs://"))
-        tail = path.rstrip("/").rsplit("/", 1)[-1] if is_dav else ""
         # WebDAV: ONE Depth-1 PROPFIND gives the TRUE child names (Kodi's VFS
         # truncates a name at a raw ";" -- its URL options separator) plus
         # sizes/dates. Use it as the listing source; the VFS listing is the
@@ -404,6 +436,7 @@ def list_network(handle, path, picker_active=False):
                     # child name at "?"/";" (its URL option/query separators) and
                     # cannot stat them; MLSD gives the true names + sizes/dates.
                     res = None
+                    _t_net = time.time()
                     if ftp_src:
                         r3 = sources.ftp_listdir(path)
                         if r3[0] is not None:
@@ -411,6 +444,7 @@ def list_network(handle, path, picker_active=False):
                             ftp_ok = True
                     if res is None:
                         res = xbmcvfs.listdir(ls_path)
+                    net_s += time.time() - _t_net
                 except Exception as e:
                     res = None
                     err = str(e) or "error"
@@ -467,6 +501,23 @@ def list_network(handle, path, picker_active=False):
         if not sources.host_reachable(path):
             err = "unreachable"
 
+    if not from_cache and not err:
+        via = "ftp" if ftp_ok else "vfs"
+
+    # Share the listing with the player so starting a file does not re-list this
+    # (slow) network folder -- see common.listing_get. A cache hit is already
+    # stored, so only a fresh listing is written back.
+    if not err and not from_cache:
+        try:
+            if dav_entries is not None:
+                _det = {vfs: [s, m, d]
+                        for (vfs, _disp, d, s, m) in dav_entries}
+            else:
+                _det = {n: list(v) for n, v in (ftp_details or {}).items()}
+            listing_put(path, dirs, files, _det)
+        except Exception:
+            pass
+
     missing = _missing_vfs_addon(path)
     if missing:
         # The scheme's VFS add-on is missing or disabled: Kodi then reports
@@ -511,6 +562,7 @@ def list_network(handle, path, picker_active=False):
         except Exception:
             pass
 
+    t_build = time.time()
     items = []
     skipped_hidden = skipped_blocked = 0
     if err:
@@ -557,8 +609,8 @@ def list_network(handle, path, picker_active=False):
                   + (natkey(safe_label(unquote(e[0]) if is_dav else e[0])),))
         for name, is_dir, size0, mtime0 in kept:
             try:
-                if picker_active and not is_dir:
-                    continue
+                # The picker shows files too (context); a file click is inert there
+                # (the list onclick only opens outside picking).
                 # WebDAV: the VFS segment is URL-form (a raw `;` in it would be
                 # parsed as options); only the display name is decoded.
                 disp = disp_map.get(name)
@@ -583,9 +635,11 @@ def list_network(handle, path, picker_active=False):
                     # Stop the core tag loader: without a media info tag it
                     # probes every file over the network (display-neutral).
                     try:
+                        # safe_label: a raw surrogate (undecodable byte in the name)
+                        # segfaults the setInfo binding.
                         item.setInfo(
                             "video" if kind == "video" else "music",
-                            {"title": disp})
+                            {"title": safe_label(disp)})
                     except Exception:
                         pass
                 if is_dir:
@@ -659,14 +713,89 @@ def list_network(handle, path, picker_active=False):
         pass
 
     _publish_playing_pos(items)
+    try:
+        win.setProperty("bp.list.path", cache_key(path))
+    except Exception:
+        pass
     total = len(items)
     for item, url, is_folder, _ in items:
         xbmcplugin.addDirectoryItem(handle, url, item, is_folder, total)
     xbmcplugin.endOfDirectory(handle, True)
-    log("network %d items from %s%s (hidden=%s, sort=%s, ff=%s, cs=%s, blacklist=%d, skipped_hidden=%d, skipped_blocked=%d)"
-        % (total, redact(path), (" err=%s" % err) if err else "", show_hidden, sort,
+    build_s = time.time() - t_build
+    log("network %d items from %s (list %.1fs, net %.1fs, build %.1fs, via=%s)%s (hidden=%s, sort=%s, ff=%s, cs=%s, blacklist=%d, skipped_hidden=%d, skipped_blocked=%d)"
+        % (total, redact(path), time.time() - t_list, net_s, build_s, via or "-",
+           (" err=%s" % err) if err else "", show_hidden, sort,
            folders_first_flag, case_sensitive, len(patterns),
            skipped_hidden, skipped_blocked))
+
+    # Stale-while-revalidate: the cached list is on screen; re-list in the
+    # background (only when the cache is old) and reload if the folder changed.
+    if (from_cache and not err and not picker_active
+            and (listing_get(path) is None or not cached_details)):
+        _refresh_cached_listing(path, dirs, files, bool(cached_details), win)
+
+
+def _fresh_net_names(path):
+    """(dirs, files, details) from a fresh network listing: our MLSD/LIST for ftp
+    and a PROPFIND for dav (both carry sizes/dates), else the VFS (none). DAV must
+    go through the PROPFIND, not the VFS, which adds the collection self-reference
+    and drops the sizes/dates."""
+    if path.lower().startswith(("dav://", "davs://")):
+        try:
+            entries = _dav_entries_from_details(
+                path, sources.dav_details(path, timeout=6, attempts=1))
+        except Exception:
+            entries = None
+        if entries is None:
+            return [], [], {}
+        dirs = [vfs for (vfs, _d, isd, _s, _m) in entries if isd]
+        files = [vfs for (vfs, _d, isd, _s, _m) in entries if not isd]
+        details = {vfs: [s, m, isd] for (vfs, _d, isd, s, m) in entries}
+        return dirs, files, details
+    try:
+        if sources.is_ftp(path):
+            r3 = sources.ftp_listdir(path)
+            if r3[0] is not None:
+                return list(r3[0]), list(r3[1]), dict(r3[2] or {})
+    except Exception:
+        pass
+    try:
+        res = xbmcvfs.listdir(sources.vfs_dir(path))
+        if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
+            return list(res[0] or []), list(res[1] or []), {}
+    except Exception:
+        pass
+    return [], [], {}
+
+
+def _refresh_cached_listing(path, dirs, files, had_details, win):
+    """Re-list a cached folder in the background and update its cache (names AND
+    sizes/dates); reload the container only if something changed (names, or the
+    sizes/dates that were missing before), and only while the same folder is
+    still shown."""
+    try:
+        ndirs, nfiles, ndet = _fresh_net_names(path)
+    except Exception:
+        return
+    if not ndirs and not nfiles:
+        return
+    changed = (sorted(ndirs) != sorted(dirs)
+               or sorted(nfiles) != sorted(files)
+               or (not had_details and bool(ndet)))
+    try:
+        listing_put(path, ndirs, nfiles, ndet)
+    except Exception:
+        pass
+    if not changed:
+        return
+    try:
+        if win.getProperty("bp.list.path") != cache_key(path):
+            return   # user navigated away: never reload a different folder
+        win.setProperty("bp.refresh", str(time.time()))
+        xbmc.executebuiltin("Container.Refresh")
+        log("network: refreshed cached listing %s" % redact(path))
+    except Exception:
+        pass
 
 
 def _publish_playing_pos(items):
@@ -790,9 +919,8 @@ def main():
                         is_dir = entry.is_dir()
                     except OSError:
                         is_dir = False
-                    # Picker: folders only.
-                    if picker_active and not is_dir:
-                        continue
+                    # The picker shows files too (context); a file click is inert
+                    # there (the list onclick only opens outside picking).
                     item = xbmcgui.ListItem(name)
                     item.setIsFolder(is_dir)
                     if not is_dir:
@@ -822,8 +950,11 @@ def main():
                     except OSError:
                         pass
                     try:
-                        cm = context_menu_picker(entry.path) if picker_active \
-                            else context_menu(entry.path)
+                        if picker_active:
+                            # Only folders are a pick target; a file gets no menu.
+                            cm = context_menu_picker(entry.path) if is_dir else []
+                        else:
+                            cm = context_menu(entry.path)
                         item.addContextMenuItems(cm)
                         try:
                             item.setProperty("hide_add_remove_favourite", "true")

@@ -888,3 +888,23 @@ msgstr "Дополнения визуализации не установлен�
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Кроссфейд"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Фон"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Папка"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Изображение"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Видимость"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Чёрно-белый"

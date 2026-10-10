@@ -888,3 +888,23 @@ msgstr "Niciun supliment de vizualizare instalat"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Crossfade"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Fundal"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Folder"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Imagine"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Vizibilitate"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Alb-negru"

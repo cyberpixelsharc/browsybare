@@ -888,3 +888,23 @@ msgstr "Nincs telepített vizualizációs kiegészítő"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Áttűnés"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Háttér"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Mappa"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Kép"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Láthatóság"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Fekete-fehér"

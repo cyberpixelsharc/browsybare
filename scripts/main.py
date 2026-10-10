@@ -35,6 +35,26 @@ def _run_theme_next():
     return _f()
 
 
+def _wallpaper_image_next():
+    from sync import wallpaper_image_next as _f
+    return _f()
+
+
+def _wallpaper_vis_next():
+    from sync import wallpaper_vis_next as _f
+    return _f()
+
+
+def _wallpaper_bw_toggle():
+    from sync import wallpaper_bw_toggle as _f
+    return _f()
+
+
+def _wallpapers():
+    from sync import wallpapers as _f
+    return _f()
+
+
 def _accent_level(level):
     from sync import set_accent_level as _f
     return _f(level)
@@ -591,10 +611,15 @@ def drives():
 
 
 def _dropdown_entries(visible):
-    """Dropdown entries; while the picker is active (bp.pick.active) hide
-    directory and network sources -- neither is a valid pick target."""
+    """Dropdown entries; while the source picker is active (bp.pick.active) hide
+    directory and network sources -- neither is a valid target for adding a source
+    (the convention: only local drives). The wallpaper picker accepts ANY source
+    (its folder may live on a network share), so it keeps them."""
+    win = xbmcgui.Window(10000)
     try:
-        if xbmcgui.Window(10000).getProperty("bp.pick.active") != "1":
+        if win.getProperty("bp.pick.active") != "1":
+            return visible
+        if win.getProperty("bp.pick.mode") == "wallpaper":
             return visible
     except Exception:
         return visible
@@ -2004,22 +2029,32 @@ def scan_arm(clear):
 
 
 
-def picker_open():
+def picker_open(mode="source"):
     """Open the folder picker from the current source root, keeping the browsed
-    folder as return path; a reload is required (stale context menus)."""
+    folder as return path; a reload is required (stale context menus). `mode`
+    is "source" (add as directory source) or "wallpaper" (choose the wallpaper
+    folder)."""
     win = xbmcgui.Window(10000)
     cur = path_dec(win.getProperty("bp.path") or "").strip()
     if xbmc.getCondVisibility("Player.HasAudio"):
         xbmc.Player().stop()
         log("picker: stopped playback (footer overlaps the picker bar)")
     src = sources.rstrip_slash(path_dec(win.getProperty("bp.src") or ""))
-    start = src if src and os.path.isdir(src) else cur
-    try:
-        dir_roots = {sources.rstrip_slash(p or "") for p in _dirsources().load()}
-    except Exception:
-        dir_roots = set()
-    if (not (start and os.path.isdir(start))
-            or sources.is_network_path(src) or src in dir_roots):
+    wallpaper = (mode == "wallpaper")
+    if wallpaper:
+        # Any source is a valid wallpaper target: keep the current source
+        # (network/dirsource included) instead of forcing a local drive.
+        start = src or cur
+        need_jump = not start
+    else:
+        start = src if src and os.path.isdir(src) else cur
+        try:
+            dir_roots = {sources.rstrip_slash(p or "") for p in _dirsources().load()}
+        except Exception:
+            dir_roots = set()
+        need_jump = (not (start and os.path.isdir(start))
+                     or sources.is_network_path(src) or src in dir_roots)
+    if need_jump:
         # Directory/network context is not a valid pick target (hidden from the
         # picker dropdown) -> jump to the first local drive root.
         first = ""
@@ -2045,6 +2080,7 @@ def picker_open():
             log("picker: network context -> first local drive %s" % first)
     win.setProperty("bp.pick.return", path_enc(cur))
     win.setProperty("bp.pick.src", win.getProperty("bp.src") or "")
+    win.setProperty("bp.pick.mode", mode or "source")
     win.setProperty("bp.pick.active", "1")
     # Close the settings dialog (1150): the picker is a Home-window construct,
     # a modal would sit on top. Its onunload drops bp.return.focus -> clear it.
@@ -2082,6 +2118,7 @@ def picker_cancel():
     win.clearProperty("bp.pick.active")
     win.clearProperty("bp.pick.return")
     win.clearProperty("bp.pick.src")
+    win.clearProperty("bp.pick.mode")
     win.clearProperty("bp.return.focus")
     root = current_source_root(cur) if cur else ""
     if root and (sources.is_network_path(root) or os.path.isdir(root)):
@@ -2150,6 +2187,7 @@ def _add_dirsource(cur):
     win.clearProperty("bp.pick.active")
     win.clearProperty("bp.pick.return")
     win.clearProperty("bp.pick.src")
+    win.clearProperty("bp.pick.mode")
     win.clearProperty("bp.return.focus")
     if added:
         dirsrc_open()
@@ -2177,8 +2215,41 @@ def _add_dirsource(cur):
 
 
 def picker_select():
-    """Add the currently browsed folder as directory source (bottom-bar Select)."""
-    _add_dirsource(path_dec(xbmcgui.Window(10000).getProperty("bp.path") or ""))
+    """Confirm the currently browsed folder: as a directory source, or (wallpaper
+    mode) as the wallpaper folder."""
+    win = xbmcgui.Window(10000)
+    cur = path_dec(win.getProperty("bp.path") or "")
+    if win.getProperty("bp.pick.mode") == "wallpaper":
+        _set_wallpaper_folder(cur)
+        return
+    _add_dirsource(cur)
+
+
+def _set_wallpaper_folder(cur):
+    """Wallpaper folder chosen in the picker: persist it, close the picker and
+    reopen the settings on the Background section."""
+    from sync import set_wallpaper_folder as _f
+    win = xbmcgui.Window(10000)
+    cur = (path_dec(cur or "") or "").strip()
+    win.clearProperty("bp.pick.active")
+    win.clearProperty("bp.pick.return")
+    win.clearProperty("bp.pick.src")
+    win.clearProperty("bp.pick.mode")
+    win.clearProperty("bp.return.focus")
+    _f(cur)
+    drivelist()
+    _bump_list()
+    win.setProperty("bp.settings.tab", "1")
+    xbmc.executebuiltin("ActivateWindow(1150)")
+    for _ in range(8):
+        time.sleep(0.15)
+        xbmc.executebuiltin("SetFocus(471)")
+        try:
+            if xbmc.getCondVisibility("Control.HasFocus(471)"):
+                break
+        except Exception:
+            break
+    log("wallpaper folder selected: %s" % cur)
 
 
 def pickadd(path):
@@ -3660,6 +3731,8 @@ if __name__ == "__main__":
                    "pickopen", "pickselect",
                    "sort", "foldersfirst", "grid", "accent_next",
                    "themecycle",
+                   "wallpaper_image_next", "wallpaper_vis_next", "wallpapers",
+                   "wallpaper_bw_toggle",
                    "vizcycle",
                    "vizsettings",
                    "vizreturn",
@@ -3831,6 +3904,14 @@ if __name__ == "__main__":
             accent_next()
         elif cmd == "themecycle":
             _run_theme_next()
+        elif cmd == "wallpaper_image_next":
+            _wallpaper_image_next()
+        elif cmd == "wallpaper_vis_next":
+            _wallpaper_vis_next()
+        elif cmd == "wallpaper_bw_toggle":
+            _wallpaper_bw_toggle()
+        elif cmd == "wallpapers":
+            _wallpapers()
         elif cmd == "vizcycle":
             vizcycle()
         elif cmd == "vizinit":
@@ -3876,7 +3957,7 @@ if __name__ == "__main__":
             _bump_list()
             log("listbump: r param bumped + Container.Refresh")
         elif cmd == "pickopen":
-            picker_open()
+            picker_open(sys.argv[2] if len(sys.argv) > 2 else "source")
         elif cmd == "pickcancel":
             picker_cancel()
         elif cmd == "pickselect":

@@ -84,6 +84,28 @@
 	<defaultcontrol always="true">30</defaultcontrol>
 	<backgroundcolor>bp_bg</backgroundcolor>
 	<controls>
+		<!-- Wallpaper: at the WINDOW level so it is loaded/rendered already during boot,
+		     before the file list appears. Visibility is a SCRIM fill over it (a fill's
+		     alpha works reliably; an image's colordiffuse alpha did not). -->
+		<control type="image">
+			<visible>!String.IsEmpty(Window(10000).Property(bp.wallpaper.path))</visible>
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<bottom>0</bottom>
+			<aspectratio>scale</aspectratio>
+			<fadetime>300</fadetime>
+			<texture>$INFO[Window(10000).Property(bp.wallpaper.path)]</texture>
+		</control>
+		<control type="image">
+			<visible>!String.IsEmpty(Window(10000).Property(bp.wallpaper.path))</visible>
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<bottom>0</bottom>
+			<texture>drawn/fill.png</texture>
+			<colordiffuse>$INFO[Window(10000).Property(bp.wallpaper.tint)]</colordiffuse>
+		</control>
 		<control type="label">
 			<visible>String.IsEqual(Window(10000).Property(bp.status), error)</visible>
 			<left>80</left>

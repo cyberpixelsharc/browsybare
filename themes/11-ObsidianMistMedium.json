@@ -18,6 +18,6 @@
 	"text": "FFF4F4F4",         // primary text
 	"text2": "FFD8D8D8",        // list / secondary text
 	"muted": "FFBEBEBE",        // faint text
-	"control": "FF595959"       // off/inactive controls (row + one step lighter)
+	"control": "FF8A8A8A"       // off/inactive controls (clearly lighter than row/panel)
   }
 }

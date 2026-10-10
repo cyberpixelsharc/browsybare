@@ -888,3 +888,23 @@ msgstr "Visualisointilisäosaa ei ole asennettu"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Ristihäivytys"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Tausta"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Kansio"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Kuva"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Näkyvyys"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Mustavalkoinen"

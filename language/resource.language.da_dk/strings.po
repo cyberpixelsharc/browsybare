@@ -888,3 +888,23 @@ msgstr "Ingen visualiseringstilføjelse installeret"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Crossfade"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Baggrund"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Mappe"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Billede"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Synlighed"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Sort-hvid"

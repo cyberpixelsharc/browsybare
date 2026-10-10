@@ -888,3 +888,23 @@ msgstr "No visualisation add-on installed"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Crossfade"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Background"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Folder"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Image"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Visibility"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Black and white"

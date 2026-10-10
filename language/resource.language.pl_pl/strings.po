@@ -888,3 +888,23 @@ msgstr "Nie zainstalowano dodatku wizualizacji"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Przenikanie"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Tło"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Folder"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Obraz"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Widoczność"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Czarno-białe"

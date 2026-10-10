@@ -15,8 +15,8 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 * Single Home window: drive chip, breadcrumb, search, hamburger menu, file list.
 * Drive chip with auto width, drive icon, and a no-source state with icon and label.
 * Breadcrumb with up to 7 clickable segments. Long names are capped, the middle collapses to an ellipsis when space runs out.
-* Own list source (`plugin://browsybare/list`): name, preformatted size, localized date, type icons (folder, video, audio, photo, file), zebra rows, scrolling `..` row below the drive root.
-* List-load veil on every drive/folder switch so the previous listing never lingers.
+* Own list source (`plugin://browsybare/list`): name, preformatted size, localized date, type icons (folder, video, audio, photo, file), zebra rows, scrolling `..` row below the drive root. A folder's listing is cached briefly, so re-opening it (and starting a file) is instant; a cache hit is refreshed in the background.
+* List-load veil on every drive/folder switch so the previous listing never lingers (a dim, so the wallpaper stays visible while a large folder loads).
 * Search: folder-scoped substring filter with query pill and virtual/hardware keyboard support. Navigation resets the query.
 * Sorting: name, size, date, each ascending/descending. Folders-first can be disabled. Hidden files, zebra stripes, and network details are optional.
 * Folder sizes: background scan with quick approximation first, then exact values. Network sizes via VFS stat, WebDAV via PROPFIND, FTP via its MLSD listing (or the server's LIST output when MLSD is unavailable).
@@ -56,7 +56,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 ## Photo viewer
 
 * Dedicated fullscreen window. Back, ESC, or left-click closes, right-click and Menu are swallowed.
-* Loading spinner only for the initial open. Empty-texture open plus crossfade avoids the stale-image flash.
+* Loading spinner from the moment a photo is clicked (over the file list) until the image is actually shown. Empty-texture open plus crossfade avoids the stale-image flash. Only the initial open spins; slideshow steps need none.
 * Folder playlist, optional recursive mode (current folder first, then subfolders in name order, depth and count bounded).
 * Formats: JPEG, TIFF, PNG, GIF, BMP natively, AVIF passthrough, HEIC/HEIF only when a real decoder exists (otherwise skipped and inert with a generic icon).
 * Pure-Python EXIF orientation with cached rotated copies. Network files via VFS header read and bounded download. Backends: Kodi Pillow, system Python with PIL, ffmpeg.
@@ -77,7 +77,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 ## Settings
 
 * Own settings dialog with 5 tabs: General, Player, Sources, Blocklist, Remote. It opens over the file manager, which stays visible behind it.
-* Appearance and colors: 9 accent swatches with intensity levels, zebra toggle, and a theme switch. A theme recolours every background and text in the skin at once. Themes ship as colour families, each in a light, a medium and a dark variant: `ForestNine`, `PaperCream`, `GoldenHour`, `ObsidianMist`, `SunriseCloud`, `MorningFrost` and `DaybreakBlue`. Each theme is one JSON file in `themes/`; its file name is the theme name and the numeric sort prefix is not shown. All themes share the same role set with a fixed meaning per role, so a new theme only supplies values. Drop another file in `themes/` to add your own theme. The files carry `//` comments that the loader strips, with each role documented next to its value. Default: `ForestNineMedium`.
+* Appearance and colors: 9 accent swatches with intensity levels, zebra toggle, and a theme switch. A theme recolours every background and text in the skin at once. Themes ship as colour families, each in a light, a medium and a dark variant: `ForestNine`, `PaperCream`, `GoldenHour`, `ObsidianMist`, `SunriseCloud`, `MorningFrost` and `DaybreakBlue`. Each theme is one JSON file in `themes/`; its file name is the theme name and the numeric sort prefix is not shown. All themes share the same role set with a fixed meaning per role, so a new theme only supplies values. Drop another file in `themes/` to add your own theme. The files carry `//` comments that the loader strips, with each role documented next to its value. Default: `ForestNineMedium`. Optional background wallpaper: pick a folder through the folder picker (the source dropdown lists every source), step through its images, set the visibility (0-15 % in 1 % steps) and switch it to black and white; the image is drawn behind the file list with the theme background showing through. The chosen image is cached locally, so it still shows when its folder is on an unavailable network source.
 * Files and folders: hidden files, folder-size scan, network scan, sorting, folders-first.
 * System and Kodi: GUI sound volume, screen dimmer.
 * Audio player: source path, label scrolling.
@@ -90,7 +90,7 @@ Pick a source, browse folders, play files. Audio plays in a footer overlay, vide
 
 * Local drives from the mount table with real labels at any depth. Network and directory sources merge in as quasi-drives. On Android the shared storage is the home source and only real removable volumes (SD/USB) appear as drives.
 * Hiding is opt-out by identity, so new sticks stay visible. Unplugged directory sources show a hint.
-* Entered sources have no `..` at their root. The folder picker turns the main list into a folder-only picker with a bottom bar.
+* Entered sources have no `..` at their root. The folder picker turns the main list into a picker that shows folders and files; an OK/Cancel pair at the top right adds the browsed folder as a source (for the wallpaper it sets the wallpaper folder). The source dropdown lists the local drives.
 * Network sources: ftp, ftps, sftp, smb, nfs, WebDAV/davs. (SFTP needs Kodi's separate `vfs.sftp` addon; when it is missing or disabled the source names it instead of a generic error. Address an SFTP source by IP/hostname, not `localhost`.) Editor modal with display name, protocol cycle, server, path, port, user, password, a write-access toggle (off by default, per source), OK, Test, Cancel. Live connection test with state icons. Browser parity plus rename, delete, and new folder (on writable sources). Copy, cut, and paste work on writable sources and between local drives and network sources; a server-side move/copy is used where the protocol supports it, and writes to FTP/FTPS and WebDAV (upload, copy, delete, rename) are performed by the skin itself -- Kodi's own FTP write path is broken, and its WebDAV write/rename mishandles authentication and encoded names. WebDAV listings retry transient server errors, cache the server's auth challenge (so listings, copies and uploads skip an extra request), support Digest authentication, and keep file names with special characters intact. FTP/FTPS listings use the skin's own request (MLSD, or the server's LIST output when the server has no MLSD, for example the FRITZ!Box), so names with `?` or `;` stay complete and carry size and date (Kodi's own FTP listing truncates them; note that Kodi itself still cannot *play* an FTP file with `?`/`;` in its name -- use SMB/SFTP/WebDAV or rename it). Network child names are percent-encoded only for WebDAV; the other protocols take them literally. FTPS verifies the server certificate, so a source with an untrusted (e.g. self-signed) certificate reports an error rather than connecting.
 
 ## Blocklist

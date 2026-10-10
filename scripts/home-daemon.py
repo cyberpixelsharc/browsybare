@@ -505,8 +505,11 @@ def main():
                     win.clearProperty("bp.aload.t")
         except Exception as e:
             log("home-daemon error (audio loading): %s" % e)
-        # Fast duty: release the list-loading veil (bp.listload) once
-        # Container(33) stopped updating; timeout as last resort.
+        # Fast duty: release the list-loading veil (bp.listload) as soon as the
+        # plugin built the items (bp.listload.ready). NOT waiting on
+        # Container(33).IsUpdating: on a network folder it stays true for many
+        # seconds (several plugin runs), holding the veil over an already drawn
+        # list. Timeout as last resort.
         try:
             if win.getProperty("bp.listload") == "1":
                 try:
@@ -514,11 +517,7 @@ def main():
                 except ValueError:
                     ll_t = 0.0
                 ready = win.getProperty("bp.listload.ready") == "1"
-                try:
-                    updating = xbmc.getCondVisibility("Container(33).IsUpdating")
-                except Exception:
-                    updating = False
-                if (ready and not updating) or time.time() - ll_t > 120.0:
+                if ready or time.time() - ll_t > 120.0:
                     win.clearProperty("bp.listload")
                     win.clearProperty("bp.listload.t")
                     win.clearProperty("bp.listload.ready")

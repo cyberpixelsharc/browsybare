@@ -888,3 +888,23 @@ msgstr "Není nainstalován žádný doplněk vizualizace"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Prolínání"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Pozadí"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Složka"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Obrázek"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Viditelnost"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Černobílé"

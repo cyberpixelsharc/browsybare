@@ -888,3 +888,23 @@ msgstr "Δεν υπάρχει εγκατεστημένο πρόσθετο οπτ
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Σταδιακή μετάβαση"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Φόντο"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Φάκελος"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Εικόνα"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Ορατότητα"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Ασπρόμαυρο"

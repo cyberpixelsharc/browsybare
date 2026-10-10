@@ -888,3 +888,23 @@ msgstr "Ni nameščenega dodatka za vizualizacijo"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Prehod"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Ozadje"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Mapa"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Slika"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Vidnost"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Črno-belo"

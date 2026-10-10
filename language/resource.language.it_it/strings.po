@@ -888,3 +888,23 @@ msgstr "Nessun componente di visualizzazione installato"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Dissolvenza incrociata"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Sfondo"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Cartella"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Immagine"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Visibilità"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Bianco e nero"

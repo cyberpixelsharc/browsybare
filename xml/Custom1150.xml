@@ -5360,7 +5360,7 @@
 								<onright>101</onright>
 								
 																							<onup>436</onup>
-								<ondown>275</ondown>
+								<ondown>470</ondown>
 					</control>
 						</control>
 
@@ -5370,6 +5370,179 @@
 							<height>10</height>
 							<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
 						</control>
+					<control type="group">
+						<height>83</height>
+						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+						<control type="label">
+							<left>16</left><top>12</top><width>651</width><height>26</height>
+							<font>font13</font><textcolor>$INFO[Window(10000).Property(bp.theme.text)]</textcolor>
+							<label>$LOCALIZE[31551]</label>
+						</control>
+						<control type="button" id="470">
+							<left>651</left><top>14</top><width>37</width><height>34</height>
+							<texturefocus colordiffuse="$INFO[Skin.String(accent)]">settings/eraser.png</texturefocus>
+							<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">settings/eraser.png</texturenofocus>
+							<onclick>RunScript(special://skin/scripts/main.py,resetopen,470)</onclick>
+							<onup>101</onup>
+							<ondown>471</ondown>
+						</control>
+						<control type="image">
+							<left>0</left><top>58</top><width>704</width><height>1</height>
+							<texture>drawn/fill.png</texture><colordiffuse>$INFO[Window(10000).Property(bp.theme.divider)]</colordiffuse>
+						</control>
+					</control>
+						<control type="group">
+							<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+							<height>68</height>
+							<control type="button" id="471">
+								<left>0</left><top>0</top><width>704</width><height>60</height>
+								<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+								<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+								<onclick>RunScript(special://skin/scripts/main.py,pickopen,wallpaper)</onclick>
+								<onleft>471</onleft><onright>471</onright>
+								<onup>470</onup><ondown>472</ondown>
+							</control>
+							<control type="label">
+								<left>26</left><top>0</top><width>418</width><height>60</height>
+								<font>font13</font><align>left</align><aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$LOCALIZE[31552]</label>
+								<visible>!Control.HasFocus(471)</visible>
+							</control>
+							<control type="label">
+								<left>26</left><top>0</top><width>418</width><height>60</height>
+								<font>font13</font><align>left</align><aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$LOCALIZE[31552]</label>
+								<visible>Control.HasFocus(471)</visible>
+							</control>
+							<control type="label">
+								<left>240</left><top>0</top><width>438</width><height>60</height>
+								<font>font13</font><align>right</align><aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.wallpaper.dir)]</label>
+								<visible>!Control.HasFocus(471)</visible>
+							</control>
+							<control type="label">
+								<left>240</left><top>0</top><width>438</width><height>60</height>
+								<font>font13</font><align>right</align><aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.wallpaper.dir)]</label>
+								<visible>Control.HasFocus(471)</visible>
+							</control>
+						</control>
+						<control type="group">
+							<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+							<height>68</height>
+							<control type="button" id="472">
+								<left>0</left><top>0</top><width>704</width><height>60</height>
+								<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+								<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+								<onclick>RunScript(special://skin/scripts/main.py,wallpaper_image_next)</onclick>
+								<onleft>472</onleft><onright>472</onright>
+								<onup>471</onup><ondown>473</ondown>
+							</control>
+							<control type="label">
+								<left>26</left><top>0</top><width>418</width><height>60</height>
+								<font>font13</font><align>left</align><aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$LOCALIZE[31553]</label>
+								<visible>!Control.HasFocus(472)</visible>
+							</control>
+							<control type="label">
+								<left>26</left><top>0</top><width>418</width><height>60</height>
+								<font>font13</font><align>left</align><aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$LOCALIZE[31553]</label>
+								<visible>Control.HasFocus(472)</visible>
+							</control>
+							<control type="label">
+								<left>240</left><top>0</top><width>438</width><height>60</height>
+								<font>font13</font><align>right</align><aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.wallpaper.name)]</label>
+								<visible>!Control.HasFocus(472)</visible>
+							</control>
+							<control type="label">
+								<left>240</left><top>0</top><width>438</width><height>60</height>
+								<font>font13</font><align>right</align><aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.wallpaper.name)]</label>
+								<visible>Control.HasFocus(472)</visible>
+							</control>
+						</control>
+						<control type="group">
+							<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+							<height>68</height>
+							<control type="button" id="473">
+								<left>0</left><top>0</top><width>704</width><height>60</height>
+								<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+								<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+								<onclick>RunScript(special://skin/scripts/main.py,wallpaper_vis_next)</onclick>
+								<onleft>473</onleft><onright>473</onright>
+								<onup>472</onup><ondown>475</ondown>
+							</control>
+							<control type="label">
+								<left>26</left><top>0</top><width>418</width><height>60</height>
+								<font>font13</font><align>left</align><aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$LOCALIZE[31554]</label>
+								<visible>!Control.HasFocus(473)</visible>
+							</control>
+							<control type="label">
+								<left>26</left><top>0</top><width>418</width><height>60</height>
+								<font>font13</font><align>left</align><aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$LOCALIZE[31554]</label>
+								<visible>Control.HasFocus(473)</visible>
+							</control>
+							<control type="label">
+								<left>240</left><top>0</top><width>438</width><height>60</height>
+								<font>font13</font><align>right</align><aligny>center</aligny>
+								<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.wallpaper.vis)]</label>
+								<visible>!Control.HasFocus(473)</visible>
+							</control>
+							<control type="label">
+								<left>240</left><top>0</top><width>438</width><height>60</height>
+								<font>font13</font><align>right</align><aligny>center</aligny>
+								<textcolor>$INFO[Skin.String(accent)]</textcolor>
+								<label>$INFO[Window(10000).Property(bp.wallpaper.vis)]</label>
+								<visible>Control.HasFocus(473)</visible>
+							</control>
+						</control>
+										<control type="group">
+						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+						<height>68</height>
+						<control type="radiobutton" id="475">
+							<left>0</left><top>0</top><width>704</width><height>60</height>
+							<texturefocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.accent.hov)]">drawn/row.png</texturefocus>
+							<texturenofocus border="18" colordiffuse="$INFO[Window(10000).Property(bp.theme.row)]">drawn/row.png</texturenofocus>
+							<textureradioonfocus colordiffuse="$INFO[Skin.String(accent)]">buttons/radio-button-on.png</textureradioonfocus>
+							<textureradioonnofocus colordiffuse="$INFO[Skin.String(accent)]">buttons/radio-button-on.png</textureradioonnofocus>
+							<textureradioofffocus colordiffuse="$INFO[Window(10000).Property(bp.theme.control)]">buttons/radio-button-off.png</textureradioofffocus>
+							<textureradiooffnofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.control)]">buttons/radio-button-off.png</textureradiooffnofocus>
+							<font>font13</font>
+							<textoffsetx>26</textoffsetx>
+							<textwidth>563</textwidth>
+							<radioposx>581</radioposx>
+							<radioposy>-6</radioposy>
+							<radiowidth>132</radiowidth>
+							<radioheight>76</radioheight>
+							<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
+							<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
+							<label>$LOCALIZE[31555]</label>
+							<onclick>RunScript(special://skin/scripts/main.py,wallpaper_bw_toggle)</onclick>
+							<selected>String.IsEqual(Window(10000).Property(bp.wallpaper.bwon),1)</selected>
+							<onright>475</onright>
+							<onup>473</onup>
+							<ondown>275</ondown>
+						</control>
+					</control>
+<control type="group">
+						<height>10</height>
+						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+					</control>
 <control type="group">
 							<height>83</height>
 							<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
@@ -5384,7 +5557,7 @@
 								<texturefocus colordiffuse="$INFO[Skin.String(accent)]">settings/eraser.png</texturefocus>
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.theme.text2)]">settings/eraser.png</texturenofocus>
 								<onclick>RunScript(special://skin/scripts/main.py,resetopen,275)</onclick>
-								<onup>101</onup>
+								<onup>475</onup>
 								<ondown>102</ondown>
 							</control>
 							<control type="image">
@@ -10909,5 +11082,25 @@
 			</control>
 
 			<include>KeyboardOverlay</include>
+			<!-- Wallpaper loading veil: topmost, covers the whole dialog while the image is prepared. -->
+			<control type="group">
+				<visible>String.IsEqual(Window(10000).Property(bp.wallpaper.busy),1)</visible>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>1920</width>
+					<bottom>0</bottom>
+					<texture>drawn/fill.png</texture>
+					<colordiffuse>$INFO[Window(10000).Property(bp.theme.veil)]</colordiffuse>
+				</control>
+				<control type="image">
+					<left>924</left>
+					<top>504</top>
+					<width>72</width>
+					<height>72</height>
+					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
+					<texture colordiffuse="$INFO[Skin.String(accent)]">osd/arrow-clockwise.png</texture>
+				</control>
+			</control>
 	</controls>
 </window>

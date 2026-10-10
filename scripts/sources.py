@@ -1385,11 +1385,17 @@ def ftp_listdir(url):
             return dirs, files, details
         except Exception:
             pass
-        # No MLSD: parse LIST. Clear a partial MLSD answer first.
+        # No MLSD: parse LIST. Read the raw bytes: ftplib.retrlines decodes as
+        # UTF-8 and aborts the WHOLE listing on one non-UTF-8 name (the FRITZ!Box
+        # sends names in its locale, e.g. Latin-1 umlauts), which used to drop the
+        # entire folder to Kodi's VFS (no sizes/dates). surrogateescape keeps the
+        # original bytes for the child URLs (safe_label renders them for display).
         dirs, files, details = [], [], {}
-        lines = []
-        ftp.retrlines("LIST " + (remote or "."), lines.append)
-        for line in lines:
+        raw = []
+        ftp.retrbinary("LIST " + (remote or "."), raw.append)
+        blob = b"".join(raw)
+        for bline in blob.splitlines():
+            line = bline.decode("utf-8", "surrogateescape")
             parsed = _ftp_parse_list(line)
             if not parsed:
                 continue
@@ -1398,7 +1404,7 @@ def ftp_listdir(url):
                 continue
             details[name] = (size, mtime, is_dir)
             (dirs if is_dir else files).append(name)
-        if not dirs and not files and lines:
+        if not dirs and not files and blob.strip():
             return None, None, None   # unparsable LIST format -> Kodi's VFS
         return dirs, files, details
     except Exception:

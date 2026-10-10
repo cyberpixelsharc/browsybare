@@ -17,7 +17,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from common import log, ok, fail, skin_name, skin_root, state_dir, read_json, read_text, write_text, write_json, record_issue, drop_issues
+from common import log, ok, fail, skin_name, skin_root, state_dir, read_json, read_text, write_text, write_json, record_issue, drop_issues, safe_label, natkey
 import remotes
 
 # ---------------------------------------------------------------- sync
@@ -1333,6 +1333,44 @@ def theme_ids(base=None):
     return [tid for tid, _path in _theme_files(base)]
 
 
+# Theme files shipped before the 0.3.28 theme-set rework. An update that ran an
+# older updater (the prune only exists from 0.3.29) or a plain zip install (Kodi's
+# own installer never prunes) leaves them behind, so they still show in the
+# switch. Dropped once on boot; a write-protected file (user's own theme) stays.
+LEGACY_THEMES = ("light.json", "medium.json", "dark.json",
+                 "01-LightPearl.json", "02-MediumOvercast.json",
+                 "03-DarkNightfall.json", "04-DaybreakBlue.json",
+                 "05-MochaGraystone.json", "06-ForestEdge.json",
+                 "07-RedbrickCastle.json")
+
+
+def migrate_legacy_themes():
+    """Drop pre-rework theme files a stale update left behind and reset the
+    selection when it pointed at one (else the old design keeps applying)."""
+    base = os.path.join(skin_root(), THEME_DIR)
+    removed = False
+    for fn in LEGACY_THEMES:
+        p = os.path.join(base, fn)
+        if os.path.isfile(p) and os.access(p, os.W_OK):
+            try:
+                os.remove(p)
+                removed = True
+            except OSError:
+                pass
+    if removed:
+        log("themes: removed legacy theme files")
+    try:
+        cur = (xbmc.getInfoLabel("Skin.String(theme)") or "").strip()
+    except Exception:
+        cur = ""
+    if cur and cur not in theme_ids():
+        try:
+            xbmc.executebuiltin("Skin.SetString(theme,%s)" % THEME_DEFAULT)
+            log("themes: stale selection %s -> %s" % (cur, THEME_DEFAULT))
+        except Exception:
+            pass
+
+
 def _strip_comments(text):
     """Strip // line and /* */ block comments. The theme files are hand-edited
     (JSON + comments), so the loader tolerates them; markers inside strings stay."""
@@ -1435,6 +1473,10 @@ def themes(tid=None):
     win.setProperty("bp.theme.id", tid)
     # The file name IS the display name (creative/international, not translated).
     win.setProperty("bp.theme.name", tid)
+    # Raw stripe kept apart so a wallpaper can lower only its alpha (and a theme
+    # change restores it): _apply_wallpaper_overrides().
+    win.setProperty("bp.theme.zebra.raw", colors.get("zebra") or "")
+    _apply_wallpaper_overrides(win)
     log("theme: %s (%d roles)" % (tid, len(colors)))
 
 
@@ -1457,3 +1499,280 @@ def theme_next():
     accents()   # the hover blend is mixed over the new theme's panel tone
     log("theme switched: %s" % nxt)
     return True
+
+
+# ---------------------------------------------------------------- wallpaper
+
+# Persisted in a state file (NOT Skin.String): an image path can contain a comma,
+# which would truncate a Skin.SetString(...) builtin argument.
+WALLPAPER_FILE = "wallpaper.json"
+WALLPAPER_VIS = tuple(range(0, 16))   # 0..15 % in 1 % steps (0 = invisible)
+WALLPAPER_VIS_DEFAULT = 5
+WALLPAPER_SETTLE = 0.4   # seconds to let the image control draw a new texture
+WALLPAPER_EXT = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tif",
+                 ".tiff", ".avif")
+
+
+def _wallpaper_path():
+    try:
+        return os.path.join(state_dir(), WALLPAPER_FILE)
+    except Exception:
+        return ""
+
+
+def _wallpaper_data():
+    p = _wallpaper_path()
+    d = read_json(p, {}) if p else {}
+    return d if isinstance(d, dict) else {}
+
+
+def _wallpaper_write(d):
+    p = _wallpaper_path()
+    if p:
+        write_json(p, d)
+
+
+def _apply_wallpaper_overrides(win):
+    """Wallpaper-derived colours that also depend on the theme: (1) the list
+    stripe goes semi-transparent (alpha 0xB3) so the image shows through the rows
+    instead of hard bands, and (2) the visibility scrim -- a fill over the image
+    tinted with the theme bg at (100-vis)% alpha (a fill's alpha works reliably;
+    an image's colordiffuse alpha did not). Both are re-applied on a theme change."""
+    d = _wallpaper_data()
+    image = (d.get("image") or "").strip()
+    vis = wallpaper_vis()
+    active = bool(image) and vis > 0   # 0 % = wallpaper off
+    raw = (win.getProperty("bp.theme.zebra.raw") or "").strip()
+    if len(raw) >= 8:
+        win.setProperty("bp.theme.zebra", ("B3" + raw[2:]) if active else raw)
+    if active:
+        bg = (win.getProperty("bp.theme.bg") or "").strip()
+        bg_rgb = bg[2:] if len(bg) >= 8 else "101014"
+        win.setProperty("bp.wallpaper.tint",
+                        "%02X%s" % (round(255.0 * (100 - vis) / 100.0), bg_rgb))
+    else:
+        win.clearProperty("bp.wallpaper.tint")
+
+
+def wallpaper_vis():
+    try:
+        v = int(_wallpaper_data().get("vis", WALLPAPER_VIS_DEFAULT))
+    except Exception:
+        v = WALLPAPER_VIS_DEFAULT
+    return v if v in WALLPAPER_VIS else WALLPAPER_VIS_DEFAULT
+
+
+def wallpaper_folder():
+    return (_wallpaper_data().get("folder") or "").strip()
+
+
+def wallpaper_bw():
+    return bool(_wallpaper_data().get("bw"))
+
+
+def wallpaper_bw_toggle():
+    """Toggle the black&white wallpaper flag and re-apply. Guarded like the image
+    cycle (the grayscale conversion can take a moment)."""
+    win = xbmcgui.Window(10000)
+    if win.getProperty("bp.wallpaper.busy") == "1":
+        log("wallpaper: black&white toggle ignored (busy)")
+        return False
+    win.setProperty("bp.wallpaper.busy", "1")
+    try:
+        d = _wallpaper_data()
+        d["bw"] = not bool(d.get("bw"))
+        _wallpaper_write(d)
+        wallpapers()
+        time.sleep(WALLPAPER_SETTLE)
+        log("wallpaper black&white -> %s" % d["bw"])
+        return True
+    finally:
+        win.clearProperty("bp.wallpaper.busy")
+
+
+WALLPAPER_CACHE_MAX = 20
+WALLPAPER_IMG_EXT = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tif",
+                     ".tiff", ".avif")
+
+
+def _wallpaper_local(image, bw):
+    """Local cached copy of the wallpaper `image` (bw = grayscale), so it still
+    shows when the source is offline. Reads through xbmcvfs (local + network);
+    colour is a byte copy (format/quality kept), grayscale needs PIL. "" on
+    failure (the caller then falls back to the source path)."""
+    if not image:
+        return ""
+    try:
+        d = os.path.join(state_dir(), "wallpaper-cache")
+        os.makedirs(d, exist_ok=True)
+    except OSError:
+        return ""
+    key = hashlib.md5(image.encode("utf-8", "surrogateescape")).hexdigest()
+    if bw:
+        out = os.path.join(d, key + "-bw.jpg")
+    else:
+        ext = os.path.splitext(image.rstrip("/"))[1].lower()
+        out = os.path.join(d, key + (ext if ext in WALLPAPER_IMG_EXT else ".jpg"))
+    if os.path.isfile(out):
+        return out
+    try:
+        f = xbmcvfs.File(image)
+        data = bytes(f.readBytes())
+        f.close()
+    except Exception:
+        data = b""
+    if not data:
+        return ""
+    if not bw:
+        try:
+            with open(out, "wb") as fh:
+                fh.write(data)
+            _wallpaper_cache_trim(d)
+            return out
+        except OSError:
+            return ""
+    Image = None
+    try:
+        from PIL import Image as _I
+        Image = _I
+    except Exception:
+        try:
+            import fileops
+            Image, _ops, _ver = fileops._pillow()
+        except Exception:
+            Image = None
+    if Image is None:
+        log("wallpaper: no PIL, black&white left as colour")
+        return ""
+    try:
+        import io
+        Image.open(io.BytesIO(data)).convert("L").save(out, "JPEG", quality=90)
+        _wallpaper_cache_trim(d)
+        return out
+    except Exception as e:
+        log("wallpaper: grayscale failed: %s" % e)
+        return ""
+
+
+def _wallpaper_cache_trim(d):
+    """Keep the cache bounded (newest WALLPAPER_CACHE_MAX files)."""
+    try:
+        files = [os.path.join(d, f) for f in os.listdir(d)]
+        files = [f for f in files if os.path.isfile(f)]
+        if len(files) <= WALLPAPER_CACHE_MAX:
+            return
+        files.sort(key=lambda p: os.path.getmtime(p))
+        for p in files[:-WALLPAPER_CACHE_MAX]:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+    except OSError:
+        pass
+
+
+def wallpaper_images(folder):
+    """Image file paths in `folder`, sorted by display name. Network folders list
+    through Kodi's VFS; os.listdir raises on network paths."""
+    if not folder:
+        return []
+    import sources
+    net = sources.is_network_path(folder)
+    names = []
+    try:
+        if net:
+            res = xbmcvfs.listdir(sources.vfs_dir(folder))
+            if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
+                names = list(res[1] or [])
+        else:
+            names = os.listdir(folder)
+    except Exception:
+        names = []
+    out = []
+    for n in names:
+        disp = sources.url_unquote(n) if net else n
+        if os.path.splitext(disp)[1].lower() in WALLPAPER_EXT:
+            out.append((natkey(safe_label(disp)), os.path.join(folder, n)))
+    out.sort(key=lambda t: t[0])
+    return [p for _, p in out]
+
+
+def set_wallpaper_folder(folder):
+    """Persist the wallpaper folder (from the picker) and re-apply."""
+    d = _wallpaper_data()
+    d["folder"] = (folder or "").strip().rstrip("/")
+    img = (d.get("image") or "").strip()
+    if img and os.path.dirname(img) != d["folder"]:
+        d["image"] = ""   # the chosen image lived in the old folder
+    if d.get("vis") not in WALLPAPER_VIS:
+        d["vis"] = WALLPAPER_VIS_DEFAULT
+    _wallpaper_write(d)
+    wallpapers()
+    log("wallpaper folder -> %s" % d["folder"])
+
+
+def wallpaper_image_next():
+    """Cycle the wallpaper image through the folder's images. Ignored while the
+    previous image is still being prepared/shown (each key press is its own
+    RunScript thread, so without the guard a fast press outruns the display)."""
+    win = xbmcgui.Window(10000)
+    if win.getProperty("bp.wallpaper.busy") == "1":
+        log("wallpaper: image switch ignored (still showing the current one)")
+        return False
+    win.setProperty("bp.wallpaper.busy", "1")
+    try:
+        imgs = wallpaper_images(wallpaper_folder())
+        if not imgs:
+            log("wallpaper: no images in folder")
+            return False
+        d = _wallpaper_data()
+        cur = (d.get("image") or "").strip()
+        try:
+            nxt = imgs[(imgs.index(cur) + 1) % len(imgs)]
+        except ValueError:
+            nxt = imgs[0]
+        d["image"] = nxt
+        _wallpaper_write(d)
+        wallpapers()
+        time.sleep(WALLPAPER_SETTLE)   # let the image control draw the new texture
+        log("wallpaper image -> %s" % nxt)
+        return True
+    finally:
+        win.clearProperty("bp.wallpaper.busy")
+
+
+def wallpaper_vis_next():
+    """Cycle the wallpaper visibility through WALLPAPER_VIS."""
+    d = _wallpaper_data()
+    cur = wallpaper_vis()
+    nxt = WALLPAPER_VIS[(WALLPAPER_VIS.index(cur) + 1) % len(WALLPAPER_VIS)]
+    d["vis"] = nxt
+    _wallpaper_write(d)
+    wallpapers()
+    log("wallpaper visibility -> %d" % nxt)
+    return True
+
+
+def wallpapers():
+    """Apply the wallpaper settings -> bp.wallpaper.* window properties (mirrors
+    themes()). The image draws over the theme background; its alpha = visibility."""
+    win = xbmcgui.Window(10000)
+    d = _wallpaper_data()
+    folder = (d.get("folder") or "").strip()
+    image = (d.get("image") or "").strip()
+    vis = wallpaper_vis()
+    win.setProperty("bp.wallpaper.dir",
+                    safe_label(os.path.basename(folder.rstrip("/"))) or "-")
+    win.setProperty("bp.wallpaper.vis", "%d %%" % vis)
+    win.setProperty("bp.wallpaper.name",
+                    safe_label(os.path.basename(image)) if image else "-")
+    use = image
+    if image and vis > 0:
+        use = _wallpaper_local(image, wallpaper_bw()) or image
+    if use and vis > 0:
+        win.setProperty("bp.wallpaper.path", use)
+    else:
+        win.clearProperty("bp.wallpaper.path")
+    win.setProperty("bp.wallpaper.bwon", "1" if wallpaper_bw() else "")
+    _apply_wallpaper_overrides(win)
+    log("wallpaper: %s (vis %d%%, bw=%s)" % (image or "-", vis, wallpaper_bw()))

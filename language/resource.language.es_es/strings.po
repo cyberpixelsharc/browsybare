@@ -888,3 +888,23 @@ msgstr "No hay ningún complemento de visualización instalado"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Fundido cruzado"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Fondo"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Carpeta"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Imagen"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Visibilidad"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Blanco y negro"

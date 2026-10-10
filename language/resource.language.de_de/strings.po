@@ -888,3 +888,23 @@ msgstr "Kein Visualisierungs-Add-on installiert"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Überblenden"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Hintergrund"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Ordner"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Bild"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Sichtbarkeit"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Schwarz-Weiß"

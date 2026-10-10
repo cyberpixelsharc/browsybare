@@ -888,3 +888,23 @@ msgstr "Aucun module de visualisation installé"
 msgid "Crossfade"
 msgctxt "#31550"
 msgstr "Fondu enchaîné"
+
+msgid "Background"
+msgctxt "#31551"
+msgstr "Arrière-plan"
+
+msgid "Folder"
+msgctxt "#31552"
+msgstr "Dossier"
+
+msgid "Image"
+msgctxt "#31553"
+msgstr "Image"
+
+msgid "Visibility"
+msgctxt "#31554"
+msgstr "Visibilité"
+
+msgid "Black and white"
+msgctxt "#31555"
+msgstr "Noir et blanc"

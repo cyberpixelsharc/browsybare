@@ -13,7 +13,7 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable, focus_control
+from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable, focus_control, listing_get, listing_put
 from urllib.parse import quote, unquote
 import keyboard
 import blacklist
@@ -43,6 +43,7 @@ ARCHIVE_EXT = {".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"}
 # Slideshow interval (s); OSD cycles PHOTO_INTERVALS.
 PHOTO_INTERVAL = 5
 PHOTO_INTERVALS = (5, 10, 15, 20)
+PHOTO_SETTLE = 0.5   # seconds the open spinner stays after the path is set
 # Recursive slideshow walk bounds (depth, file cap).
 PHOTO_TREE_DEPTH = 6
 PHOTO_TREE_MAX = 4000
@@ -1264,7 +1265,7 @@ def _set_player_osd_lines(prefix, path):
     # Display only: decode the percent-encoded VFS URL (playback keeps URL form).
     path = sources.url_display(path)
     name = safe_label(os.path.basename(path))
-    disp = sources.display_path_below_source(os.path.dirname(path) or ".")
+    disp = safe_label(sources.display_path_below_source(os.path.dirname(path) or "."))
     leaf = safe_label(os.path.basename((os.path.dirname(path) or ".").rstrip("/")) or "")
     if leaf in ("", ".", "/"):
         leaf = disp
@@ -1276,20 +1277,42 @@ def _set_player_osd_lines(prefix, path):
     win.setProperty("%s.folder.rep" % prefix, _ticker(leaf, 11))
 
 
+def _network_listdir(folder):
+    """(dirs, files) child names of a network `folder`. FTP/FTPS uses our own
+    MLSD listing (one connection, fast); other schemes use Kodi's VFS (which
+    re-handshakes TLS on FTPS and can take minutes)."""
+    try:
+        if sources.is_ftp(folder):
+            r = sources.ftp_listdir(folder)
+            if r and r[0] is not None:
+                return list(r[0]), list(r[1])
+    except Exception:
+        pass
+    try:
+        res = xbmcvfs.listdir(sources.vfs_dir(folder))
+        if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
+            return list(res[0] or []), list(res[1] or [])
+    except Exception:
+        pass
+    return [], []
+
+
 def _folder_playlist(folder, exts):
     """Playlist file paths of `folder`, in browser order.
 
-    Network folders are listed through xbmcvfs (os.listdir raises); sort by
-    display name so network order matches the browser list."""
+    Network folders reuse the listing the browser just fetched (shared cache),
+    else list once (our MLSD for FTP, the VFS otherwise) and cache it; os.listdir
+    raises on network paths. Sort by display name so order matches the browser."""
     net = sources.is_network_path(folder)
-    names = []
     if net:
-        try:
-            res = xbmcvfs.listdir(sources.vfs_dir(folder))
-            if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
-                names = list(res[1] or [])
-        except Exception:
-            names = []
+        hit = listing_get(folder)
+        if hit is not None:
+            names = hit[0] + hit[1]
+        else:
+            dirs, files = _network_listdir(folder)
+            names = dirs + files
+            if names:
+                listing_put(folder, dirs, files)  # never cache a failed/empty listing
     else:
         try:
             names = os.listdir(folder)
@@ -1382,6 +1405,24 @@ def toggle_shuffle(playerid, exts):
         % ("on" if on else "off", len(files), redact(folder), pos))
 
 
+def _rebuild_for_footer():
+    """Rebuild the list right after an audio start so its bottom padding rows
+    (the audio footer height) are added. Without it the footer overlaps the
+    still-unpadded list for a moment on the FIRST play (later switches rebuild
+    anyway). Waits briefly for the player so the padding condition is true."""
+    try:
+        win = xbmcgui.Window(10000)
+        for _ in range(20):
+            if (xbmc.getCondVisibility("Player.HasAudio")
+                    or win.getProperty("bp.aload") == "1"):
+                break
+            time.sleep(0.1)
+        win.setProperty("bp.refresh", str(time.time()))
+        xbmc.executebuiltin("Container.Refresh")
+    except Exception:
+        pass
+
+
 def _play_audio_folder(path):
     """Start an audio file within its folder's playlist (so Previous/Next walk
     the folder); playback starts at the selected track's position."""
@@ -1402,7 +1443,7 @@ def _play_audio_folder(path):
             files.insert(0, head)
     t1 = time.time()
     _set_player_osd_lines("bp.audio", path)
-    xbmcgui.Window(10000).setProperty("bp.lastplayed", path)
+    xbmcgui.Window(10000).setProperty("bp.lastplayed", play_str(path))
     pl = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
     pl.clear()
     for f in files:
@@ -1422,6 +1463,7 @@ def _play_audio_folder(path):
             "(list %.1fs, add %.1fs, play %.1fs)"
             % (len(files), redact(folder), redact(path), idx,
                t1 - t0, t2 - t1, t3 - t2))
+        _rebuild_for_footer()
     else:
         # clicked file filtered out of the folder list: play it standalone
         xbmc.Player().play(play_str(path))
@@ -1461,7 +1503,7 @@ def _play_video_folder(path):
             files.insert(0, head)
     t1 = time.time()
     _set_player_osd_lines("bp.video", path)
-    xbmcgui.Window(10000).setProperty("bp.lastplayed", path)
+    xbmcgui.Window(10000).setProperty("bp.lastplayed", play_str(path))
     pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
     pl.clear()
     for f in files:
@@ -2947,7 +2989,10 @@ def _photo_open_ui(win, path):
     _photo_osd_on(win, "901")
     time.sleep(0.08)
     _photo_show(win, plist, idx)
-    # Spinner is for the OPEN only; slideshow steps need none.
+    # Keep the spinner until the image control has drawn the texture (else it
+    # flashes empty between the spinner and the picture). Slideshow steps need
+    # no spinner.
+    time.sleep(PHOTO_SETTLE)
     win.clearProperty("bp.photo.loading")
     for _ in range(10):
         xbmc.executebuiltin("SetFocus(901)")
