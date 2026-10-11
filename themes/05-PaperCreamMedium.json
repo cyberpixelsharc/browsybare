@@ -14,7 +14,6 @@
 	"surface": "FF454038",      // modal surfaces
 	"divider": "26EDEBE9",      // thin separator (alpha 0x26)
 	"divider2": "33EDEBE9",     // stronger separator (alpha 0x33)
-	"veil": "80070904",         // dim backdrop behind menus (alpha 0x80)
 	"text": "FFEDEBE9",         // primary text
 	"text2": "FFC5C3BC",        // list / secondary text
 	"muted": "FFA88C78",        // faint text

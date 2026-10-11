@@ -5,6 +5,11 @@
 	<defaultcontrol always="true">300</defaultcontrol>
 	<onload>SetProperty(bp.settings,open,10000)</onload>
 	<onload>SetProperty(bp.settings.tab,1,10000)</onload>
+	<onload>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onload>
+	<onload>SetProperty(bp.tabc.2,$INFO[Window(10000).Property(bp.theme.text2)],10000)</onload>
+	<onload>SetProperty(bp.tabc.3,$INFO[Window(10000).Property(bp.theme.text2)],10000)</onload>
+	<onload>SetProperty(bp.tabc.4,$INFO[Window(10000).Property(bp.theme.text2)],10000)</onload>
+	<onload>SetProperty(bp.tabc.5,$INFO[Window(10000).Property(bp.theme.text2)],10000)</onload>
 	<onload>SetFocus(300)</onload>
 	<onunload>ClearProperty(bp.settings,10000)</onunload>
 	<onunload>ClearProperty(bp.settings.tab,10000)</onunload>
@@ -95,18 +100,10 @@
 						<animation effect="fade" start="0" end="100" time="150">Visible</animation>
 					</control>
 					<control type="label">
-						<left>35</left><top>155</top><width>140</width><height>26</height>
+						<left>10</left><top>155</top><width>190</width><height>26</height>
 						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Skin.String(accent)]</textcolor>
-						<label>$LOCALIZE[31368]</label>
-						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
-					</control>
-					<control type="label">
-						<left>35</left><top>155</top><width>140</width><height>26</height>
-						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
-						<label>$LOCALIZE[31368]</label>
-						<visible>!String.IsEqual(Window(10000).Property(bp.settings.tab),1)</visible>
+						<textcolor>$INFO[Window(10000).Property(bp.tabc.1)]</textcolor>
+						<label> $LOCALIZE[31368] </label>
 					</control>
 					<control type="button" id="300">
 						<left>35</left><top>83</top><width>140</width><height>98</height>
@@ -141,18 +138,10 @@
 						<animation effect="fade" start="0" end="100" time="150">Visible</animation>
 					</control>
 					<control type="label">
-						<left>175</left><top>155</top><width>140</width><height>26</height>
+						<left>150</left><top>155</top><width>190</width><height>26</height>
 						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Skin.String(accent)]</textcolor>
-						<label>$LOCALIZE[31369]</label>
-						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),4)</visible>
-					</control>
-					<control type="label">
-						<left>175</left><top>155</top><width>140</width><height>26</height>
-						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
-						<label>$LOCALIZE[31369]</label>
-						<visible>!String.IsEqual(Window(10000).Property(bp.settings.tab),4)</visible>
+						<textcolor>$INFO[Window(10000).Property(bp.tabc.4)]</textcolor>
+						<label> $LOCALIZE[31369] </label>
 					</control>
 					<control type="button" id="303">
 						<left>175</left><top>83</top><width>140</width><height>98</height>
@@ -187,18 +176,10 @@
 						<animation effect="fade" start="0" end="100" time="150">Visible</animation>
 					</control>
 					<control type="label">
-						<left>315</left><top>155</top><width>140</width><height>26</height>
+						<left>290</left><top>155</top><width>190</width><height>26</height>
 						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Skin.String(accent)]</textcolor>
-						<label>$LOCALIZE[31370]</label>
-						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),3)</visible>
-					</control>
-					<control type="label">
-						<left>315</left><top>155</top><width>140</width><height>26</height>
-						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
-						<label>$LOCALIZE[31370]</label>
-						<visible>!String.IsEqual(Window(10000).Property(bp.settings.tab),3)</visible>
+						<textcolor>$INFO[Window(10000).Property(bp.tabc.3)]</textcolor>
+						<label> $LOCALIZE[31370] </label>
 					</control>
 					<control type="button" id="301">
 						<left>315</left><top>83</top><width>140</width><height>98</height>
@@ -233,18 +214,10 @@
 						<animation effect="fade" start="0" end="100" time="150">Visible</animation>
 					</control>
 					<control type="label">
-						<left>455</left><top>155</top><width>140</width><height>26</height>
+						<left>430</left><top>155</top><width>190</width><height>26</height>
 						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Skin.String(accent)]</textcolor>
-						<label>$LOCALIZE[31371]</label>
-						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),2)</visible>
-					</control>
-					<control type="label">
-						<left>455</left><top>155</top><width>140</width><height>26</height>
-						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
-						<label>$LOCALIZE[31371]</label>
-						<visible>!String.IsEqual(Window(10000).Property(bp.settings.tab),2)</visible>
+						<textcolor>$INFO[Window(10000).Property(bp.tabc.2)]</textcolor>
+						<label> $LOCALIZE[31371] </label>
 					</control>
 					<control type="button" id="302">
 						<left>455</left><top>83</top><width>140</width><height>98</height>
@@ -279,18 +252,10 @@
 						<animation effect="fade" start="0" end="100" time="150">Visible</animation>
 					</control>
 					<control type="label">
-						<left>595</left><top>155</top><width>140</width><height>26</height>
+						<left>570</left><top>155</top><width>190</width><height>26</height>
 						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Skin.String(accent)]</textcolor>
-						<label>$LOCALIZE[31375]</label>
-						<visible>String.IsEqual(Window(10000).Property(bp.settings.tab),5)</visible>
-					</control>
-					<control type="label">
-						<left>595</left><top>155</top><width>140</width><height>26</height>
-						<font>font_tab</font><align>center</align><aligny>center</aligny>
-						<textcolor>$INFO[Window(10000).Property(bp.theme.text2)]</textcolor>
-						<label>$LOCALIZE[31375]</label>
-						<visible>!String.IsEqual(Window(10000).Property(bp.settings.tab),5)</visible>
+						<textcolor>$INFO[Window(10000).Property(bp.tabc.5)]</textcolor>
+						<label> $LOCALIZE[31375] </label>
 					</control>
 					<control type="button" id="304">
 						<left>595</left><top>83</top><width>140</width><height>98</height>
@@ -4890,6 +4855,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.1)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,1,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.1)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.1)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.1)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.1)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.1)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.1)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.1))</visible>
@@ -4918,6 +4884,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.2)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,2,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.2)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.2)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.2)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.2)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.2)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.2)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.2))</visible>
@@ -4946,6 +4913,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.3)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,3,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.3)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.3)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.3)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.3)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.3)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.3)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.3))</visible>
@@ -4974,6 +4942,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.4)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,4,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.4)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.4)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.4)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.4)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.4)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.4)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.4))</visible>
@@ -5002,6 +4971,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.5)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,5,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.5)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.5)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.5)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.5)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.5)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.5)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.5))</visible>
@@ -5030,6 +5000,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.6)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,6,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.6)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.6)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.6)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.6)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.6)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.6)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.6))</visible>
@@ -5058,6 +5029,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.7)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,7,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.7)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.7)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.7)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.7)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.7)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.7)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.7))</visible>
@@ -5086,6 +5058,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.8)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,8,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.8)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.8)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.8)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.8)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.8)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.8)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.8))</visible>
@@ -5114,6 +5087,7 @@
 								<texturenofocus colordiffuse="$INFO[Window(10000).Property(bp.accent.9)]">drawn/circle.png</texturenofocus>
 								<onclick>SetProperty(bp.accent.slot,9,10000)</onclick>
 								<onclick>Skin.SetString(accent,$INFO[Window(10000).Property(bp.accent.9)])</onclick>
+								<onclick>SetProperty(bp.tabc.1,$INFO[Skin.String(accent)],10000)</onclick>
 								<onclick>SetProperty(bp.accent.tint,1A$INFO[Window(10000).Property(bp.accent.rgb.9)]),10000)</onclick>
 								<onclick>SetProperty(bp.accent.hov,$INFO[Window(10000).Property(bp.accent.hov.9)]),10000)</onclick><onclick>SetProperty(bp.accent.bg,$INFO[Window(10000).Property(bp.accent.bg.9)],10000)</onclick><onclick>SetProperty(bp.accent.bg2,$INFO[Window(10000).Property(bp.accent.bg2.9)],10000)</onclick><onclick>SetProperty(bp.accent.focus,$INFO[Window(10000).Property(bp.accent.focus.9)],10000)</onclick>
 								<visible>!String.IsEmpty(Window(10000).Property(bp.accent.9))</visible>

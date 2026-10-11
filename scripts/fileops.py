@@ -13,7 +13,7 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable, focus_control, listing_get, listing_put
+from common import fs_path, log, L, skin_name, safe_label, redact, path_enc, path_dec, natkey, play_str, state_dir, cache_key, heic_capable, focus_control, listing_get, listing_put, listing_drop
 from urllib.parse import quote, unquote
 import keyboard
 import blacklist
@@ -94,10 +94,16 @@ def _net_dead(path):
         return False
 
 
-def _net_rescan(folder):
-    """Ask the foldersize daemon to drop its cooldown for a just-changed network
-    folder, so a new/changed entry's size+date are fetched right away instead of
-    waiting out NET_RESCAN_SECS (the daemon only scans the current folder)."""
+def _net_changed(folder):
+    """A network folder's contents just changed (rename/create/delete). Drop its
+    cached listing so the browser re-lists the new names at once -- a still-fresh
+    entry would serve the old names for the whole LISTING_TTL (the stale-while-
+    revalidate refresh only runs once the cache is old) -- and ask the foldersize
+    daemon to drop its cooldown so the new entry's size+date come right away."""
+    try:
+        listing_drop(folder)
+    except Exception:
+        pass
     try:
         win = xbmcgui.Window(10000)
         win.setProperty("bp.netscan.path", path_enc(folder.rstrip("/")))
@@ -693,7 +699,7 @@ def rename(path=None):
         log("rename: %s -> %s" % (redact(p), redact(new_path)))
         _reload_list()
         if net:
-            _net_rescan(os.path.dirname(p.rstrip("/")))
+            _net_changed(os.path.dirname(p.rstrip("/")))
     except Exception as e:
         log("rename failed: %s" % e)
         xbmcgui.Dialog().notification(skin_name(), safe_label(L(31336) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -789,7 +795,7 @@ def mkdircreate():
                 raise OSError("VFS mkdir failed")
             log("mkdir: %s" % redact(new_path))
             _reload_list()
-            _net_rescan(cur_raw)
+            _net_changed(cur_raw)
         except Exception as e:
             log("mkdir failed: %s" % e)
             xbmcgui.Dialog().notification(skin_name(), safe_label(L(31338) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -871,7 +877,7 @@ def delconfirm():
         log("delete: %s" % redact(p))
         _reload_list()
         if _net(p):
-            _net_rescan(os.path.dirname(p.rstrip("/")))
+            _net_changed(os.path.dirname(p.rstrip("/")))
     except Exception as e:
         log("delete failed: %s" % e)
         xbmcgui.Dialog().notification(skin_name(), safe_label(L(31337) % e), xbmcgui.NOTIFICATION_ERROR, 4000)
@@ -1124,7 +1130,7 @@ def _paste_vfs(src, dest, mode):
             win.setProperty("bp.pasterefresh.path", path_enc(dest))
             # The folder may still be on its size/date cooldown; let the new
             # file get its size+date now instead of after NET_RESCAN_SECS.
-            _net_rescan(dest)
+            _net_changed(dest)
         time.sleep(0.2)
         xbmc.executebuiltin("SetFocus(33)")
     except _ProgCancelled:

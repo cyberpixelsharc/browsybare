@@ -1307,7 +1307,12 @@ THEME_DIR = "themes"
 THEME_DEFAULT = "ForestNineMedium"
 THEME_ROLES = ("bg", "panel", "panel_solid", "panel_solid2", "row", "zebra",
                "header", "raised", "raised2", "raised3", "surface", "divider",
-               "divider2", "veil", "text", "text2", "muted", "control")
+               "divider2", "text", "text2", "muted", "control")
+# The dim backdrop behind every modal/menu is a FIXED neutral gray, identical
+# for all themes: a theme must not tint it (e.g. a blue-gray veil cast a colour
+# over the dimmed file manager and top bar). bp.theme.veil is still set -- the
+# XML reads it -- but no longer comes from the theme file.
+THEME_VEIL = "80101010"
 
 
 def _theme_files(base=None):
@@ -1471,6 +1476,8 @@ def themes(tid=None):
             win.setProperty("bp.theme.%s" % role, v)
         else:
             win.clearProperty("bp.theme.%s" % role)
+    # Fixed neutral dim backdrop, independent of the theme (see THEME_VEIL).
+    win.setProperty("bp.theme.veil", THEME_VEIL)
     win.setProperty("bp.theme.id", tid)
     # The file name IS the display name (creative/international, not translated).
     win.setProperty("bp.theme.name", tid)

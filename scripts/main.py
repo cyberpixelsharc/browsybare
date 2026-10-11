@@ -874,6 +874,11 @@ def accent_next():
         if val:
             win.setProperty("bp.accent.%s" % key, val)
     win.setProperty("bp.accent.focus", nxt)
+    try:
+        _tab = int(win.getProperty("bp.settings.tab") or 1)
+    except (TypeError, ValueError):
+        _tab = 1
+    _tab_colors(win, _tab)
     log("accent: slot %d (%s)" % (slot, nxt))
 
 
@@ -901,6 +906,16 @@ def intensity_next():
 GUISOUND_VOLUMES = (0, 25, 50, 75, 100)
 
 
+def _tab_colors(win, tab):
+    """Per-tab caption colours (bp.tabc.1-5): the active tab gets the accent,
+    the others the dim theme text. The captions are single labels -- the former
+    active/inactive label pair shifted the text by a few px in Kodi."""
+    accent = xbmc.getInfoLabel("Skin.String(accent)")
+    text2 = win.getProperty("bp.theme.text2")
+    for n in range(1, 6):
+        win.setProperty("bp.tabc.%d" % n, accent if n == tab else text2)
+
+
 def settings_tab(tab, tabid):
     """Switch the settings tab and reset its shared grouplist (id 91) scroll:
     briefly focus the tab's top row, then return focus to the tab button."""
@@ -910,6 +925,7 @@ def settings_tab(tab, tabid):
         return
     win = xbmcgui.Window(10000)
     win.setProperty("bp.settings.tab", str(tab))
+    _tab_colors(win, tab)
     time.sleep(0.08)
     candidates = {1: (274,), 2: (272, 701), 3: (129, 105, 271),
                   4: (277,), 5: (500,)}.get(tab, ())

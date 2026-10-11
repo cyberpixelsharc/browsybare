@@ -285,6 +285,23 @@ def listing_put(folder, dirs, files, details=None):
         pass
 
 
+def listing_drop(folder):
+    """Forget the cached listing of a `folder`. Called after a rename/create/
+    delete so the browser re-lists instead of serving the stale child names (a
+    still-fresh entry would skip the stale-while-revalidate refresh for the whole
+    LISTING_TTL)."""
+    path = listing_cache_path()
+    if not path:
+        return
+    try:
+        data = read_json(path, {})
+        if isinstance(data, dict):
+            data.pop(cache_key((folder or "").rstrip("/")), None)
+            write_json(path, data)
+    except Exception:
+        pass
+
+
 def safe_label(s):
     """Kodi-safe display string: plain str, no surrogates (undecodable filenames segfault Kodi's Python bindings). Original bytes are guessed back (UTF-8 then cp1252); navigation paths stay raw -- display only."""
     try:
