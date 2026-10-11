@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import platform
+import random
 import re
 import shutil
 import sys
@@ -1506,11 +1507,16 @@ def theme_next():
 # Persisted in a state file (NOT Skin.String): an image path can contain a comma,
 # which would truncate a Skin.SetString(...) builtin argument.
 WALLPAPER_FILE = "wallpaper.json"
-WALLPAPER_VIS = tuple(range(0, 16))   # 0..15 % in 1 % steps (0 = invisible)
-WALLPAPER_VIS_DEFAULT = 5
+WALLPAPER_VIS = tuple(range(0, 21))   # 0..20 % in 1 % steps (0 = invisible)
+WALLPAPER_VIS_DEFAULT = 10
+WALLPAPER_BW_DEFAULT = True           # black & white unless the user turns it off
 WALLPAPER_SETTLE = 0.4   # seconds to let the image control draw a new texture
 WALLPAPER_EXT = (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tif",
                  ".tiff", ".avif")
+# Shipped default folder, shown while the user has neither a folder nor an image
+# set (a fresh install and a reset). Its first image (by name) is the default;
+# special:// is resolved by Kodi's VFS/texture.
+WALLPAPER_DEFAULT_FOLDER = "special://skin/media/wallpaper"
 
 
 def _wallpaper_path():
@@ -1538,8 +1544,7 @@ def _apply_wallpaper_overrides(win):
     instead of hard bands, and (2) the visibility scrim -- a fill over the image
     tinted with the theme bg at (100-vis)% alpha (a fill's alpha works reliably;
     an image's colordiffuse alpha did not). Both are re-applied on a theme change."""
-    d = _wallpaper_data()
-    image = (d.get("image") or "").strip()
+    image = wallpaper_image()
     vis = wallpaper_vis()
     active = bool(image) and vis > 0   # 0 % = wallpaper off
     raw = (win.getProperty("bp.theme.zebra.raw") or "").strip()
@@ -1563,11 +1568,26 @@ def wallpaper_vis():
 
 
 def wallpaper_folder():
-    return (_wallpaper_data().get("folder") or "").strip()
+    """The chosen folder, or the shipped default while none is set."""
+    f = (_wallpaper_data().get("folder") or "").strip()
+    return f or WALLPAPER_DEFAULT_FOLDER
+
+
+def wallpaper_image():
+    """The effective image: the chosen one, or the first shipped image while the
+    user has neither a folder nor an image set. An own folder with no image = none."""
+    d = _wallpaper_data()
+    img = (d.get("image") or "").strip()
+    if img:
+        return img
+    if (d.get("folder") or "").strip():
+        return ""
+    imgs = wallpaper_images(WALLPAPER_DEFAULT_FOLDER)
+    return imgs[0] if imgs else ""
 
 
 def wallpaper_bw():
-    return bool(_wallpaper_data().get("bw"))
+    return bool(_wallpaper_data().get("bw", WALLPAPER_BW_DEFAULT))
 
 
 def wallpaper_bw_toggle():
@@ -1580,7 +1600,7 @@ def wallpaper_bw_toggle():
     win.setProperty("bp.wallpaper.busy", "1")
     try:
         d = _wallpaper_data()
-        d["bw"] = not bool(d.get("bw"))
+        d["bw"] = not wallpaper_bw()
         _wallpaper_write(d)
         wallpapers()
         time.sleep(WALLPAPER_SETTLE)
@@ -1613,8 +1633,20 @@ def _wallpaper_local(image, bw):
     else:
         ext = os.path.splitext(image.rstrip("/"))[1].lower()
         out = os.path.join(d, key + (ext if ext in WALLPAPER_IMG_EXT else ".jpg"))
+    meta = out + ".stamp"
+    stamp = _wallpaper_stamp(image)
     if os.path.isfile(out):
-        return out
+        # The key is path-only, so a replaced file at the same path must refresh
+        # (the cached copy would otherwise stick forever). An empty stamp (an
+        # unreachable source) trusts the cache instead.
+        if not stamp:
+            return out
+        try:
+            prev = read_text(meta).strip() if os.path.isfile(meta) else ""
+        except Exception:
+            prev = ""
+        if prev and prev == stamp:
+            return out
     try:
         f = xbmcvfs.File(image)
         data = bytes(f.readBytes())
@@ -1627,6 +1659,7 @@ def _wallpaper_local(image, bw):
         try:
             with open(out, "wb") as fh:
                 fh.write(data)
+            _wallpaper_stamp_write(meta, stamp)
             _wallpaper_cache_trim(d)
             return out
         except OSError:
@@ -1647,6 +1680,7 @@ def _wallpaper_local(image, bw):
     try:
         import io
         Image.open(io.BytesIO(data)).convert("L").save(out, "JPEG", quality=90)
+        _wallpaper_stamp_write(meta, stamp)
         _wallpaper_cache_trim(d)
         return out
     except Exception as e:
@@ -1654,19 +1688,49 @@ def _wallpaper_local(image, bw):
         return ""
 
 
-def _wallpaper_cache_trim(d):
-    """Keep the cache bounded (newest WALLPAPER_CACHE_MAX files)."""
+def _wallpaper_stamp(image):
+    """Cheap change stamp ("mtime-size") of the source, or "" when it cannot be
+    read (offline source). Local and special:// paths go through translatePath,
+    network paths through xbmcvfs.Stat."""
     try:
-        files = [os.path.join(d, f) for f in os.listdir(d)]
-        files = [f for f in files if os.path.isfile(f)]
+        local = xbmcvfs.translatePath(image)
+        if local and "://" not in local:
+            st = os.stat(local)
+            return "%d-%d" % (int(st.st_mtime), int(st.st_size))
+    except Exception:
+        pass
+    try:
+        st = xbmcvfs.Stat(image)
+        mt = st.st_mtime() if callable(getattr(st, "st_mtime", None)) else st.st_mtime
+        sz = st.st_size() if callable(getattr(st, "st_size", None)) else st.st_size
+        return "%d-%d" % (int(mt), int(sz))
+    except Exception:
+        return ""
+
+
+def _wallpaper_stamp_write(meta, stamp):
+    try:
+        with open(meta, "w", encoding="utf-8") as fh:
+            fh.write(stamp or "")
+    except OSError:
+        pass
+
+
+def _wallpaper_cache_trim(d):
+    """Keep the cache bounded (newest WALLPAPER_CACHE_MAX images; the .stamp
+    sidecars are removed with their image)."""
+    try:
+        files = [f for f in os.listdir(d) if not f.endswith(".stamp")]
+        files = [os.path.join(d, f) for f in files if os.path.isfile(os.path.join(d, f))]
         if len(files) <= WALLPAPER_CACHE_MAX:
             return
         files.sort(key=lambda p: os.path.getmtime(p))
         for p in files[:-WALLPAPER_CACHE_MAX]:
-            try:
-                os.remove(p)
-            except OSError:
-                pass
+            for x in (p, p + ".stamp"):
+                try:
+                    os.remove(x)
+                except OSError:
+                    pass
     except OSError:
         pass
 
@@ -1678,10 +1742,11 @@ def wallpaper_images(folder):
         return []
     import sources
     net = sources.is_network_path(folder)
+    vfs = net or folder.lower().startswith("special://")   # shipped default folder
     names = []
     try:
-        if net:
-            res = xbmcvfs.listdir(sources.vfs_dir(folder))
+        if vfs:
+            res = xbmcvfs.listdir(sources.vfs_dir(folder) if net else folder)
             if isinstance(res, tuple) and len(res) == 2 and res[0] is not False:
                 names = list(res[1] or [])
         else:
@@ -1704,6 +1769,9 @@ def set_wallpaper_folder(folder):
     img = (d.get("image") or "").strip()
     if img and os.path.dirname(img) != d["folder"]:
         d["image"] = ""   # the chosen image lived in the old folder
+    if not d.get("image"):
+        imgs = wallpaper_images(d["folder"])
+        d["image"] = imgs[0] if imgs else ""   # show the folder's first image
     if d.get("vis") not in WALLPAPER_VIS:
         d["vis"] = WALLPAPER_VIS_DEFAULT
     _wallpaper_write(d)
@@ -1712,9 +1780,10 @@ def set_wallpaper_folder(folder):
 
 
 def wallpaper_image_next():
-    """Cycle the wallpaper image through the folder's images. Ignored while the
-    previous image is still being prepared/shown (each key press is its own
-    RunScript thread, so without the guard a fast press outruns the display)."""
+    """Pick a random wallpaper image from the folder (a different one when the
+    folder holds more than one). Ignored while the previous image is still being
+    prepared/shown (each key press is its own RunScript thread, so without the
+    guard a fast press outruns the display)."""
     win = xbmcgui.Window(10000)
     if win.getProperty("bp.wallpaper.busy") == "1":
         log("wallpaper: image switch ignored (still showing the current one)")
@@ -1725,12 +1794,10 @@ def wallpaper_image_next():
         if not imgs:
             log("wallpaper: no images in folder")
             return False
+        cur = wallpaper_image()
+        pool = [p for p in imgs if p != cur] or imgs   # avoid repeating the current
+        nxt = random.choice(pool)
         d = _wallpaper_data()
-        cur = (d.get("image") or "").strip()
-        try:
-            nxt = imgs[(imgs.index(cur) + 1) % len(imgs)]
-        except ValueError:
-            nxt = imgs[0]
         d["image"] = nxt
         _wallpaper_write(d)
         wallpapers()
@@ -1757,9 +1824,8 @@ def wallpapers():
     """Apply the wallpaper settings -> bp.wallpaper.* window properties (mirrors
     themes()). The image draws over the theme background; its alpha = visibility."""
     win = xbmcgui.Window(10000)
-    d = _wallpaper_data()
-    folder = (d.get("folder") or "").strip()
-    image = (d.get("image") or "").strip()
+    folder = wallpaper_folder()
+    image = wallpaper_image()
     vis = wallpaper_vis()
     win.setProperty("bp.wallpaper.dir",
                     safe_label(os.path.basename(folder.rstrip("/"))) or "-")

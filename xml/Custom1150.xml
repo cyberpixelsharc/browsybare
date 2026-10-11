@@ -11094,8 +11094,8 @@
 					<colordiffuse>$INFO[Window(10000).Property(bp.theme.veil)]</colordiffuse>
 				</control>
 				<control type="image">
-					<left>924</left>
-					<top>504</top>
+					<centerleft>50%</centerleft>
+					<centertop>50%</centertop>
 					<width>72</width>
 					<height>72</height>
 					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>

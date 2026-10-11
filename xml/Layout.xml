@@ -303,6 +303,8 @@
 			<!-- List loading veil: a dim (not an opaque fill) over the list while list.py builds the items, so the wallpaper shows through; a stale list is dimmed rather than hidden (hiding the list would stop the plugin). -->
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.listload),1)</visible>
+				<top>0</top>
+				<bottom>0</bottom>
 				<control type="image">
 					<left>0</left>
 					<top>128</top>
@@ -312,8 +314,8 @@
 					<colordiffuse>$INFO[Window(10000).Property(bp.theme.veil)]</colordiffuse>
 				</control>
 				<control type="image">
-					<left>924</left>
-					<top>568</top>
+					<centerleft>50%</centerleft>
+					<centertop>50%</centertop>
 					<width>72</width>
 					<height>72</height>
 					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
@@ -332,8 +334,8 @@
 					<colordiffuse>$INFO[Window(10000).Property(bp.theme.veil)]</colordiffuse>
 				</control>
 				<control type="image">
-					<left>924</left>
-					<top>504</top>
+					<centerleft>50%</centerleft>
+					<centertop>50%</centertop>
 					<width>72</width>
 					<height>72</height>
 					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
@@ -354,8 +356,8 @@
 					<colordiffuse>$INFO[Window(10000).Property(bp.theme.veil)]</colordiffuse>
 				</control>
 				<control type="image">
-					<left>924</left>
-					<top>568</top>
+					<centerleft>50%</centerleft>
+					<centertop>50%</centertop>
 					<width>72</width>
 					<height>72</height>
 					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
@@ -419,7 +421,7 @@
 				<height>$PARAM[ctrl_h]</height>
 				<itemgap>0</itemgap>
 				
-				<onright condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onright>
+				<onright condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">474</onright>
 				<onright>74</onright>
 				
 				<onleft condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onleft>
@@ -443,7 +445,8 @@
 					<onleft condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onleft>
 					<onleft>32</onleft>
 					<!-- Right skips the 14px spacer (47): an image cannot take focus, so the first Right died on it at drive root. -->
-					<onright condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">923</onright>
+					<onright condition="String.IsEqual(Window(10000).Property(bp.pick.active),1) + !String.IsEmpty(Window(10000).Property(bp.crumb.1))">40</onright>
+					<onright condition="String.IsEqual(Window(10000).Property(bp.pick.active),1)">474</onright>
 					<onright condition="!String.IsEmpty(Window(10000).Property(bp.crumb.1))">40</onright>
 					<onright>74</onright>
 					<onclick condition="String.IsEqual(Window(10000).Property(bp.drives),open)">ClearProperty(bp.drives)</onclick>
@@ -775,7 +778,7 @@
 				<focusedcolor>$INFO[Skin.String(accent)]</focusedcolor>
 				<label>$LOCALIZE[31343]</label>
 				<onclick>RunScript(special://skin/scripts/main.py,pickselect)</onclick>
-				<onleft>474</onleft>
+				<onleft>36</onleft>
 				<onright>923</onright>
 				<ondown>33</ondown>
 			</control>
@@ -3595,12 +3598,14 @@
 			<control type="group">
 				<visible>String.IsEqual(Window(10000).Property(bp.aload),1)</visible>
 				<animation effect="fade" start="0" end="100" time="120">Visible</animation>
+				<top>0</top>
+				<bottom>0</bottom>
 				<control type="image">
 					<left>0</left><top>0</top><width>1920</width><bottom>200</bottom>
 					<texture colordiffuse="$INFO[Window(10000).Property(bp.theme.veil)]">drawn/fill.png</texture>
 				</control>
 				<control type="image">
-					<left>924</left><top>568</top><width>72</width><height>72</height>
+					<centerleft>50%</centerleft><centertop>50%</centertop><width>72</width><height>72</height>
 					<animation effect="rotate" end="-360" center="auto" time="1200" loop="true" reversible="false" condition="true">Conditional</animation>
 					<texture colordiffuse="$INFO[Skin.String(accent)]">osd/arrow-clockwise.png</texture>
 				</control>
